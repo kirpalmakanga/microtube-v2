@@ -1,29 +1,32 @@
 {
-  "name": "microtube-v2",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
-    "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
-    "lint": "eslint .",
-    "typecheck": "nuxt typecheck",
-    "caddy:run": "caddy run",
-    "caddy:reload": "caddy reload"
-  },
-  "dependencies": {
-    "@iconify-json/lucide": "^1.2.104",
-    "@iconify-json/simple-icons": "^1.2.80",
-    "@nuxt/ui": "^4.7.0",
-    "nuxt": "^4.4.2",
-    "tailwindcss": "^4.2.4"
-  },
-  "devDependencies": {
-    "@nuxt/eslint": "^1.15.2",
-    "eslint": "^10.2.1",
-    "typescript": "^6.0.3",
-    "vue-tsc": "^3.2.7"
-  },
-  "packageManager": "pnpm@10.33.2"
+    "name": "microtube-v2",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "nuxt build",
+        "dev": "nuxt dev",
+        "preview": "nuxt preview",
+        "postinstall": "nuxt prepare",
+        "typecheck": "nuxt typecheck",
+        "caddy:run": "caddy run",
+        "caddy:reload": "caddy reload",
+        "fmt": "oxfmt",
+        "fmt:check": "oxfmt --check",
+        "lint": "oxlint",
+        "lint:fix": "oxlint --fix"
+    },
+    "dependencies": {
+        "@iconify-json/lucide": "^1.2.104",
+        "@iconify-json/simple-icons": "^1.2.80",
+        "@nuxt/ui": "^4.7.0",
+        "nuxt": "^4.4.2",
+        "tailwindcss": "^4.2.4"
+    },
+    "devDependencies": {
+        "oxfmt": "^0.47.0",
+        "oxlint": "^1.62.0",
+        "typescript": "^6.0.3",
+        "vue-tsc": "^3.2.7"
+    },
+    "packageManager": "pnpm@10.33.2"
 }

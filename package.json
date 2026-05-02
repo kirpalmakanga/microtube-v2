@@ -8,7 +8,9 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
-    "typecheck": "nuxt typecheck"
+    "typecheck": "nuxt typecheck",
+    "caddy:run": "caddy run",
+    "caddy:reload": "caddy reload"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.104",

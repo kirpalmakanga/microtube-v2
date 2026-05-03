@@ -44,6 +44,8 @@ const { picture } = storeToRefs(authStore);
                 />
             </UTooltip> -->
 
+            <SearchForm />
+
             <UColorModeButton />
 
             <UButton color="neutral" variant="ghost"><UAvatar :src="picture" /></UButton>

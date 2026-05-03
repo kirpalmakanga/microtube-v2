@@ -9,6 +9,11 @@ const {
 } = process.env;
 
 export default defineNuxtConfig({
+    app: {
+        head: {
+            title: 'Microtube'
+        }
+    },
     ssr: false,
     modules: ['@nuxt/ui', '@pinia/nuxt', '@pinia/colada-nuxt', 'pinia-plugin-persistedstate/nuxt'],
     imports: {

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 const route = useRoute();
+const authStore = useAuthStore();
+const { picture } = storeToRefs(authStore);
 // import { useAppTitle } from '../store/app';
 // import { useAuth } from '../store/user';
 
@@ -44,7 +46,7 @@ const route = useRoute();
 
             <UColorModeButton />
 
-            <UButton color="neutral" variant="ghost"><UAvatar /></UButton>
+            <UButton color="neutral" variant="ghost"><UAvatar :src="picture" /></UButton>
         </template>
     </UHeader>
 </template>

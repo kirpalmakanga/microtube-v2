@@ -7,8 +7,8 @@ defineProps<{
 </script>
 
 <template>
-    <div class="relative flex bg-red shrink-0">
-        <Img class="rounded h-28 aspect-video" :src="img" :alt="alt" />
+    <div class="bg-gray-800 relative flex shrink-0 rounded-md overflow-hidden">
+        <Img class="h-28 aspect-video" :src="img" :alt="alt" />
 
         <span
             v-if="badge"

@@ -22,7 +22,7 @@ defineProps<{
             {{ index + 1 }}
         </div>
 
-        <div class="flex flex-grow overflow-hidden p-4 gap-4 cursor-pointer">
+        <div class="flex grow overflow-hidden p-4 gap-4 cursor-pointer">
             <ListItemThumbnail
                 :img="getThumbnails(thumbnails, 'medium') || getThumbnails(thumbnails, 'default')"
                 :alt="title"

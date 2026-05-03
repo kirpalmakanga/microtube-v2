@@ -14,7 +14,7 @@ interface Props {
 }
 
 const Loader = () => (
-    <div class="flex flex-grow items-center justify-center p-4">
+    <div class="flex grow items-center justify-center p-4">
         <LoadingIcon class="text-light-50 w-8 h-8" />
     </div>
 );
@@ -59,7 +59,7 @@ const List = (props: Props) => {
     onCleanup(() => (isUnmounting = true));
 
     return (
-        <div class="relative flex-grow">
+        <div class="relative grow">
             <div
                 class="absolute inset-0 flex flex-col overflow-y-auto scrollbar-thin scrollbar-track-primary-600 scrollbar-thumb-primary-400 hover:scrollbar-thumb-primary-300"
                 ref={scrollTarget}

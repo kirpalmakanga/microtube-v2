@@ -19,6 +19,6 @@
 
 @layer utilities {
     .ellipsis {
-        @apply whitespace-nowrap overflow-ellipsis overflow-hidden;
+        @apply whitespace-nowrap text-ellipsis overflow-hidden;
     }
 }

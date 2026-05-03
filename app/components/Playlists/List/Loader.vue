@@ -6,7 +6,7 @@
             <USkeleton class="size-5" />
         </div>
 
-        <div class="flex flex-grow overflow-hidden p-4 gap-4 cursor-pointer">
+        <div class="flex grow overflow-hidden p-4 gap-4 cursor-pointer">
             <USkeleton class="aspect-video h-28" />
 
             <div class="flex flex-col grow"><USkeleton class="h-4 w-full" /></div>

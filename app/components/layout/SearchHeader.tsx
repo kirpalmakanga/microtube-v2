@@ -19,7 +19,7 @@ const SearchHeader = () => {
     const handleFormSubmit = (query: string) => setSearchParams({ query }, { replace: true });
 
     return (
-        <div class="flex flex-grow items-center px-4">
+        <div class="flex grow items-center px-4">
             <Title>{title()}</Title>
 
             <A

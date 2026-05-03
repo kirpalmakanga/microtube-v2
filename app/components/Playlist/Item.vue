@@ -25,6 +25,11 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
         // onSelect: () => queuePlaylist(playlistData, false)
     },
     {
+        label: 'Save to playlist',
+        icon: 'i-mdi-bookmark-outline'
+        // onSelect: () => queuePlaylist(playlistData, false)
+    },
+    {
         label: 'Share',
         icon: 'i-mdi-share-outline',
         onSelect: () => {
@@ -59,13 +64,13 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
         @click="$router.push(`/video/${id}`)"
     >
         <template #content>
-            <h2 class="font-bold text-light-50 font-montserrat ellipsis">{{ title }}</h2>
+            <h2 class="font-bold font-montserrat ellipsis">{{ title }}</h2>
 
-            <h3 class="text-sm text-light-50 opacity-70 hover:opacity-60 font-montserrat ellipsis">
+            <h3 class="text-sm opacity-70 hover:opacity-60 font-montserrat ellipsis">
                 <NuxtLink :to="`/channel/${channelId}`" @click.stop>{{ channelTitle }}</NuxtLink>
             </h3>
 
-            <h4 class="text-xs text-light-50 opacity-50 font-montserrat ellipsis">
+            <h4 class="text-xs opacity-50 font-montserrat ellipsis">
                 {{ formatDate(publishedAt, 'MMMM do yyyy') }}
             </h4>
         </template>

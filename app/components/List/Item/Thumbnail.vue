@@ -2,7 +2,7 @@
 defineProps<{
     img: string;
     alt: string;
-    badge: string;
+    badge?: string;
 }>();
 </script>
 

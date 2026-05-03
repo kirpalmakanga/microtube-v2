@@ -4,8 +4,15 @@ import type { ContextMenuItem } from '@nuxt/ui';
 const props = defineProps<{
     id: string;
     title: string;
+    description: string;
     thumbnails: Thumbnails;
-    itemCount: number;
+    duration: number;
+    publishedAt: string;
+    channelId: string;
+    channelTitle: string;
+    privacyStatus: string;
+    playlistId: string;
+    playlistItemId: string;
 }>();
 
 const copy = useCopy();
@@ -35,7 +42,7 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
     },
     { type: 'separator' },
     {
-        label: 'Delete',
+        label: 'Delete from this playlist',
         icon: 'i-mdi-delete-forever-outline',
         color: 'error'
         // onSelect: () => removePlaylist(playlistData)
@@ -45,15 +52,22 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
 
 <template>
     <ListItem
-        :index="index"
         :title="title"
         :thumbnails="thumbnails"
-        :badge="`${itemCount} video${itemCount !== 1 ? 's' : ''}`"
+        :badge="formatTime(duration)"
         :menu-options="menuOptions"
-        @click="$router.push(`/playlist/${id}`)"
+        @click="$router.push(`/video/${id}`)"
     >
         <template #content>
             <h2 class="font-bold text-light-50 font-montserrat ellipsis">{{ title }}</h2>
+
+            <h3 class="text-sm text-light-50 opacity-70 hover:opacity-60 font-montserrat ellipsis">
+                <NuxtLink :to="`/channel/${channelId}`" @click.stop>{{ channelTitle }}</NuxtLink>
+            </h3>
+
+            <h4 class="text-xs text-light-50 opacity-50 font-montserrat ellipsis">
+                {{ formatDate(publishedAt, 'MMMM do yyyy') }}
+            </h4>
         </template>
     </ListItem>
 </template>

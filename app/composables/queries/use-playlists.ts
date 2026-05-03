@@ -5,7 +5,8 @@ import {
     getPlaylistItems,
     addPlaylistItem,
     // getUserPlaylists,
-    removePlaylistItem
+    removePlaylistItem,
+    removePlaylist
 } from '~/services/youtube';
 
 export function usePlaylists(channelId?: MaybeRef<string>) {
@@ -20,6 +21,48 @@ export function usePlaylists(channelId?: MaybeRef<string>) {
         initialPageParam: undefined,
         getNextPageParam: ({ nextPageToken }) => {
             return nextPageToken;
+        }
+    });
+}
+
+export function useRemovePlaylist(playlistId: MaybeRef<string>) {
+    const queryCache = useQueryCache();
+
+    return useMutation({
+        mutation: () => removePlaylist(toValue(playlistId)),
+        onSuccess: () => {
+            queryCache.invalidateQueries({
+                key: ['playlists', 'mine']
+            });
+        }
+    });
+}
+
+export function usePlaylistItems(playlistId: MaybeRef<string>) {
+    return useInfiniteQuery({
+        key: () => ['playlistItems', toValue(playlistId)],
+        query: ({ pageParam: pageToken }) => {
+            return getPlaylistItems({
+                playlistId: toValue(playlistId),
+                ...(pageToken ? { pageToken } : {})
+            });
+        },
+        initialPageParam: undefined,
+        getNextPageParam: ({ nextPageToken }) => {
+            return nextPageToken;
+        }
+    });
+}
+
+export function useRemovePlaylistItem(playlistId: MaybeRef<string>) {
+    const queryCache = useQueryCache();
+
+    return useMutation({
+        mutation: () => removePlaylistItem(toValue(playlistId)),
+        onSuccess: () => {
+            queryCache.invalidateQueries({
+                key: ['playlistItems', toValue(playlistId)]
+            });
         }
     });
 }

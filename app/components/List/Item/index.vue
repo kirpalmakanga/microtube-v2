@@ -36,13 +36,23 @@ defineEmits<{ click: [e: void] }>();
             </div>
 
             <div class="flex grow overflow-hidden gap-4">
-                <ListItemThumbnail
-                    :img="
-                        getThumbnails(thumbnails, 'medium') || getThumbnails(thumbnails, 'default')
-                    "
-                    :alt="title"
-                    :badge="badge"
-                />
+                <div class="bg-gray-800 relative flex shrink-0 rounded-md overflow-hidden">
+                    <Img
+                        class="h-28 aspect-video"
+                        :src="
+                            getThumbnails(thumbnails, 'medium') ||
+                            getThumbnails(thumbnails, 'default')
+                        "
+                        :alt="title"
+                    />
+
+                    <span
+                        v-if="badge"
+                        class="absolute bottom-2 right-2 bg-gray-800/70 text-light-50 font-semibold font-montserrat text-xs rounded px-2 py-1"
+                    >
+                        {{ badge }}
+                    </span>
+                </div>
 
                 <div class="flex flex-col grow gap-1">
                     <slot name="content" />

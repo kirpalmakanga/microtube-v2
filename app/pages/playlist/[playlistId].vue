@@ -3,19 +3,41 @@ const {
     params: { playlistId }
 } = useRoute();
 
-const { data, isPending, isLoading, error, refetch, hasNextPage, loadNextPage } = usePlaylistItems(
-    playlistId as string
-);
+const {
+    data: playlistData,
+    isPending: isPlaylistPending,
+    isLoading: isPlaylistLoading,
+    error: playlistError,
+    refetch: refetchPlaylist
+} = usePlaylist(playlistId as string);
 
-const items = computed(() => data.value?.pages.flatMap(({ items }) => items));
+const {
+    data: playlistItems,
+    isPending: arePlaylistItemsPending,
+    isLoading: arePlaylistItemsLoading,
+    error: playlistItemsError,
+    refetch: refetchPlaylistItems,
+    hasNextPage,
+    loadNextPage
+} = usePlaylistItems(playlistId as string);
+
+const items = computed(() => playlistItems.value?.pages.flatMap(({ items }) => items));
+
+useAppTitle(computed(() => playlistData.value?.title || ''));
 </script>
 
 <template>
     <div class="flex flex-col grow">
-        <PlaylistLoader v-if="isPending || (error && isLoading)" />
+        <PlaylistItemsLoader
+            v-if="arePlaylistItemsPending || (playlistItemsError && arePlaylistItemsLoading)"
+        />
 
-        <Error v-else-if="error" @action="refetch()" />
+        <Error v-else-if="playlistItemsError" @action="refetchPlaylistItems()" />
 
-        <Playlist v-else-if="items" :items="items" @load-more="hasNextPage && loadNextPage()" />
+        <PlaylistItems
+            v-else-if="items"
+            :items="items"
+            @load-more="hasNextPage && loadNextPage()"
+        />
     </div>
 </template>

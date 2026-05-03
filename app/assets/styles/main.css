@@ -16,3 +16,9 @@
     --color-green-900: #0a5331;
     --color-green-950: #052e16;
 }
+
+@layer utilities {
+    .ellipsis {
+        @apply whitespace-nowrap overflow-ellipsis overflow-hidden;
+    }
+}

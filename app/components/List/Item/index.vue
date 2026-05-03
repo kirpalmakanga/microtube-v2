@@ -48,7 +48,7 @@ defineEmits<{ click: [e: void] }>();
 
                     <span
                         v-if="badge"
-                        class="absolute bottom-2 right-2 bg-gray-800/70 text-light-50 font-semibold font-montserrat text-xs rounded px-2 py-1"
+                        class="absolute bottom-2 right-2 bg-gray-800/70 font-semibold font-montserrat text-xs rounded px-2 py-1"
                     >
                         {{ badge }}
                     </span>
@@ -61,7 +61,7 @@ defineEmits<{ click: [e: void] }>();
 
             <UDropdownMenu v-if="menuOptions" :items="menuOptions" :content="menuConfig">
                 <UButton
-                    class="cursor-pointer"
+                    class="cursor-pointer ml-4"
                     color="neutral"
                     variant="ghost"
                     icon="i-mdi-dots-vertical"

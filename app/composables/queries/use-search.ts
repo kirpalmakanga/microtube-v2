@@ -4,7 +4,10 @@ export function useSearch(searchParams: MaybeRef<{ query: string; forMine: numbe
     return useInfiniteQuery({
         key: () => ['search'],
         query: ({ pageParam: pageToken }) => {
-            return searchVideos({ ...toValue(searchParams), ...(pageToken ? { pageToken } : {}) });
+            return searchVideos({
+                ...toValue(searchParams),
+                ...(pageToken ? { pageToken } : {})
+            });
         },
         initialPageParam: undefined,
         getNextPageParam: ({ nextPageToken }) => {

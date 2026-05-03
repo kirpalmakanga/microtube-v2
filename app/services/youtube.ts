@@ -66,11 +66,11 @@ const request = async (
 export async function searchVideos({
     query,
     forMine,
-    pageToken
+    pageToken = ''
 }: {
     query: string;
     forMine: number;
-    pageToken: string;
+    pageToken?: string;
 }) {
     const {
         items: searchResults,

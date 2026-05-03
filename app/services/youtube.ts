@@ -205,17 +205,15 @@ export async function removePlaylist(id: string) {
     });
 }
 
-export async function getPlaylistTitle(id: string) {
-    const { items } = await request('get', 'playlists', {
+export async function getPlaylist(id: string) {
+    const {
+        items: [item]
+    } = await request('get', 'playlists', {
         id,
         part: 'snippet'
     });
 
-    const {
-        snippet: { title }
-    } = items[0];
-
-    return title;
+    return parsePlaylistData(item);
 }
 
 export async function getPlaylistItems({

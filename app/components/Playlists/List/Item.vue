@@ -45,7 +45,6 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
 
 <template>
     <ListItem
-        :index="index"
         :title="title"
         :thumbnails="thumbnails"
         :badge="`${itemCount} video${itemCount !== 1 ? 's' : ''}`"

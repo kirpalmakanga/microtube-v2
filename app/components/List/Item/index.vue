@@ -22,17 +22,20 @@ defineEmits<{ click: [e: void] }>();
 
 <template>
     <UContextMenu :items="menuOptions" :disabled="!menuOptions">
-        <div
-            class="flex items-center w-full bg-gray-900 hover:bg-gray-800 transition-colors no-highlights"
+        <UCard
+            class="hover:bg-elevated/25 transition-colors cursor-pointer"
+            variant="soft"
+            :ui="{ body: 'flex items-center' }"
+            @click="$emit('click')"
         >
             <div
                 v-if="typeof index === 'number'"
-                class="text-sm text-center text-light-50 font-montserrat w-10"
+                class="text-sm text-center text-light-50 font-montserrat w-4 whitespace-nowrap mr-4"
             >
-                {{ index + 1 }}
+                {{ index }}
             </div>
 
-            <div class="flex grow overflow-hidden p-4 gap-4 cursor-pointer" @click="$emit('click')">
+            <div class="flex grow overflow-hidden gap-4">
                 <ListItemThumbnail
                     :img="
                         getThumbnails(thumbnails, 'medium') || getThumbnails(thumbnails, 'default')
@@ -47,13 +50,15 @@ defineEmits<{ click: [e: void] }>();
             </div>
 
             <UDropdownMenu v-if="menuOptions" :items="menuOptions" :content="menuConfig">
-                <button
-                    class="flex items-center justify-center transition-colors text-light-50 hover:text-opacity-50 p-2 cursor-pointer"
-                    @click.stop=""
-                >
-                    <UIcon class="size-5" name="i-mdi-dots-vertical" />
-                </button>
+                <UButton
+                    class="cursor-pointer"
+                    color="neutral"
+                    variant="ghost"
+                    icon="i-mdi-dots-vertical"
+                    size="lg"
+                    @click.stop
+                />
             </UDropdownMenu>
-        </div>
+        </UCard>
     </UContextMenu>
 </template>

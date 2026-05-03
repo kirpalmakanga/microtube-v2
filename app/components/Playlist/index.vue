@@ -6,9 +6,9 @@ defineProps<{ items: PlaylistItem[] }>();
 
 <template>
     <ScrollContainer @reached-bottom="$emit('load-more')">
-        <ul>
+        <ul class="flex flex-col p-6 gap-6">
             <li v-for="(playlistItem, index) of items">
-                <PlaylistItem :index="index" v-bind="playlistItem" />
+                <PlaylistItem :index="index + 1" v-bind="playlistItem" />
             </li>
         </ul>
     </ScrollContainer>

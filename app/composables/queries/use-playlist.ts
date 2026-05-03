@@ -1,4 +1,11 @@
-import { getPlaylistItems, removePlaylistItem } from '~/services/youtube';
+import { getPlaylist, getPlaylistItems, removePlaylistItem } from '~/services/youtube';
+
+export function usePlaylist(playlistId: MaybeRef<string>) {
+    return useQuery({
+        key: () => ['playlist', toValue(playlistId)],
+        query: () => getPlaylist(toValue(playlistId))
+    });
+}
 
 export function usePlaylistItems(playlistId: MaybeRef<string>) {
     return useInfiniteQuery({

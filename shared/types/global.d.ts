@@ -25,6 +25,8 @@ declare global {
         thumbnails: Thumbnails;
         itemCount: number;
         privacyStatus: string;
+        channelId: string;
+        channelTitle: string;
     }
 
     interface Video {

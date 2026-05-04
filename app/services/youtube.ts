@@ -210,7 +210,7 @@ export async function getPlaylist(id: string) {
         items: [item]
     } = await request('get', 'playlists', {
         id,
-        part: 'snippet'
+        part: 'snippet, contentDetails, status'
     });
 
     return parsePlaylistData(item);

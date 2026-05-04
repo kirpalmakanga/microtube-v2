@@ -28,6 +28,12 @@ useAppTitle(computed(() => playlistData.value?.title || ''));
 
 <template>
     <div class="flex flex-col grow">
+        <PlaylistLoader v-if="isPlaylistPending || (playlistError && isPlaylistLoading)" />
+
+        <Error v-else-if="playlistError" @action="refetchPlaylistItems()" />
+
+        <PlaylistHeader v-else-if="playlistData" v-bind="playlistData" />
+
         <PlaylistItemsLoader
             v-if="arePlaylistItemsPending || (playlistItemsError && arePlaylistItemsLoading)"
         />

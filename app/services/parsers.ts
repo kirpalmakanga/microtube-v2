@@ -17,7 +17,7 @@ interface YoutubeVideo {
 interface YoutubePlaylist {
     id: string;
     contentDetails: { itemCount: number };
-    snippet: { title: string; thumbnails: Thumbnails };
+    snippet: { title: string; thumbnails: Thumbnails; channelId: string; channelTitle: string };
     status: { privacyStatus: string };
 }
 
@@ -46,14 +46,16 @@ export const parseVideoData = ({
 export const parsePlaylistData = ({
     id,
     contentDetails: { itemCount = 0 },
-    snippet: { title, thumbnails },
+    snippet: { title, thumbnails, channelId, channelTitle },
     status: { privacyStatus }
 }: YoutubePlaylist): Playlist => ({
     id,
     title,
     thumbnails,
     itemCount,
-    privacyStatus
+    privacyStatus,
+    channelId,
+    channelTitle
 });
 
 export const parseChannelData = ({

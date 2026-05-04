@@ -35,7 +35,7 @@ defineEmits<{ submit: [q: { query: string; forMine: number }] }>();
 <template>
     <UForm>
         <UFieldGroup>
-            <UInput variant="soft" v-model="state.query" />
+            <UInput placeholder="Search" variant="soft" v-model="state.query" />
 
             <USelect variant="soft" :items="menuOptions" v-model="state.forMine" />
 

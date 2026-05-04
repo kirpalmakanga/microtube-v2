@@ -1,15 +1,4 @@
-import { loadScript } from '../lib/helpers';
-
-type PlayerConstructor = new (id: string, options: Options) => YouTubePlayerInstance;
-
-declare global {
-    interface Window {
-        YT: { Player: PlayerConstructor };
-        onYouTubeIframeAPIReady: Function;
-    }
-}
-
-enum PlayerStates {
+enum YoutubePlayerState {
     BUFFERING = 3,
     ENDED = 0,
     PAUSED = 2,
@@ -18,17 +7,18 @@ enum PlayerStates {
     VIDEO_CUED = 5
 }
 
-type IframeApiType = {
-    Player: PlayerConstructor;
-};
-
-export type EventType = 'onReady' | 'onStateChange' | 'onError' | 'onApiChange' | 'onVolumeChange';
+export type YoutubePlayerEvent =
+    | 'onReady'
+    | 'onStateChange'
+    | 'onError'
+    | 'onApiChange'
+    | 'onVolumeChange';
 
 export enum YoutubePlaybackState {
     UNSTARTED = -1
 }
 
-export interface Options {
+export interface YoutubePlayerOptions {
     width?: number | string;
     height?: number | string;
     videoId?: string;
@@ -56,7 +46,7 @@ export interface Options {
         widget_referrer?: string;
     };
     events?: {
-        [eventType in EventType]?: (event: CustomEvent) => void;
+        [eventType in YoutubePlayerEvent]?: (event: CustomEvent) => void;
     };
 }
 
@@ -90,7 +80,7 @@ export interface YouTubePlayerInstance {
     getPlaylistIndex: () => number;
     getPlaybackQuality: () => string;
     getPlaybackRate: () => number;
-    getPlayerState: () => PlayerStates;
+    getPlayerState: () => YoutubePlayerState;
     getVideoEmbedCode: () => string;
     getVideoLoadedFraction: () => number;
     getVideoUrl: () => string;
@@ -137,7 +127,22 @@ export interface YouTubePlayerInstance {
     setVolume: (volume: number) => void;
     stopVideo: () => void;
     unMute: () => void;
-    on: (eventType: EventType, listener: (event: CustomEvent) => void) => void;
+    on: (eventType: YoutubePlayerEvent, listener: (event: CustomEvent) => void) => void;
+}
+
+type YoutubePlayerConstructor = new (
+    id: string,
+    options: YoutubePlayerOptions
+) => YouTubePlayerInstance;
+
+type YoutubeIframeApi = {
+    Player: YoutubePlayerConstructor;
+};
+declare global {
+    interface Window {
+        YT: { Player: YoutubePlayerConstructor };
+        onYouTubeIframeAPIReady: () => void;
+    }
 }
 
 export const EVENT_NAMES = [
@@ -159,7 +164,7 @@ export const PLAYBACK_STATES = {
     CUED: 5
 };
 
-const loadYoutubeIframeAPI = async (): Promise<IframeApiType> => {
+const loadYoutubeIframeAPI = async (): Promise<YoutubeIframeApi> => {
     if (window?.YT?.Player instanceof Function) {
         return window.YT;
     } else {
@@ -171,7 +176,7 @@ const loadYoutubeIframeAPI = async (): Promise<IframeApiType> => {
     }
 };
 
-export const createYoutubePlayer = async (id: string, options: Options) => {
+export const createYoutubePlayer = async (id: string, options: YoutubePlayerOptions) => {
     const YT = await loadYoutubeIframeAPI();
 
     return new YT.Player(id, options);

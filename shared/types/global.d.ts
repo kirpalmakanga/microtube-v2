@@ -2,12 +2,18 @@ declare const SIZE_DEFAULT = 'default';
 declare const SIZE_MEDIUM = 'medium';
 declare const SIZE_HIGH = 'high';
 
+interface ThumbnailData {
+    url: string;
+    width: number;
+    height: number;
+}
+
 declare global {
     interface Thumbnails {
-        [key: string]: File;
-        [SIZE_DEFAULT]: File;
-        [SIZE_MEDIUM]: File;
-        [SIZE_HIGH]: File;
+        [key: string]: ThumbnailData;
+        [SIZE_DEFAULT]: ThumbnailData;
+        [SIZE_MEDIUM]: ThumbnailData;
+        [SIZE_HIGH]: ThumbnailData;
     }
 
     interface User {

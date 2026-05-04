@@ -12,10 +12,8 @@ export const stopPropagation = (func?: (e: Event) => void) => (e: Event) => {
     if (func) func(e);
 };
 
-export const getThumbnails = (thumbnails: ThumbnailsData, size: string): string => {
-    const {
-        [size]: { url = '' }
-    } = thumbnails;
+export const getThumbnails = (thumbnails: Thumbnails, size: string): string => {
+    const { [size]: { url = '' } = {} } = thumbnails;
 
     return url.replace('http:', 'https:');
 };
@@ -205,6 +203,11 @@ export const setImmediateInterval = (handler: Function, timeout?: number): numbe
 export const getVideoURL = (id: string) => `https://youtu.be/${id}`;
 
 export const getPlaylistURL = (id: string) => `https://youtube.com/playlist?list=${id}`;
+
+interface ShareConfig {
+    title: string;
+    url: string;
+}
 
 export const shareURL = (config: ShareConfig) => navigator.share(config);
 

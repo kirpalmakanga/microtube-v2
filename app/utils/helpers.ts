@@ -179,19 +179,21 @@ export const wrapURLs = (text: string) => {
         .replace(emailAddressPattern, '<a href="mailto:$&">$&</a>');
 };
 
-export const loadScript = async (src: string) => {
-    if (!document.querySelector(`script[src="${src}"]`)) {
+export const loadScript = (src: string) => {
+    if (document.querySelector(`script[src="${src}"]`)) {
+        throw new Error(`Script already appended: ${src}`);
+    }
+
+    return new Promise((resolve, reject) => {
         const js = document.createElement('script');
 
+        js.onload = resolve;
+        js.onerror = reject;
+
+        js.src = src;
+
         document.body.appendChild(js);
-
-        return new Promise((resolve, reject) => {
-            js.onload = resolve;
-            js.onerror = reject;
-
-            js.src = src;
-        });
-    }
+    });
 };
 
 export const setImmediateInterval = (handler: Function, timeout?: number): number => {

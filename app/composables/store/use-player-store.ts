@@ -10,24 +10,6 @@ interface PlayerState {
     video: Video | null;
 }
 
-function getInitialVideoState(): Video {
-    return {
-        id: '',
-        title: 'No video.',
-        description: '',
-        duration: 0,
-        thumbnails: {
-            medium: { url: '' },
-            default: { url: '' },
-            high: { url: '' }
-        },
-        publishedAt: '',
-        channelId: '',
-        channelTitle: '',
-        privacyStatus: ''
-    };
-}
-
 function getInitialState(): PlayerState {
     return {
         isScreenVisible: false,
@@ -36,7 +18,7 @@ function getInitialState(): PlayerState {
         currentTime: 0,
         queue: [],
         selectedItemId: '',
-        video: getInitialVideoState()
+        video: null
     };
 }
 
@@ -107,7 +89,7 @@ export const usePlayerStore = defineStore(
             queueItems([data]);
         }
 
-        function setActiveQueueItem(videoId: string) {
+        function setSelectedItem(videoId: string) {
             state.selectedItemId = videoId;
 
             saveData(currentIdPath.value, videoId);
@@ -144,7 +126,7 @@ export const usePlayerStore = defineStore(
         }
 
         function clearVideo() {
-            state.video = getInitialVideoState();
+            state.video = null;
         }
 
         async function fetchVideo(videoId: string) {
@@ -164,7 +146,7 @@ export const usePlayerStore = defineStore(
             const newIndex = queue.findIndex(({ id }) => id === selectedItemId) + (next ? 1 : -1);
             const { [newIndex]: { id = null } = {} } = queue;
 
-            if (id) setActiveQueueItem(id);
+            if (id) setSelectedItem(id);
         }
 
         return {
@@ -179,7 +161,7 @@ export const usePlayerStore = defineStore(
             setQueue,
             queueItems,
             queueItem,
-            setActiveQueueItem,
+            setSelectedItem,
             importVideos,
             removeQueueItem,
             clearQueue,

@@ -3,7 +3,7 @@ import { onKeyStroke, useFullscreen } from '@vueuse/core';
 import { YoutubePlaybackState, type YouTubePlayerInstance } from '~/services/youtube-player';
 
 const playerStore = usePlayerStore();
-const { currentVideo, video } = storeToRefs(playerStore);
+const { currentVideo, video, newItemCount } = storeToRefs(playerStore);
 const { resetNewItemCount, goToNextQueueItem } = playerStore;
 
 const { isFullscreen, toggle: toggleFullscreen } = useFullscreen(useTemplateRef('playerWrapper'));
@@ -56,26 +56,6 @@ function toggleScreen() {
     Object.assign(state, {
         isScreenVisible,
         ...(isScreenVisible ? { isQueueVisible: false, isDescriptionVisible: false } : {})
-    });
-}
-
-function toggleQueue() {
-    const isQueueVisible = !state.isQueueVisible;
-
-    Object.assign(state, {
-        isQueueVisible,
-        ...(isQueueVisible ? { isScreenVisible: false, isDescriptionVisible: false } : {})
-    });
-
-    if (isQueueVisible) resetNewItemCount();
-}
-
-function toggleInfo() {
-    const isVisible = !state.isDescriptionVisible;
-
-    Object.assign(state, {
-        isDescriptionVisible: isVisible,
-        ...(isVisible ? { isScreenVisible: false, isQueueVisible: false } : {})
     });
 }
 
@@ -203,8 +183,8 @@ watch(
 </script>
 
 <template>
-    <div class="flex flex-col justify-end shadow bg-elevated" ref="playerWrapper">
-        <div class="flex px-6 py-4">
+    <div class="flex flex-col justify-end shadow bg-elevated/70" ref="playerWrapper">
+        <div class="flex px-6 py-4 bg-elevated">
             <div class="flex gap-2">
                 <UButton :icon="state.isPlaying ? 'i-mdi-pause' : 'i-mdi-play'" />
 
@@ -235,9 +215,33 @@ watch(
             <div class="grow"></div>
 
             <div class="flex gap-2">
-                <UButton icon="i-mdi-information" />
+                <UButton icon="i-mdi-bookmark" />
 
-                <UButton icon="i-mdi-view-list" />
+                <PlayerVideoDescription
+                    v-if="currentVideo"
+                    :title="currentVideo?.title"
+                    :text="currentVideo.description"
+                >
+                    <UButton icon="i-mdi-information" />
+                </PlayerVideoDescription>
+
+                <PlayerQueue>
+                    <div class="relative">
+                        <UButton
+                            icon="i-mdi-view-list"
+                            @click="newItemCount && resetNewItemCount()"
+                        />
+
+                        <UBadge
+                            v-if="newItemCount"
+                            class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2"
+                            color="error"
+                            size="sm"
+                        >
+                            {{ newItemCount }}
+                        </UBadge>
+                    </div>
+                </PlayerQueue>
 
                 <UButton icon="i-mdi-monitor" />
 

@@ -10,7 +10,7 @@ defineProps<{
 </script>
 
 <template>
-    <div class="flex bg-elevated/50 p-6 gap-6">
+    <div class="flex bg-elevated/80 p-6 gap-6 shadow">
         <Img
             class="aspect-video h-28 rounded-md"
             :src="getThumbnails(thumbnails, 'medium') || getThumbnails(thumbnails, 'default')"

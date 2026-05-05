@@ -4,8 +4,8 @@ declare const SIZE_HIGH = 'high';
 
 interface ThumbnailData {
     url: string;
-    width: number;
-    height: number;
+    // width: number;
+    // height: number;
 }
 
 declare global {

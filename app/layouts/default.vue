@@ -6,9 +6,11 @@ const { isSignedIn } = storeToRefs(authStore);
 <template>
     <LayoutDefaultHeader />
 
-    <UMain class="flex">
-        <NuxtPage />
-    </UMain>
+    <UMain class="flex flex-col">
+        <div class="flex flex-col grow">
+            <NuxtPage />
+        </div>
 
-    <!-- <Player v-if="isSignedIn" /> -->
+        <Player v-if="isSignedIn" />
+    </UMain>
 </template>

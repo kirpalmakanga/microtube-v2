@@ -56,7 +56,7 @@ const menuConfig = {
 <template>
     <UContextMenu :items="menuOptions" :disabled="!menuOptions">
         <div
-            class="bg-elevated/50 hover:bg-elevated/25 transition-colors relative flex grow items-center overflow-hidden pl-10 py-4 pr-4"
+            class="bg-elevated/50 hover:bg-elevated/25 transition-colors relative flex grow items-center overflow-hidden pl-10 py-2 pr-2"
             :class="{
                 'bg-zinc-700 hover:bg-zinc-600': isSelected
             }"
@@ -65,7 +65,7 @@ const menuConfig = {
             <div class="flex grow gap-4">
                 <div class="relative flex shrink-0">
                     <Img
-                        class="bg-gray-800 h-28 aspect-video rounded-md"
+                        class="bg-gray-800 h-18 aspect-video rounded-md"
                         :src="
                             getThumbnails(thumbnails, 'medium') ||
                             getThumbnails(thumbnails, 'default')

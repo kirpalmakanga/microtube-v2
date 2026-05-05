@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { ContextMenuItem } from '@nuxt/ui';
 
+const { queueItem } = usePlayerStore();
+
 const props = defineProps<{
     id: string;
     title: string;
@@ -21,8 +23,23 @@ const { mutate } = useRemovePlaylist(props.id);
 const menuOptions = computed<ContextMenuItem[]>(() => [
     {
         label: 'Add to queue',
-        icon: 'i-mdi-plus-circle-outline'
-        // onSelect: () => queuePlaylist(playlistData, false)
+        icon: 'i-mdi-plus-circle-outline',
+        onSelect: () => {
+            queueItem(
+                pick(
+                    props,
+                    'id',
+                    'title',
+                    'thumbnails',
+                    'duration',
+                    'description',
+                    'publishedAt',
+                    'channelId',
+                    'channelTitle',
+                    'privacyStatus'
+                )
+            );
+        }
     },
     {
         label: 'Save to playlist',

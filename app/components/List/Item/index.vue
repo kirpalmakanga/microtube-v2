@@ -23,22 +23,22 @@ defineEmits<{ click: [e: void] }>();
 <template>
     <UContextMenu :items="menuOptions" :disabled="!menuOptions">
         <UCard
-            class="hover:bg-elevated/25 transition-colors cursor-pointer"
+            class="hover:bg-elevated/25 transition-colors"
             variant="soft"
             :ui="{ body: 'flex items-center' }"
             @click="$emit('click')"
         >
             <div
                 v-if="typeof index === 'number'"
-                class="text-sm text-center text-light-50 font-montserrat w-4 whitespace-nowrap mr-4"
+                class="text-sm text-center whitespace-nowrap w-4 mr-4"
             >
                 {{ index }}
             </div>
 
-            <div class="flex grow overflow-hidden gap-4">
-                <div class="bg-gray-800 relative flex shrink-0 rounded-md overflow-hidden">
+            <div class="flex grow gap-4">
+                <div class="relative shrink-0">
                     <Img
-                        class="h-28 aspect-video"
+                        class="bg-gray-800 h-28 aspect-video rounded-md"
                         :src="
                             getThumbnails(thumbnails, 'medium') ||
                             getThumbnails(thumbnails, 'default')
@@ -61,7 +61,7 @@ defineEmits<{ click: [e: void] }>();
 
             <UDropdownMenu v-if="menuOptions" :items="menuOptions" :content="menuConfig">
                 <UButton
-                    class="cursor-pointer ml-4"
+                    class="ml-4"
                     color="neutral"
                     variant="ghost"
                     icon="i-mdi-dots-vertical"

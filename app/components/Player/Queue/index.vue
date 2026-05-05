@@ -4,13 +4,17 @@ const playerStore = usePlayerStore();
 const { queue, selectedItemId } = storeToRefs(playerStore);
 const { removeQueueItem, setSelectedItem } = playerStore;
 const list = shallowRef(queue);
+
+function isSelected(videoId: string) {
+    return videoId === selectedItemId.value;
+}
 </script>
 
 <template>
     <USlideover
         title="Queue"
         :description="`${queue.length} video${queue.length !== 1 ? 's' : ''}`"
-        :ui="{ body: 'flex sm:p-0' }"
+        :ui="{ content: 'max-w-2/3', body: 'flex sm:p-0' }"
     >
         <slot />
 
@@ -35,8 +39,8 @@ const list = shallowRef(queue);
                         v-bind="item"
                         :index="index"
                         :is-playing="false"
-                        :is-selected="item.id === selectedItemId"
-                        @select="setSelectedItem(item.id)"
+                        :is-selected="isSelected(item.id)"
+                        @select="!isSelected(item.id) && setSelectedItem(item.id)"
                         @remove="removeQueueItem(item.id)"
                     />
 

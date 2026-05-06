@@ -39,23 +39,15 @@ function reset() {
     Object.assign(formData, getInitialState());
 }
 
-function handleCancel() {
-    close();
-
-    reset();
-}
-
-function handleSubmit({ data }: FormSubmitEvent<PlaylisFormData>) {
+function handleSubmit() {
     createPlaylist(formData);
 
     close();
-
-    // reset();
 }
 </script>
 
 <template>
-    <UModal v-model:open="isOpen" title="New Playlist">
+    <UModal v-model:open="isOpen" title="New Playlist" @after:leave="reset">
         <UButton class="text-center self-center" icon="i-mdi-plus">New playlist</UButton>
 
         <template #body>
@@ -88,7 +80,7 @@ function handleSubmit({ data }: FormSubmitEvent<PlaylisFormData>) {
 
         <template #footer>
             <div class="flex gap-2">
-                <UButton color="error" label="Cancel" @click="handleCancel" />
+                <UButton color="error" label="Cancel" @click="close" />
                 <UButton type="submit" form="playlist-form" label="Create" />
             </div>
         </template>

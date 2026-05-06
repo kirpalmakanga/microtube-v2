@@ -17,7 +17,7 @@ function handleSelectPlaylist(playlistId: string) {
 </script>
 
 <template>
-    <div class="flex flex-col h-[60vh] gap-4">
+    <div class="flex flex-col h-[60vh]">
         <PlaylistSelectorLoader v-if="isPending || (error && isLoading)" />
 
         <Error v-else-if="error" @action="refetch()" />
@@ -30,20 +30,24 @@ function handleSelectPlaylist(playlistId: string) {
                         @click="handleSelectPlaylist(id)"
                     >
                         <Img
-                            class="aspect-video h-16 rounded-md"
+                            class="aspect-video h-10 rounded-md"
                             :src="getThumbnails(thumbnails, 'default')"
                         />
 
-                        <span class="font-bold truncate grow ellipsis">
+                        <span class="text-sm font-bold truncate grow ellipsis">
                             {{ title }}
                         </span>
 
-                        <span class="text-xs">
+                        <span class="text-xs opacity-50">
                             {{ itemCount }} item{{ itemCount !== 1 ? 's' : '' }}
                         </span>
                     </button>
                 </li>
             </ul>
         </ScrollContainer>
+
+        <USeparator orientation="horizontal" class="h-8" />
+
+        <PlaylistSelectorForm />
     </div>
 </template>

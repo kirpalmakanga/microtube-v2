@@ -1,71 +1,96 @@
 <script setup lang="ts">
-interface FormProps {
-    onSubmit: (data: PlaylistData) => void;
+import type { FormError, FormSubmitEvent, SelectMenuItem } from '@nuxt/ui';
+
+interface PlaylisFormData {
+    title: string;
+    privacyStatus: 'public' | 'unlisted' | 'private';
 }
 
-const privacyOptions: DropDownOption<string>[] = [
-    { label: 'Public', value: 'public' },
-    { label: 'Private', value: 'private' },
-    { label: 'Unlisted', value: 'unlisted' }
+function getInitialState(): PlaylisFormData {
+    return {
+        title: '',
+        privacyStatus: 'private'
+    };
+}
+
+const { mutate: createPlaylist } = useCreateplaylist();
+
+const formData = reactive<PlaylisFormData>(getInitialState());
+
+const isOpen = ref<boolean>(false);
+
+const visibilityOptions: SelectMenuItem[] = [
+    { label: 'Public', icon: 'i-mdi-earth', value: 'public' },
+    { label: 'Unlisted', icon: 'i-mdi-link-variant', value: 'unlisted' },
+    { label: 'Private', icon: 'i-mdi-lock', value: 'private' }
 ];
 
-const [state, setState] = createStore({
-    title: '',
-    privacyStatus: 'public'
-});
+function validate(state: Partial<PlaylisFormData>): FormError[] {
+    const errors = [];
+    if (!state.title) errors.push({ name: 'title', message: 'A title is required' });
+    return errors;
+}
 
-const setValue = (key: string, value: unknown) => setState({ [key]: value });
+function close() {
+    isOpen.value = false;
+}
 
-const handlePrivacyStatusChange = (value: string) => {
-    setValue('privacyStatus', value);
-};
+function reset() {
+    Object.assign(formData, getInitialState());
+}
 
-const handleInput: JSX.EventHandler<HTMLInputElement, Event> = ({
-    currentTarget: { name, value }
-}) => {
-    setValue(name, value);
-};
+function handleCancel() {
+    close();
 
-const handleSubmit = preventDefault(() => state.title && onSubmit(state as PlaylistData));
+    reset();
+}
+
+function handleSubmit({ data }: FormSubmitEvent<PlaylisFormData>) {
+    createPlaylist(formData);
+
+    close();
+
+    // reset();
+}
 </script>
 
 <template>
-    <form class="flex flex-col z-1 gap-4" onSubmit="{handleSubmit}">
-        <fieldset class="flex flex-col gap-4">
-            <label>New playlist</label>
+    <UModal v-model:open="isOpen" title="New Playlist">
+        <UButton class="text-center self-center" icon="i-mdi-plus">New playlist</UButton>
 
-            <div class="flex flex-col">
-                <label class="text-sm mb-1" for="playlist-title">Title</label>
+        <template #body>
+            <UForm
+                id="playlist-form"
+                class="flex flex-col gap-4"
+                :validate="validate"
+                :state="formData"
+                @submit="handleSubmit"
+            >
+                <UFormField label="Title" name="title" required>
+                    <UInput
+                        class="w-full"
+                        variant="soft"
+                        placeholder="Choose a title"
+                        v-model="formData.title"
+                    />
+                </UFormField>
 
-                <input
-                    id="playlist-title"
-                    class="h-8 flex-grow transition-colors bg-primary-800 hover:bg-primary-700 focus:(outline-none bg-primary-600) px-2 rounded"
-                    name="title"
-                    value="{state.title}"
-                    placeholder="Title"
-                    onChange="{handleInput}"
-                    onKeyPress="{stopPropagation()}"
-                />
+                <UFormField label="Visibility" name="privacyStatus">
+                    <USelect
+                        class="w-full"
+                        :items="visibilityOptions"
+                        variant="soft"
+                        v-model="formData.privacyStatus"
+                    />
+                </UFormField>
+            </UForm>
+        </template>
+
+        <template #footer>
+            <div class="flex gap-2">
+                <UButton color="error" label="Cancel" @click="handleCancel" />
+                <UButton type="submit" form="playlist-form" label="Create" />
             </div>
-
-            <div class="flex flex-col">
-                <label class="text-sm mb-1">Privacy</label>
-
-                <DropDown
-                    currentValue="{state.privacyStatus}"
-                    options="{privacyOptions}"
-                    onSelect="{handlePrivacyStatusChange}"
-                />
-            </div>
-        </fieldset>
-
-        <div class="flex justify-end">
-            <Button
-                class="flex items-center justify-center gap-2 px-4 py-1 bg-violet-500 hover:bg-violet-400 transition-colors text-light-50 font-montserrat rounded shadow"
-                type="submit"
-                title="Create"
-                disabled="{!state.title}"
-            />
-        </div>
-    </form>
+        </template>
+    </UModal>
 </template>

@@ -13,18 +13,20 @@ const props = defineProps<{
     privacyStatus: string;
 }>();
 
+const emit = defineEmits<{ queue: [e: void]; save: [e: void] }>();
+
 const copy = useCopy();
 
 const menuOptions = computed<ContextMenuItem[]>(() => [
     {
         label: 'Add to queue',
-        icon: 'i-mdi-plus-circle-outline'
-        // onSelect: () => queuePlaylist(playlistData, false)
+        icon: 'i-mdi-plus-circle-outline',
+        onSelect: () => emit('queue')
     },
     {
         label: 'Save to playlist',
-        icon: 'i-mdi-bookmark-outline'
-        // onSelect: () => queuePlaylist(playlistData, false)
+        icon: 'i-mdi-bookmark-outline',
+        onSelect: () => emit('save')
     },
     {
         label: 'Share',

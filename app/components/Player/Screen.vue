@@ -22,7 +22,7 @@ defineEmits<{
 </script>
 
 <template>
-    <div class="flex">
+    <div class="flex bg-accented">
         <YoutubePlayer
             v-if="videoId"
             class="relative grow after:content-[''] after:absolute after:inset-0"

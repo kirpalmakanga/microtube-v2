@@ -1,4 +1,9 @@
-import { getPlaylist, getPlaylistItems, removePlaylistItem } from '~/services/youtube';
+import {
+    addPlaylistItem,
+    getPlaylist,
+    getPlaylistItems,
+    removePlaylistItem
+} from '~/services/youtube';
 
 export function usePlaylist(playlistId: MaybeRef<string>) {
     return useQuery({
@@ -23,14 +28,41 @@ export function usePlaylistItems(playlistId: MaybeRef<string>) {
     });
 }
 
-export function useRemovePlaylistItem(playlistId: MaybeRef<string>) {
+export function useAddPlaylistItem() {
     const queryCache = useQueryCache();
 
     return useMutation({
-        mutation: () => removePlaylistItem(toValue(playlistId)),
-        onSuccess: () => {
+        mutation: async ({ playlistId, videoId }: { playlistId: string; videoId: string }) => {
+            await addPlaylistItem(playlistId, videoId);
+
+            return { playlistId };
+        },
+        onSuccess: ({ playlistId }) => {
             queryCache.invalidateQueries({
-                key: ['playlistItems', toValue(playlistId)]
+                key: ['playlistItems', playlistId]
+            });
+        }
+    });
+}
+
+export function useRemovePlaylistItem() {
+    const queryCache = useQueryCache();
+
+    return useMutation({
+        mutation: async ({
+            playlistId,
+            playlistItemId
+        }: {
+            playlistId: string;
+            playlistItemId: string;
+        }) => {
+            await removePlaylistItem(playlistItemId);
+
+            return { playlistId };
+        },
+        onSuccess: ({ playlistId }) => {
+            queryCache.invalidateQueries({
+                key: ['playlistItems', playlistId]
             });
         }
     });

@@ -282,9 +282,9 @@ export async function addPlaylistItem(playlistId: string, videoId: string): Prom
     return id;
 }
 
-export async function removePlaylistItem(id: string) {
+export async function removePlaylistItem(playlistItemId: string) {
     return request('delete', 'playlistItems', {
-        id
+        id: playlistItemId
     });
 }
 /* Subscriptions */

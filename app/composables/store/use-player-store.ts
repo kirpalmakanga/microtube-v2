@@ -1,4 +1,4 @@
-import { getVideo, getVideosFromIds } from '~/services/youtube';
+import { getPlaylistItems, getVideo, getVideosFromIds } from '~/services/youtube';
 
 interface PlayerState {
     isScreenVisible: boolean;
@@ -143,6 +143,35 @@ export const usePlayerStore = defineStore(
             }
         }
 
+        async function queuePlaylist({ id: playlistId }: Playlist, play?: boolean) {
+            async function getItems(pageToken?: string) {
+                const { items, nextPageToken } = await getPlaylistItems({
+                    playlistId,
+                    pageToken
+                });
+
+                const newItems = queueItems(items);
+
+                if (play && !pageToken && newItems.length) {
+                    const [{ id } = {}] = newItems;
+
+                    if (id) setSelectedItem(id);
+                }
+
+                if (nextPageToken) {
+                    await getItems(nextPageToken);
+                }
+            }
+
+            try {
+                await getItems();
+            } catch (error) {
+                captureError(error);
+
+                toast.add({ title: 'Error queueing playlist items.' });
+            }
+        }
+
         function moveInQueue(direction: -1 | 1) {
             const { [selectedItemIndex.value + direction]: selectedItem } = state.queue;
 
@@ -163,6 +192,7 @@ export const usePlayerStore = defineStore(
             setQueue,
             queueItems,
             queueItem,
+            queuePlaylist,
             setSelectedItem,
             importVideos,
             removeQueueItem,

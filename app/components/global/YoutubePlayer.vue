@@ -44,7 +44,7 @@ async function createPlayer() {
             ...props.options,
             videoId: props.videoId,
             events: {
-                onReady: () => emit('ready', internalPlayer.value),
+                onReady: () => internalPlayer.value && emit('ready', internalPlayer.value),
                 onError: captureError,
                 onStateChange({ data }: { [key: string]: any }) {
                     switch (data) {

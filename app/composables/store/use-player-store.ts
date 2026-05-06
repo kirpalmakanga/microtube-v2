@@ -25,7 +25,6 @@ function getInitialState(): PlayerState {
 export const usePlayerStore = defineStore(
     'player',
     () => {
-        console.log('env', import.meta.env);
         const authStore = useAuthStore();
         const { id: userId } = storeToRefs(authStore);
 
@@ -35,10 +34,13 @@ export const usePlayerStore = defineStore(
 
         const state = reactive<PlayerState>(getInitialState());
 
-        const currentUserId = computed(() => (import.meta.env ? 'dev' : userId.value));
+        const selectedItemIndex = computed(() =>
+            state.queue.findIndex(({ id }) => id === state.selectedItemId)
+        );
 
+        const currentUserId = computed(() => (import.meta.env.DEV ? 'dev' : userId.value));
         const queuePath = computed(() => `users/${currentUserId.value}/queue`);
-        const currentIdPath = computed(() => `users/${currentUserId.value}/currentId`);
+        const currentIdPath = computed(() => `users/${currentUserId.value}/selectedItemId`);
 
         function subscribeToQueue() {
             subscribeToData(queuePath.value, (queue = []) => {
@@ -141,12 +143,10 @@ export const usePlayerStore = defineStore(
             }
         }
 
-        function goToNextQueueItem(next: boolean | undefined = true) {
-            const { queue, selectedItemId } = state;
-            const newIndex = queue.findIndex(({ id }) => id === selectedItemId) + (next ? 1 : -1);
-            const { [newIndex]: { id = null } = {} } = queue;
+        function moveInQueue(direction: -1 | 1) {
+            const { [selectedItemIndex.value + direction]: selectedItem } = state.queue;
 
-            if (id) setSelectedItem(id);
+            if (selectedItem) setSelectedItem(selectedItem.id);
         }
 
         return {
@@ -156,6 +156,8 @@ export const usePlayerStore = defineStore(
 
                 return video || queue.find(({ id }) => id === selectedItemId);
             }),
+            previousVideo: computed(() => state.queue[selectedItemIndex.value - 1]),
+            nextVideo: computed(() => state.queue[selectedItemIndex.value + 1]),
             subscribeToQueue,
             subscribeToCurrentQueueId,
             setQueue,
@@ -168,7 +170,7 @@ export const usePlayerStore = defineStore(
             resetNewItemCount,
             clearVideo,
             fetchVideo,
-            goToNextQueueItem
+            moveInQueue
         };
     },
     {

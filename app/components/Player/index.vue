@@ -4,9 +4,9 @@ import { YoutubePlaybackState, type YouTubePlayerInstance } from '~/services/you
 
 const playerStore = usePlayerStore();
 const { currentVideo, video, newItemCount } = storeToRefs(playerStore);
-const { resetNewItemCount, goToNextQueueItem } = playerStore;
+const { resetNewItemCount, moveInQueue } = playerStore;
 
-const { isFullscreen, toggle: toggleFullscreen } = useFullscreen(useTemplateRef('playerWrapper'));
+const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
 interface PlayerState {
     isPlaying: boolean;
@@ -30,7 +30,6 @@ const getInitialPlayerState = () => ({
 
 const state = reactive<PlayerState>(getInitialPlayerState());
 
-let isStartup: boolean = true;
 let youtube: YouTubePlayerInstance | null;
 let youtubeVolume = ref<number>(100);
 
@@ -85,7 +84,7 @@ function handleBuffering() {
 
 function handleVideoEnd() {
     if (!isSingleVideo()) {
-        goToNextQueueItem();
+        moveInQueue(1);
     }
 }
 
@@ -125,19 +124,6 @@ function handleWheelVolume({ deltaY }: WheelEvent) {
 
 function handleYoutubeIframeReady(playerInstance: YouTubePlayerInstance) {
     youtube = playerInstance;
-}
-
-function handleYoutubeIframeStateChange(playbackStateId: YoutubePlaybackState) {
-    switch (playbackStateId) {
-        case YoutubePlaybackState.UNSTARTED:
-            // TODO: check if startup is still necessary
-            if (!isStartup) {
-                handlePlay();
-            } else {
-                isStartup = false;
-            }
-            break;
-    }
 }
 
 onKeyStroke('m', toggleMute);
@@ -183,14 +169,34 @@ watch(
 </script>
 
 <template>
-    <div class="flex flex-col justify-end shadow bg-elevated/70" ref="playerWrapper">
-        <div class="flex px-6 py-4 bg-elevated">
+    <div class="flex flex-col justify-end bg-elevated/70" ref="playerWrapper">
+        <PlayerScreen
+            class="fixed left-0 right-0 transition-opacity z-51"
+            :class="{
+                'top-16 bottom-16': !isFullscreen,
+                'top-0 bottom-0': isFullscreen,
+                invisible: !state.isScreenVisible,
+                visible: state.isScreenVisible
+            }"
+            :videoId="currentVideo?.id"
+            @ready="handleYoutubeIframeReady"
+            @ended="handleVideoEnd"
+            @buffering="handleBuffering"
+            @playing="handlePlay"
+            @paused="handlePause"
+            @click="togglePlay"
+        />
+
+        <div class="flex px-6 py-4 h-16 bg-elevated shadow z-52">
             <div class="flex gap-2">
-                <UButton :icon="state.isPlaying ? 'i-mdi-pause' : 'i-mdi-play'" />
+                <UButton
+                    :icon="state.isPlaying ? 'i-mdi-pause' : 'i-mdi-play'"
+                    @click="togglePlay"
+                />
 
                 <UFieldGroup>
-                    <UButton icon="i-mdi-skip-previous" />
-                    <UButton icon="i-mdi-skip-next" />
+                    <UButton icon="i-mdi-skip-previous" @click="moveInQueue(-1)" />
+                    <UButton icon="i-mdi-skip-next" @click="moveInQueue(1)" />
                 </UFieldGroup>
 
                 <div
@@ -243,7 +249,7 @@ watch(
                     </div>
                 </PlayerQueue>
 
-                <UButton icon="i-mdi-monitor" />
+                <UButton icon="i-mdi-monitor" @click="toggleScreen" />
 
                 <UButton
                     :icon="isFullscreen ? 'i-mdi-arrow-collapse' : 'i-mdi-arrow-expand'"

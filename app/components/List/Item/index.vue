@@ -35,7 +35,7 @@ defineEmits<{ click: [e: void] }>();
                 {{ index }}
             </div>
 
-            <div class="flex grow gap-4">
+            <div class="flex grow gap-4 overflow-hidden">
                 <div class="relative shrink-0">
                     <Img
                         class="bg-gray-800 h-28 aspect-video rounded-md"
@@ -54,7 +54,7 @@ defineEmits<{ click: [e: void] }>();
                     </span>
                 </div>
 
-                <div class="flex flex-col grow gap-1">
+                <div class="flex flex-col grow gap-1 overflow-hidden">
                     <slot name="content" />
                 </div>
             </div>

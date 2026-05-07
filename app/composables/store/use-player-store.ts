@@ -143,7 +143,7 @@ export const usePlayerStore = defineStore(
             }
         }
 
-        async function queuePlaylist({ id: playlistId }: Playlist, play?: boolean) {
+        async function queuePlaylist(playlistId: string, play?: boolean) {
             async function getItems(pageToken?: string) {
                 const { items, nextPageToken } = await getPlaylistItems({
                     playlistId,

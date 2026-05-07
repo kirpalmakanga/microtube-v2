@@ -40,7 +40,6 @@ export function useCreateplaylist() {
             });
         },
         onSettled: () => {
-            // TODO: get added item after refresh
             queryCache.invalidateQueries({
                 key: ['playlists', 'mine'],
                 exact: true
@@ -54,9 +53,10 @@ export function useRemovePlaylist() {
 
     return useMutation({
         mutation: ({ playlistId }: { playlistId: string }) => removePlaylist(playlistId),
-        onSuccess: () => {
+        onSettled: () => {
             queryCache.invalidateQueries({
-                key: ['playlists', 'mine']
+                key: ['playlists', 'mine'],
+                exact: true
             });
         }
     });

@@ -123,8 +123,6 @@ export const usePlayerStore = defineStore(
 
         function clearQueue() {
             state.queue = state.queue.filter(({ id }) => id === state.selectedItemId);
-
-            // TODO: Prompt
         }
 
         function clearVideo() {

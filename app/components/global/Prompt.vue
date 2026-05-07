@@ -18,7 +18,7 @@ const props = withDefaults(
     }
 );
 
-const emit = defineEmits<{ confirm: [e: void] }>();
+const emit = defineEmits<{ close: [e: void]; confirm: [e: void] }>();
 
 const isOpen = defineModel<boolean>('isOpen');
 
@@ -35,7 +35,7 @@ watch(
 </script>
 
 <template>
-    <UModal :title="title" v-model:open="isOpen">
+    <UModal :title="title" v-model:open="isOpen" @after:leave="$emit('close')">
         <slot />
 
         <template #footer>

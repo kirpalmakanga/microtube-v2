@@ -21,18 +21,9 @@ defineProps<{ items: Video[] }>();
         </ul>
     </ScrollContainer>
 
-    <UModal
-        :open="!!selectedItem"
-        :title="selectedItem?.title"
-        description="Save to playlist"
-        @close:prevent="selectedItem = null"
-    >
-        <template #body>
-            <PlaylistSelector
-                v-if="selectedItem"
-                :video-id="selectedItem.id"
-                @saved="selectedItem = null"
-            />
-        </template>
-    </UModal>
+    <PlaylistSelectorModal
+        v-if="selectedItem"
+        :video-id="selectedItem.id"
+        @saved="selectedItem = null"
+    />
 </template>

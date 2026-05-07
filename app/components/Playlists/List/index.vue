@@ -7,11 +7,7 @@ const { queuePlaylist } = usePlayerStore();
 
 const { mutate: removePlaylist } = useRemovePlaylist();
 
-const selectedPlaylist = ref<Playlist | null>(null);
-
-function handleRemovePlaylist() {
-    if (selectedPlaylist.value) removePlaylist({ playlistId: selectedPlaylist.value.id });
-}
+const selectedItem = ref<Playlist | null>(null);
 </script>
 
 <template>
@@ -21,16 +17,16 @@ function handleRemovePlaylist() {
                 <PlaylistsListItem
                     v-bind="playlist"
                     @queue="queuePlaylist(playlist.id)"
-                    @save="selectedPlaylist = playlist"
+                    @save="selectedItem = playlist"
                 />
             </li>
         </ul>
     </ScrollContainer>
 
     <Prompt
-        :is-open="!!selectedPlaylist"
-        :title="`Remove playlist &quot;${selectedPlaylist?.title}&quot; ?`"
+        :is-open="!!selectedItem"
+        :title="`Remove playlist &quot;${selectedItem?.title}&quot; ?`"
         confirm-text="Remove"
-        @confirm="handleRemovePlaylist"
+        @confirm="selectedItem && removePlaylist(selectedItem)"
     />
 </template>

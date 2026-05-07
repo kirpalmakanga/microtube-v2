@@ -49,13 +49,7 @@ export function useRemovePlaylistItem() {
     const queryCache = useQueryCache();
 
     return useMutation({
-        mutation: async ({
-            playlistId,
-            playlistItemId
-        }: {
-            playlistId: string;
-            playlistItemId: string;
-        }) => {
+        mutation: async ({ playlistId, playlistItemId }: PlaylistItem) => {
             await removePlaylistItem(playlistItemId);
 
             return { playlistId };

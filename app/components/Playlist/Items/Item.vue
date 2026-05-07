@@ -3,6 +3,8 @@ import type { ContextMenuItem } from '@nuxt/ui';
 
 const { queueItem } = usePlayerStore();
 
+const emit = defineEmits<{ queue: [e: void]; save: [e: void]; remove: [e: void] }>();
+
 const props = defineProps<{
     id: string;
     title: string;
@@ -18,37 +20,21 @@ const props = defineProps<{
 }>();
 
 const copy = useCopy();
-const { mutate } = useRemovePlaylist(props.id);
 
 const menuOptions = computed<ContextMenuItem[]>(() => [
     {
         label: 'Add to queue',
-        icon: 'i-mdi-plus-circle-outline',
-        onSelect: () => {
-            queueItem(
-                pick(
-                    props,
-                    'id',
-                    'title',
-                    'thumbnails',
-                    'duration',
-                    'description',
-                    'publishedAt',
-                    'channelId',
-                    'channelTitle',
-                    'privacyStatus'
-                )
-            );
-        }
+        icon: 'i-mdi-plus-circle',
+        onSelect: () => emit('queue')
     },
     {
         label: 'Save to playlist',
-        icon: 'i-mdi-bookmark-outline'
-        // onSelect: () => queuePlaylist(playlistData, false)
+        icon: 'i-mdi-bookmark',
+        onSelect: () => emit('save')
     },
     {
         label: 'Share',
-        icon: 'i-mdi-share-outline',
+        icon: 'i-mdi-share',
         onSelect: () => {
             const url = getPlaylistURL(props.id);
 
@@ -65,9 +51,9 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
     { type: 'separator' },
     {
         label: 'Delete from this playlist',
-        icon: 'i-mdi-delete-forever-outline',
-        color: 'error'
-        // onSelect: () => removePlaylist(playlistData)
+        icon: 'i-mdi-delete-forever',
+        color: 'error',
+        onSelect: () => emit('remove')
     }
 ]);
 </script>

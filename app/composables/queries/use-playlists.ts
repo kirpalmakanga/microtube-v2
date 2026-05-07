@@ -49,10 +49,21 @@ export function useCreateplaylist() {
 }
 
 export function useRemovePlaylist() {
+    const toast = useToast();
     const queryCache = useQueryCache();
 
     return useMutation({
-        mutation: ({ playlistId }: { playlistId: string }) => removePlaylist(playlistId),
+        mutation: async (playlist: Playlist) => {
+            await removePlaylist(playlist.id);
+
+            return playlist;
+        },
+        onSuccess: ({ title }) => {
+            toast.add({
+                title: `Playlist "${title}" removed`,
+                orientation: 'horizontal'
+            });
+        },
         onSettled: () => {
             queryCache.invalidateQueries({
                 key: ['playlists', 'mine'],

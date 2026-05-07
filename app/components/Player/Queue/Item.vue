@@ -24,7 +24,7 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
     },
     {
         label: 'Share',
-        icon: 'i-mdi-share-outline',
+        icon: 'i-mdi-share',
         onSelect: () => {
             const url = getPlaylistURL(props.id);
 
@@ -41,7 +41,7 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
     { type: 'separator' },
     {
         label: 'Remove from queue',
-        icon: 'i-mdi-delete-forever-outline',
+        icon: 'i-mdi-delete-forever',
         color: 'error',
         onSelect: () => emit('remove')
     }

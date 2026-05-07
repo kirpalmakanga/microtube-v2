@@ -26,7 +26,7 @@ async function handleSignIn() {
 </script>
 
 <template>
-    <Placeholder icon="i-mdi-lock-outline" text="You must be logged in to access this content.">
+    <Placeholder icon="i-mdi-lock" text="You must be logged in to access this content.">
         <UButton icon="i-mdi-login" :loading="isSigningIn" @click="handleSignIn" type="button">
             Sign in
         </UButton>

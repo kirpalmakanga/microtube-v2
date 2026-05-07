@@ -20,17 +20,17 @@ const copy = useCopy();
 const menuOptions = computed<ContextMenuItem[]>(() => [
     {
         label: 'Add to queue',
-        icon: 'i-mdi-plus-circle-outline',
+        icon: 'i-mdi-plus-circle',
         onSelect: () => emit('queue')
     },
     {
         label: 'Save to playlist',
-        icon: 'i-mdi-bookmark-outline',
+        icon: 'i-mdi-bookmark',
         onSelect: () => emit('save')
     },
     {
         label: 'Share',
-        icon: 'i-mdi-share-outline',
+        icon: 'i-mdi-share',
         onSelect: () => {
             const url = getPlaylistURL(props.id);
 

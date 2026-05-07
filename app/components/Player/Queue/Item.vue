@@ -62,7 +62,7 @@ const menuConfig = {
             }"
             @click="emit('select')"
         >
-            <div class="flex grow gap-4">
+            <div class="flex grow gap-4 overflow-hidden">
                 <div class="relative flex shrink-0">
                     <Img
                         class="bg-gray-800 h-18 aspect-video rounded-md"

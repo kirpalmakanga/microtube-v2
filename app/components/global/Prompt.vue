@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { ButtonProps } from '@nuxt/ui';
 
-withDefaults(
+const props = withDefaults(
     defineProps<{
+        isOpen?: boolean;
         title: string;
         cancelText?: string;
         cancelColor?: ButtonProps['color'];
@@ -26,6 +27,11 @@ function handleConfirm() {
 
     emit('confirm');
 }
+
+watch(
+    () => props.isOpen,
+    () => (isOpen.value = props.isOpen)
+);
 </script>
 
 <template>

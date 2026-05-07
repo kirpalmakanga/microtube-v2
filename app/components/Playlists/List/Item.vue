@@ -12,17 +12,11 @@ const props = defineProps<{
 
 const copy = useCopy();
 
-const { queuePlaylist } = usePlayerStore();
-
-const { mutate: removePlaylist } = useRemovePlaylist();
-
-const isRemovalPromptOpen = ref<boolean>();
-
 const menuOptions = computed<ContextMenuItem[]>(() => [
     {
         label: 'Add to queue',
         icon: 'i-mdi-plus-circle-outline',
-        onSelect: () => queuePlaylist(props.id)
+        onSelect: () => emit('queue')
     },
     {
         label: 'Share',
@@ -45,7 +39,7 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
         label: 'Delete',
         icon: 'i-mdi-delete-forever-outline',
         color: 'error',
-        onSelect: () => (isRemovalPromptOpen.value = true)
+        onSelect: () => emit('remove')
     }
 ]);
 </script>
@@ -62,11 +56,4 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
             <h2 class="font-bold text-light-50 font-montserrat ellipsis">{{ title }}</h2>
         </template>
     </ListItem>
-
-    <Prompt
-        v-model:is-open="isRemovalPromptOpen"
-        :title="`Remove playlist &quot;${title}&quot; ?`"
-        confirm-text="Remove"
-        @confirm="removePlaylist({ playlistId: id })"
-    />
 </template>

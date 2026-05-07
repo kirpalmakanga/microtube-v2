@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { queueItem } = usePlayerStore();
 
-const selectedItem = ref<Video | null>();
+const selectedItem = ref<Video | null>(null);
 
 defineEmits<{ 'load-more': [e: void] }>();
 
@@ -22,8 +22,8 @@ defineProps<{ items: Video[] }>();
     </ScrollContainer>
 
     <PlaylistSelectorModal
-        v-if="selectedItem"
-        :video-id="selectedItem.id"
-        @saved="selectedItem = null"
+        :is-open="!!selectedItem"
+        :video="selectedItem"
+        @close="selectedItem = null"
     />
 </template>

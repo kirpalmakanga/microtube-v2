@@ -1,5 +1,5 @@
 <template>
-    <div class="p-4">
+    <div>
         <UCard variant="soft" :ui="{ body: 'flex items-center' }">
             <div class="flex items-center justify-center size-10">
                 <USkeleton class="size-5" />

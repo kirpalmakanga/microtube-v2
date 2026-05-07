@@ -27,9 +27,9 @@ const itemToBeRemoved = ref<PlaylistItem | null>(null);
     </ScrollContainer>
 
     <PlaylistSelectorModal
-        v-if="itemToBeSaved"
-        :video-id="itemToBeSaved.id"
-        @saved="itemToBeSaved = null"
+        :is-open="!!itemToBeSaved"
+        :video="itemToBeSaved"
+        @close="itemToBeSaved = null"
     />
 
     <Prompt
@@ -37,5 +37,6 @@ const itemToBeRemoved = ref<PlaylistItem | null>(null);
         :title="`Remove playlist item &quot;${itemToBeRemoved?.title}&quot; ?`"
         confirm-text="Remove"
         @confirm="itemToBeRemoved && removePlaylistItem(itemToBeRemoved)"
+        @close="itemToBeRemoved = null"
     />
 </template>

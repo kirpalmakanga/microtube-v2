@@ -1,11 +1,11 @@
 <template>
-    <div class="p-6">
+    <div class="p-4">
         <UCard variant="soft" :ui="{ body: 'flex items-center' }">
             <div class="flex items-center justify-center size-10">
                 <USkeleton class="size-5" />
             </div>
 
-            <div class="flex grow overflow-hidden p-4 gap-4">
+            <div class="flex grow overflow-hidden gap-4">
                 <USkeleton class="aspect-video h-28" />
 
                 <div class="flex flex-col grow gap-1">

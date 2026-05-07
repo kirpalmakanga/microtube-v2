@@ -17,7 +17,7 @@ const selectedItem = ref<Playlist | null>(null);
                 <PlaylistsListItem
                     v-bind="playlist"
                     @queue="queuePlaylist(playlist.id)"
-                    @save="selectedItem = playlist"
+                    @remove="selectedItem = playlist"
                 />
             </li>
         </ul>
@@ -28,5 +28,6 @@ const selectedItem = ref<Playlist | null>(null);
         :title="`Remove playlist &quot;${selectedItem?.title}&quot; ?`"
         confirm-text="Remove"
         @confirm="selectedItem && removePlaylist(selectedItem)"
+        @close="selectedItem = null"
     />
 </template>

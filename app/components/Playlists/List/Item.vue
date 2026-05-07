@@ -16,7 +16,7 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
     {
         label: 'Add to queue',
         icon: 'i-mdi-plus-circle',
-        onSelect: () => emit('queue')
+        onSelect: () => props.itemCount && emit('queue')
     },
     {
         label: 'Share',
@@ -30,7 +30,7 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
                     url
                 });
             } else {
-                copy(url);
+                copy(url, 'Link copied to clipboard.');
             }
         }
     },

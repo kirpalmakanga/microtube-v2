@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import type { ContextMenuItem } from '@nuxt/ui';
 
-const { queueItem } = usePlayerStore();
-
 const emit = defineEmits<{ queue: [e: void]; save: [e: void]; remove: [e: void] }>();
 
 const props = defineProps<{

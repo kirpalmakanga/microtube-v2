@@ -79,7 +79,7 @@ function handleSubmit() {
         </template>
 
         <template #footer>
-            <div class="flex gap-2">
+            <div class="flex gap-2 justify-end">
                 <UButton color="error" label="Cancel" @click="close" />
                 <UButton type="submit" form="playlist-form" label="Create" />
             </div>

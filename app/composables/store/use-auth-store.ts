@@ -1,4 +1,4 @@
-import { instance, getAuthorizationUrl, refreshAccessToken } from '~/services/youtube';
+import { getAuthorizationUrl, refreshAccessToken } from '~/services/youtube';
 import { captureError } from '~/utils/helpers';
 
 interface AuthState {
@@ -51,36 +51,9 @@ export const useAuthStore = defineStore(
             Object.assign(state, data);
         }
 
-        instance.interceptors.request.use((config) => {
-            config.headers.set('Authorization', `Bearer ${state.accessToken}`);
-
-            return config;
-        });
-
-        instance.interceptors.response.use(
-            (response) => response,
-            async (error) => {
-                const {
-                    response: { status },
-                    config
-                } = error;
-
-                if ([401, 403].includes(status) && !config._retry) {
-                    await refreshTokens();
-
-                    config._retry = true;
-
-                    return instance(config);
-                }
-
-                return Promise.reject(error);
-            }
-        );
-
         watch(
             () => state.accessToken,
             async (accessToken) => {
-                // FIXME: gets executed before Firebase is initialized
                 if (accessToken) {
                     try {
                         await signIntoDatabase(state.idToken, accessToken);

@@ -4,9 +4,9 @@ export function useCopy() {
     const toast = useToast();
     const { copy } = useClipboard();
 
-    return (text: string) => {
+    return (text: string, message?: string) => {
         copy(text);
 
-        toast.add({ title: 'Copied to clipboard.' });
+        toast.add({ title: message || 'Copied to clipboard.' });
     };
 }

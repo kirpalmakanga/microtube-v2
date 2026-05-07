@@ -10,14 +10,15 @@ const search = computed(() => {
     };
 });
 
-const { data, isPending, isLoading, error, refetch, refresh, hasNextPage, loadNextPage } =
-    useSearch(search);
+const { data, isPending, isLoading, error, refetch, hasNextPage, loadNextPage } = useSearch(search);
 
 const items = computed(() => data.value?.pages.flatMap(({ items }) => items));
 
-watch(search, () => {
-    refetch();
-});
+const { queueItem } = usePlayerStore();
+
+const selectedItem = ref<Video | null>(null);
+
+watch(search, () => refetch());
 </script>
 
 <template>
@@ -26,16 +27,30 @@ watch(search, () => {
 
         <Error v-else-if="error" @action="refetch()" />
 
-        <SearchResults
-            v-else-if="items && items.length"
-            :items="items"
-            @load-more="hasNextPage && loadNextPage()"
-        />
-
         <Placeholder
             v-else-if="items && !items.length"
             icon="i-mdi-format-list-bulleted"
             :text="`Search for &quot;${search.query}&quot; gave no results.`"
         />
+
+        <List v-else-if="items" :items="items" @load-more="hasNextPage && loadNextPage()">
+            <template #item="{ item }">
+                <SearchResultsItem
+                    v-bind="item"
+                    @queue="queueItem(item)"
+                    @save="selectedItem = item"
+                />
+            </template>
+
+            <template v-if="isLoading" #loader>
+                <SearchResultsLoader />
+            </template>
+        </List>
     </div>
+
+    <PlaylistSelectorModal
+        :is-open="!!selectedItem"
+        :video="selectedItem"
+        @close="selectedItem = null"
+    />
 </template>

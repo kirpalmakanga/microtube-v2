@@ -63,15 +63,21 @@ const request = async (
 };
 
 /* Videos */
+export interface SearchVideosReturn {
+    items: Video[];
+    nextPageToken: string | null;
+    totalResults: number;
+}
+
 export async function searchVideos({
     query,
     forMine,
-    pageToken = ''
+    pageToken
 }: {
     query: string;
     forMine: number;
-    pageToken?: string;
-}) {
+    pageToken: string | null;
+}): Promise<SearchVideosReturn> {
     const {
         items: searchResults,
         nextPageToken,

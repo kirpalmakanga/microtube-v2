@@ -1,15 +1,15 @@
-import { searchVideos } from '~/services/youtube';
+import { searchVideos, type SearchVideosReturn } from '~/services/youtube';
 
 export function useSearch(searchParams: MaybeRef<{ query: string; forMine: number }>) {
-    return useInfiniteQuery({
+    return useInfiniteQuery<SearchVideosReturn, {}, string | null>({
         key: () => ['search'],
         query: ({ pageParam: pageToken }) => {
             return searchVideos({
-                ...toValue(searchParams),
-                ...(pageToken ? { pageToken } : {})
+                pageToken,
+                ...toValue(searchParams)
             });
         },
-        initialPageParam: undefined,
+        initialPageParam: null,
         getNextPageParam: ({ nextPageToken }) => {
             return nextPageToken;
         }

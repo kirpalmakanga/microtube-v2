@@ -6,7 +6,7 @@ import {
     set,
     onValue,
     off,
-    DataSnapshot
+    type DataSnapshot
 } from 'firebase/database';
 
 const getRef = (path: string) => databaseRef(getDatabase(), path);

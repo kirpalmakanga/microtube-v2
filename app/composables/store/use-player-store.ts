@@ -142,7 +142,7 @@ export const usePlayerStore = defineStore(
         }
 
         async function queuePlaylist(playlistId: string, play?: boolean) {
-            async function getItems(pageToken?: string) {
+            async function getItems(pageToken: string | null) {
                 const { items, nextPageToken } = await getPlaylistItems({
                     playlistId,
                     pageToken
@@ -162,7 +162,7 @@ export const usePlayerStore = defineStore(
             }
 
             try {
-                await getItems();
+                await getItems(null);
             } catch (error) {
                 captureError(error);
 

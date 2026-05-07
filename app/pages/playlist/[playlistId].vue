@@ -59,8 +59,8 @@ useAppTitle(computed(() => playlistData.value?.title || ''));
                 />
             </template>
 
-            <template #loader>
-                <PlaylistItemsLoader v-if="arePlaylistItemsLoading" />
+            <template v-if="arePlaylistItemsLoading" #loader>
+                <PlaylistItemsLoader />
             </template>
         </List>
     </div>

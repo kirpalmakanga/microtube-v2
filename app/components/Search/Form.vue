@@ -1,10 +1,15 @@
 <script setup lang="ts">
-import type { SelectItem } from '@nuxt/ui';
+import type { FormError, SelectItem } from '@nuxt/ui';
 
 const router = useRouter();
 const route = useRoute();
 
-const state = reactive<{ query: string; forMine: number }>({
+interface SearchFormData {
+    query: string;
+    forMine: number;
+}
+
+const state = reactive<SearchFormData>({
     query: (route.query.query as string) || '',
     forMine: parseInt(route.query.forMine as string) || 0
 });
@@ -17,25 +22,26 @@ const menuOptions = computed<SelectItem[]>(() => [
     { label: 'My videos', value: 1 }
 ]);
 
-watch(
-    state,
-    debounce(
-        () =>
-            router.push({
-                path: '/search',
-                query: state
-            }),
-        500
-    )
-);
-
 defineEmits<{ submit: [q: { query: string; forMine: number }] }>();
+
+function validate(state: Partial<SearchFormData>): FormError[] {
+    const errors = [];
+    if (!state.query) errors.push({ name: 'query', message: '' });
+    return errors;
+}
+
+function handleSubmit() {
+    router.push({
+        path: '/search',
+        query: state
+    });
+}
 </script>
 
 <template>
-    <UForm>
+    <UForm :validate="validate" :state="state" @submit="handleSubmit">
         <UFieldGroup>
-            <UInput placeholder="Search" variant="soft" v-model="state.query" @keydown.stop />
+            <UInput placeholder="Search" variant="soft" v-model="state.query" />
 
             <USelect variant="soft" :items="menuOptions" v-model="state.forMine" />
 

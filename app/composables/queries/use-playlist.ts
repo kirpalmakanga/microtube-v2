@@ -29,18 +29,32 @@ export function usePlaylistItems(playlistId: MaybeRef<string>) {
 }
 
 export function useAddPlaylistItem() {
+    const toast = useToast();
     const queryCache = useQueryCache();
 
     return useMutation({
-        mutation: async ({ playlistId, videoId }: { playlistId: string; videoId: string }) => {
-            await addPlaylistItem(playlistId, videoId);
+        mutation: async ({ videoId, playlist }: { videoId: string; playlist: Playlist }) => {
+            await addPlaylistItem(playlist.id, videoId);
 
-            return { playlistId };
+            return playlist;
         },
-        onSuccess: ({ playlistId }) => {
-            queryCache.invalidateQueries({
-                key: ['playlistItems', playlistId]
+
+        onSuccess: ({ id, title }) => {
+            toast.add({
+                title: `Added to playlist "${title}"`,
+                orientation: 'horizontal'
             });
+
+            queryCache.invalidateQueries({
+                key: ['playlistItems', id]
+            });
+            queryCache.invalidateQueries(
+                {
+                    key: ['playlists', 'mine'],
+                    exact: true
+                },
+                'all'
+            );
         }
     });
 }
@@ -58,6 +72,14 @@ export function useRemovePlaylistItem() {
             queryCache.invalidateQueries({
                 key: ['playlistItems', playlistId]
             });
+
+            queryCache.invalidateQueries(
+                {
+                    key: ['playlists', 'mine'],
+                    exact: true
+                },
+                'all'
+            );
         }
     });
 }

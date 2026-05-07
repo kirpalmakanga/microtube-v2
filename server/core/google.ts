@@ -23,7 +23,7 @@ function getClient({
 export async function getAuthorizationUrl(origin: string) {
     const client = getClient({ redirectUri: `${origin}/callback` });
 
-    const url = await client.generateAuthUrl({
+    const url = client.generateAuthUrl({
         access_type: 'offline',
         prompt: 'consent',
         scope: [

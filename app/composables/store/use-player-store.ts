@@ -40,7 +40,7 @@ export const usePlayerStore = defineStore(
 
         const currentUserId = computed(() => (import.meta.env.DEV ? 'dev' : userId.value));
         const queuePath = computed(() => `users/${currentUserId.value}/queue`);
-        const currentIdPath = computed(() => `users/${currentUserId.value}/selectedItemId`);
+        const selectedItemIdPath = computed(() => `users/${currentUserId.value}/selectedItemId`);
 
         function subscribeToQueue() {
             subscribeToData(queuePath.value, (queue = []) => {
@@ -53,24 +53,24 @@ export const usePlayerStore = defineStore(
         }
 
         function subscribeToCurrentQueueId() {
-            subscribeToData(currentIdPath.value, (videoId = '') => {
+            subscribeToData(selectedItemIdPath.value, (videoId = '') => {
                 if (videoId !== state.selectedItemId) {
                     state.selectedItemId = videoId;
                 }
             });
         }
 
-        function setQueue(queue: Video[]) {
+        async function setQueue(queue: Video[]) {
             state.queue = queue;
 
-            saveData(queuePath.value, queue);
+            await saveData(queuePath.value, queue);
         }
 
         function isInQueue(videoId: string) {
             return state.queue.find(({ id: queueItemId }) => queueItemId === videoId);
         }
 
-        const queueItems = (newItems: Video[]) => {
+        async function queueItems(newItems: Video[]) {
             const items = newItems.filter(({ id }) => !isInQueue(id));
 
             const { queue: currentQueue, newItemCount } = state;
@@ -82,26 +82,26 @@ export const usePlayerStore = defineStore(
                 newItemCount: newItemCount + items.length
             });
 
-            saveData(queuePath.value, queue);
+            await saveData(queuePath.value, queue);
 
             return items;
-        };
-
-        function queueItem(data: Video) {
-            queueItems([data]);
         }
 
-        function setSelectedItem(videoId: string) {
+        function queueItem(data: Video) {
+            return queueItems([data]);
+        }
+
+        async function setSelectedItem(videoId: string) {
             state.selectedItemId = videoId;
 
-            saveData(currentIdPath.value, videoId);
+            await saveData(selectedItemIdPath.value, videoId);
         }
 
         async function importVideos(ids: string[]) {
             try {
                 const items = await getVideosFromIds(ids.filter((id) => !isInQueue(id)));
 
-                queueItems(items);
+                await queueItems(items);
             } catch (error) {
                 captureError(error);
 
@@ -109,13 +109,13 @@ export const usePlayerStore = defineStore(
             }
         }
 
-        const removeQueueItem = (targetId: string) => {
-            setQueue(state.queue.filter(({ id }) => id !== targetId));
+        async function removeQueueItem(targetId: string) {
+            await setQueue(state.queue.filter(({ id }) => id !== targetId));
 
             if (targetId === state.selectedItemId) {
-                saveData(currentIdPath.value, '');
+                await saveData(selectedItemIdPath.value, '');
             }
-        };
+        }
 
         function resetNewItemCount() {
             state.newItemCount = 0;
@@ -148,12 +148,12 @@ export const usePlayerStore = defineStore(
                     pageToken
                 });
 
-                const newItems = queueItems(items);
+                const newItems = await queueItems(items);
 
                 if (play && !pageToken && newItems.length) {
                     const [{ id } = {}] = newItems;
 
-                    if (id) setSelectedItem(id);
+                    if (id) await setSelectedItem(id);
                 }
 
                 if (nextPageToken) {
@@ -170,10 +170,10 @@ export const usePlayerStore = defineStore(
             }
         }
 
-        function moveInQueue(direction: -1 | 1) {
+        async function moveInQueue(direction: -1 | 1) {
             const { [selectedItemIndex.value + direction]: selectedItem } = state.queue;
 
-            if (selectedItem) setSelectedItem(selectedItem.id);
+            if (selectedItem) await setSelectedItem(selectedItem.id);
         }
 
         return {

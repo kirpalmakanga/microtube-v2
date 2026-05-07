@@ -37,15 +37,15 @@ export function useCreateplaylist() {
                 actions: [
                     {
                         label: 'See list',
-                        onClick() {
-                            router.push(`/playlist/${id}`);
+                        async onClick() {
+                            await router.push(`/playlist/${id}`);
                         }
                     }
                 ]
             });
         },
-        onSettled: () => {
-            queryCache.invalidateQueries({
+        onSettled: async () => {
+            await queryCache.invalidateQueries({
                 key: ['playlists', 'mine'],
                 exact: true
             });
@@ -69,8 +69,8 @@ export function useRemovePlaylist() {
                 orientation: 'horizontal'
             });
         },
-        onSettled: () => {
-            queryCache.invalidateQueries({
+        onSettled: async () => {
+            await queryCache.invalidateQueries({
                 key: ['playlists', 'mine'],
                 exact: true
             });

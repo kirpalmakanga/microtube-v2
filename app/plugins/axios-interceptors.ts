@@ -31,7 +31,7 @@ export default defineNuxtPlugin(() => {
                 } catch (refreshError) {
                     await signOut();
 
-                    navigateTo('/login');
+                    await navigateTo('/login');
 
                     return Promise.reject(refreshError);
                 }

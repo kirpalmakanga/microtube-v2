@@ -21,19 +21,19 @@ export function useFirebase() {
     if (!app.value) app.value = initializeApp(firebaseConfig);
 
     return {
-        signIntoDatabase(idToken: string, accessToken: string) {
+        signIntoDatabase: (idToken: string, accessToken: string) => {
             return signInWithCredential(
                 getAuth(),
                 GoogleAuthProvider.credential(idToken, accessToken)
             );
         },
-        signOutOfDatabase() {
+        signOutOfDatabase: () => {
             return signOut(getAuth());
         },
-        saveData(path: string, data: string | object) {
+        saveData: (path: string, data: string | object) => {
             return set(getRef(path), data);
         },
-        subscribeToData(path: string, callback: Function) {
+        subscribeToData: (path: string, callback: Function) => {
             const reference = getRef(path);
             const handler = (snapshot: DataSnapshot) => callback(snapshot.val() || undefined);
 

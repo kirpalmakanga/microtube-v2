@@ -63,7 +63,7 @@ export const useAuthStore = defineStore(
                         await refreshTokens();
                     }
                 } else {
-                    signOutOfDatabase();
+                    await signOutOfDatabase();
                 }
             }
         );

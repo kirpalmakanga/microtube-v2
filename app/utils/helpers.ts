@@ -95,7 +95,7 @@ export const formatTime = (t: number) => {
 };
 
 export const isMobile = () => {
-    const { userAgent = '' } = navigator;
+    const { userAgent } = navigator;
 
     return !!userAgent.match(/(Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone)/i);
 };
@@ -103,6 +103,7 @@ export const isMobile = () => {
 export const parseVideoId = (url: string) => {
     const parts = url.split(/(vi\/|v%3D|v=|\/v\/|youtu\.be\/|\/embed\/)/);
 
+    // oxlint-disable-next-line no-useless-escape
     return parts[2] !== undefined ? parts[2].split(/[^0-9a-z_\-]/i)[0] : parts[0];
 };
 
@@ -167,8 +168,10 @@ export function omit<T extends object, K extends keyof T>(base: T, ...keys: K[])
 }
 
 export const wrapURLs = (text: string) => {
+    // oxlint-disable-next-line no-useless-escape
     const urlPattern = /\b(?:https?|ftp):\/\/[a-z0-9-+&@#\/%?=~_|!:,.;]*[a-z0-9-+&@#\/%=~_|]/gim;
 
+    // oxlint-disable-next-line no-useless-escape
     const pseudoUrlPattern = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
 
     const emailAddressPattern = /[\w.]+@[a-zA-Z_-]+?(?:\.[a-zA-Z]{2,6})+/gim;

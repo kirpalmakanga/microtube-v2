@@ -40,22 +40,24 @@ export function useAddPlaylistItem() {
             return playlist;
         },
 
-        onSuccess: ({ id, title }) => {
+        onSuccess: async ({ id, title }) => {
             toast.add({
                 title: `Added to playlist "${title}"`,
                 orientation: 'horizontal'
             });
 
-            queryCache.invalidateQueries({
-                key: ['playlistItems', id]
-            });
-            queryCache.invalidateQueries(
-                {
-                    key: ['playlists', 'mine'],
-                    exact: true
-                },
-                'all'
-            );
+            await Promise.all([
+                queryCache.invalidateQueries({
+                    key: ['playlistItems', id]
+                }),
+                queryCache.invalidateQueries(
+                    {
+                        key: ['playlists', 'mine'],
+                        exact: true
+                    },
+                    'all'
+                )
+            ]);
         }
     });
 }
@@ -69,18 +71,19 @@ export function useRemovePlaylistItem() {
 
             return { playlistId };
         },
-        onSuccess: ({ playlistId }) => {
-            queryCache.invalidateQueries({
-                key: ['playlistItems', playlistId]
-            });
-
-            queryCache.invalidateQueries(
-                {
-                    key: ['playlists', 'mine'],
-                    exact: true
-                },
-                'all'
-            );
+        onSuccess: async ({ playlistId }) => {
+            await Promise.all([
+                queryCache.invalidateQueries({
+                    key: ['playlistItems', playlistId]
+                }),
+                queryCache.invalidateQueries(
+                    {
+                        key: ['playlists', 'mine'],
+                        exact: true
+                    },
+                    'all'
+                )
+            ]);
         }
     });
 }

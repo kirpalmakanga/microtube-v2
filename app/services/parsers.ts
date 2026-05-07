@@ -30,7 +30,7 @@ export const parseVideoData = ({
     id,
     contentDetails: { duration },
     snippet: { title, description, thumbnails, channelId, channelTitle, publishedAt },
-    status: { privacyStatus = 'deleted' }
+    status: { privacyStatus }
 }: YoutubeVideo): Video => ({
     id,
     title,
@@ -40,19 +40,19 @@ export const parseVideoData = ({
     publishedAt,
     channelId,
     channelTitle,
-    privacyStatus
+    privacyStatus: privacyStatus || 'deleted'
 });
 
 export const parsePlaylistData = ({
     id,
-    contentDetails: { itemCount = 0 },
+    contentDetails: { itemCount },
     snippet: { title, thumbnails, channelId, channelTitle },
     status: { privacyStatus }
 }: YoutubePlaylist): Playlist => ({
     id,
     title,
     thumbnails,
-    itemCount,
+    itemCount: itemCount || 0,
     privacyStatus,
     channelId,
     channelTitle

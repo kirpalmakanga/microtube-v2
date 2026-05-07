@@ -1,9 +1,25 @@
+import { initializeApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithCredential, signOut } from 'firebase/auth';
-import { getDatabase, ref, set, onValue, off, DataSnapshot } from 'firebase/database';
+import {
+    getDatabase,
+    ref as databaseRef,
+    set,
+    onValue,
+    off,
+    DataSnapshot
+} from 'firebase/database';
 
-const getRef = (path: string) => ref(getDatabase(), path);
+const getRef = (path: string) => databaseRef(getDatabase(), path);
+
+const app = ref<FirebaseApp | null>(null);
 
 export function useFirebase() {
+    const {
+        public: { firebaseConfig }
+    } = useRuntimeConfig();
+
+    if (!app.value) app.value = initializeApp(firebaseConfig);
+
     return {
         signIntoDatabase(idToken: string, accessToken: string) {
             return signInWithCredential(

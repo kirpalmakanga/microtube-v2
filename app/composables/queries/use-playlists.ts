@@ -1,15 +1,20 @@
-import { createPlaylist, getPlaylists, removePlaylist } from '~/services/youtube';
+import {
+    createPlaylist,
+    getPlaylists,
+    removePlaylist,
+    type GetPlaylistsReturn
+} from '~/services/youtube';
 
 export function usePlaylists(channelId?: MaybeRef<string>) {
-    return useInfiniteQuery({
+    return useInfiniteQuery<GetPlaylistsReturn, {}, string | null>({
         key: () => ['playlists', toValue(channelId) || 'mine'],
         query: ({ pageParam: pageToken }) => {
             return getPlaylists({
-                ...(pageToken ? { pageToken } : {}),
+                pageToken,
                 ...(toValue(channelId) ? { channelId: toValue(channelId) } : { mine: true })
             });
         },
-        initialPageParam: undefined,
+        initialPageParam: null,
         getNextPageParam: ({ nextPageToken }) => {
             return nextPageToken;
         }

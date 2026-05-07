@@ -121,17 +121,23 @@ export async function getVideosFromIds(ids: string[]) {
 
 /* Playlists */
 
+export interface GetPlaylistsReturn {
+    items: Playlist[];
+    nextPageToken: string;
+    totalResults: number;
+}
+
 export async function getPlaylists({
-    pageToken = '',
+    pageToken,
     mine = false,
     channelId = '',
     ids = []
 }: {
-    pageToken?: string;
+    pageToken: string | null;
     mine?: boolean;
     channelId?: string;
     ids?: string[];
-}) {
+}): Promise<GetPlaylistsReturn> {
     const {
         items,
         nextPageToken,
@@ -153,7 +159,7 @@ export async function getPlaylists({
 }
 
 export async function getAllPlaylists({ mine = false } = {}) {
-    let pageToken = '';
+    let pageToken = null;
     let stack = [];
 
     while (pageToken !== null) {

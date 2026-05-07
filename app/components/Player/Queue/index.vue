@@ -5,6 +5,8 @@ const { queue, selectedItemId } = storeToRefs(playerStore);
 const { removeQueueItem, setSelectedItem } = playerStore;
 const list = shallowRef(queue);
 
+const itemToSave = ref<Video | null>(null);
+
 function isSelected(videoId: string) {
     return videoId === selectedItemId.value;
 }
@@ -41,6 +43,7 @@ function isSelected(videoId: string) {
                         :is-playing="false"
                         :is-selected="isSelected(item.id)"
                         @select="!isSelected(item.id) && setSelectedItem(item.id)"
+                        @save="itemToSave = item"
                         @remove="removeQueueItem(item.id)"
                     />
 
@@ -59,4 +62,6 @@ function isSelected(videoId: string) {
             </UseSortable>
         </template>
     </USlideover>
+
+    <PlaylistSelectorModal :is-open="!!itemToSave" :video="itemToSave" @close="itemToSave = null" />
 </template>

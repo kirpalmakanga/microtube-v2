@@ -34,7 +34,7 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
                     url
                 });
             } else {
-                copy(url);
+                copy(url, 'Link copied to clipboard.');
             }
         }
     },

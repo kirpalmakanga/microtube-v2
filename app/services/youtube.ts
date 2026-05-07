@@ -216,13 +216,19 @@ export async function getPlaylist(id: string) {
     return parsePlaylistData(item);
 }
 
+export interface GetPlaylistItemsReturn {
+    items: PlaylistItem[];
+    nextPageToken: string;
+    totalResults: number;
+}
+
 export async function getPlaylistItems({
-    pageToken = '',
+    pageToken,
     playlistId
 }: {
-    pageToken?: string;
+    pageToken: string | null;
     playlistId: string;
-}) {
+}): Promise<GetPlaylistItemsReturn> {
     const {
         items: playlistItems,
         nextPageToken,

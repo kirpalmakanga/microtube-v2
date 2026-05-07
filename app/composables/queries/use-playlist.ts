@@ -2,7 +2,8 @@ import {
     addPlaylistItem,
     getPlaylist,
     getPlaylistItems,
-    removePlaylistItem
+    removePlaylistItem,
+    type GetPlaylistItemsReturn
 } from '~/services/youtube';
 
 export function usePlaylist(playlistId: MaybeRef<string>) {
@@ -13,15 +14,15 @@ export function usePlaylist(playlistId: MaybeRef<string>) {
 }
 
 export function usePlaylistItems(playlistId: MaybeRef<string>) {
-    return useInfiniteQuery({
+    return useInfiniteQuery<GetPlaylistItemsReturn, {}, string | null>({
         key: () => ['playlistItems', toValue(playlistId)],
         query: ({ pageParam: pageToken }) => {
             return getPlaylistItems({
                 playlistId: toValue(playlistId),
-                ...(pageToken ? { pageToken } : {})
+                pageToken
             });
         },
-        initialPageParam: undefined,
+        initialPageParam: null,
         getNextPageParam: ({ nextPageToken }) => {
             return nextPageToken;
         }

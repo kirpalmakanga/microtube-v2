@@ -32,9 +32,5 @@ function handleSelectPlaylist(playlist: Playlist) {
                 </li>
             </ul>
         </ScrollContainer>
-
-        <USeparator orientation="horizontal" class="h-8" />
-
-        <PlaylistSelectorForm />
     </div>
 </template>

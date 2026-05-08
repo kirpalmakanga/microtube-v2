@@ -17,7 +17,7 @@ const { mutate: createPlaylist } = useCreateplaylist();
 
 const formData = reactive<PlaylisFormData>(getInitialState());
 
-const isOpen = ref<boolean>(false);
+const isOpen = defineModel<boolean>('isOpen');
 
 const visibilityOptions: SelectMenuItem[] = [
     { label: 'Public', icon: 'i-mdi-earth', value: 'public' },
@@ -48,7 +48,7 @@ function handleSubmit() {
 
 <template>
     <UModal v-model:open="isOpen" title="New Playlist" @after:leave="reset">
-        <UButton class="text-center self-center" icon="i-mdi-plus">New playlist</UButton>
+        <slot />
 
         <template #body>
             <UForm

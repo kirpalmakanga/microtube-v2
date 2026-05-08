@@ -14,7 +14,7 @@ interface NewOptions {
 
 const props = defineProps<{
     videoId: string;
-    options: YoutubePlayerOptions;
+    options?: YoutubePlayerOptions;
 }>();
 
 const emit = defineEmits<{
@@ -27,11 +27,12 @@ const emit = defineEmits<{
 }>();
 
 const containerId = 'youtube-player';
-const internalPlayer = ref<YouTubePlayerInstance | null>(null);
+const youtubePlayer = ref<YouTubePlayerInstance | null>(null);
+const isPlaying = defineModel<boolean>('playing', { default: false });
 let isStartup: boolean = true;
 
 async function createPlayer() {
-    if (internalPlayer.value) {
+    if (youtubePlayer.value) {
         captureError(new Error('Youtube: player already initialized'));
 
         return;
@@ -40,17 +41,17 @@ async function createPlayer() {
     const { ENDED, PLAYING, PAUSED, BUFFERING, UNSTARTED } = PLAYBACK_STATES;
 
     try {
-        internalPlayer.value = await createYoutubePlayer(containerId, {
+        youtubePlayer.value = await createYoutubePlayer(containerId, {
             ...props.options,
             videoId: props.videoId,
             events: {
-                onReady: () => internalPlayer.value && emit('ready', internalPlayer.value),
+                onReady: () => youtubePlayer.value && emit('ready', youtubePlayer.value),
                 onError: captureError,
                 onStateChange({ data }: { [key: string]: any }) {
                     switch (data) {
                         case UNSTARTED:
                             if (!isStartup) {
-                                internalPlayer.value?.playVideo();
+                                youtubePlayer.value?.playVideo();
                             } else {
                                 isStartup = false;
                             }
@@ -63,10 +64,14 @@ async function createPlayer() {
                             break;
 
                         case PLAYING:
+                            isPlaying.value = true;
+
                             emit('playing');
                             break;
 
                         case PAUSED:
+                            isPlaying.value = false;
+
                             emit('paused');
                             break;
 
@@ -86,7 +91,7 @@ async function createPlayer() {
 }
 
 function destroyPlayer() {
-    internalPlayer.value?.destroy();
+    youtubePlayer.value?.destroy();
 }
 
 async function resetPlayer() {
@@ -96,12 +101,12 @@ async function resetPlayer() {
 }
 
 async function updateVideo() {
-    if (!internalPlayer.value) return;
+    if (!youtubePlayer.value) return;
 
     const { videoId, options } = props;
 
     if (!videoId) {
-        internalPlayer.value.stopVideo();
+        youtubePlayer.value.stopVideo();
 
         return;
     }
@@ -109,7 +114,7 @@ async function updateVideo() {
     const newOpts: NewOptions = { videoId };
     let autoplay = false;
 
-    if ('playerVars' in options) {
+    if (options && 'playerVars' in options) {
         const { playerVars = {} } = options;
 
         autoplay = playerVars.autoplay === 1;
@@ -123,9 +128,9 @@ async function updateVideo() {
     }
 
     if (autoplay) {
-        internalPlayer.value.loadVideoById(newOpts);
+        youtubePlayer.value.loadVideoById(newOpts);
     } else {
-        internalPlayer.value.cueVideoById(newOpts);
+        youtubePlayer.value.cueVideoById(newOpts);
     }
 }
 
@@ -133,9 +138,16 @@ watch(() => props.options, resetPlayer, { deep: true });
 
 watch(() => props.videoId, updateVideo);
 
+watch(isPlaying, () => {
+    if (isPlaying.value) youtubePlayer.value?.playVideo();
+    else youtubePlayer.value?.pauseVideo();
+});
+
 onMounted(createPlayer);
 
 onBeforeUnmount(destroyPlayer);
+
+defineExpose(youtubePlayer);
 </script>
 
 <template>

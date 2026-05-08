@@ -152,7 +152,7 @@ watch(
             ref="youtubePlayer"
             class="fixed left-0 right-0 transition-opacity z-51"
             :class="{
-                'top-16 bottom-34': !isFullscreen,
+                'top-16 bottom-31': !isFullscreen,
                 'top-0 bottom-0': isFullscreen,
                 invisible: !state.isScreenVisible,
                 visible: state.isScreenVisible
@@ -165,16 +165,15 @@ watch(
             @click="togglePlay"
         />
 
-        <div class="flex flex-col gap-4 px-6 py-4 h-34 bg-elevated shadow z-52 overflow-hidden">
-            <p class="ellipsis">{{ currentVideo?.title }}</p>
+        <div class="flex flex-col gap-4 px-6 py-4 h-31 bg-elevated shadow z-52 overflow-hidden">
+            <p class="ellipsis leading-none shrink-0">{{ currentVideo?.title }}</p>
 
-            <div class="flex items-center gap-4">
-                <PlayerSeekbar
-                    :position="state.currentTime"
-                    :duration="currentVideo?.duration || 0"
-                    @update="handleSeeking"
-                />
-            </div>
+            <PlayerSeekbar
+                class="shrink-0"
+                :position="state.currentTime"
+                :duration="currentVideo?.duration || 0"
+                @update="handleSeeking"
+            />
 
             <div class="flex">
                 <div class="flex items-center gap-2">

@@ -162,7 +162,7 @@ watch(
         if (!currentVideo.value?.id) {
             youtube = null;
 
-            Object.assign(state, omit(getInitialPlayerState(), 'isQueueVisible'));
+            Object.assign(state, getInitialPlayerState());
         }
     }
 );

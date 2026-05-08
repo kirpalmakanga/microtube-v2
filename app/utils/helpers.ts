@@ -1,5 +1,11 @@
 import { format } from 'date-fns';
 
+export function captureError(error: unknown) {
+    if (import.meta.env.DEV) {
+        console.error(error);
+    }
+}
+
 export const getThumbnails = (thumbnails: Thumbnails, size: string): string => {
     const { [size]: { url = '' } = {} } = thumbnails;
 
@@ -255,8 +261,6 @@ export function isEqual(a: unknown, b: unknown): boolean {
     return false;
 }
 
-export function captureError(error: unknown) {
-    if (import.meta.env.DEV) {
-        console.error(error);
-    }
+export function nextFrame() {
+    return new Promise((resolve) => requestAnimationFrame(resolve));
 }

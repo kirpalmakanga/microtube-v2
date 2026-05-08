@@ -105,7 +105,7 @@ export const usePlayerStore = defineStore(
             } catch (error) {
                 captureError(error);
 
-                toast.add({ title: 'Error queuing videos.' });
+                toast.add({ title: 'Error queuing videos.', color: 'error' });
             }
         }
 
@@ -137,7 +137,7 @@ export const usePlayerStore = defineStore(
             } catch (error) {
                 captureError(error);
 
-                toast.add({ title: 'Error fetching video.' });
+                toast.add({ title: 'Error fetching video.', color: 'error' });
             }
         }
 
@@ -166,7 +166,7 @@ export const usePlayerStore = defineStore(
             } catch (error) {
                 captureError(error);
 
-                toast.add({ title: 'Error queueing playlist items.' });
+                toast.add({ title: 'Error queueing playlist items.', color: 'error' });
             }
         }
 

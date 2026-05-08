@@ -2,10 +2,12 @@
 import { UseSortable } from '@vueuse/integrations/useSortable/component';
 const playerStore = usePlayerStore();
 const { queue, selectedItemId } = storeToRefs(playerStore);
-const { removeQueueItem, setSelectedItem } = playerStore;
+const { clearQueue, removeQueueItem, setSelectedItem } = playerStore;
 const list = shallowRef(queue);
 
 const itemToSave = ref<Video | null>(null);
+const isImportFormOpen = ref<boolean>(false);
+const isClearingPromptOpen = ref<boolean>(false);
 
 function isSelected(videoId: string) {
     return videoId === selectedItemId.value;
@@ -16,7 +18,7 @@ function isSelected(videoId: string) {
     <USlideover
         title="Queue"
         :description="`${queue.length} video${queue.length !== 1 ? 's' : ''}`"
-        :ui="{ content: 'max-w-2/5', body: 'flex p-0 sm:p-0' }"
+        :ui="{ content: 'max-w-2/5', body: 'flex p-0 sm:p-0', footer: 'justify-end' }"
     >
         <slot />
 
@@ -61,7 +63,20 @@ function isSelected(videoId: string) {
                 </li>
             </UseSortable>
         </template>
+
+        <template #footer>
+            <UButton icon="i-mdi-plus-box" @click="isImportFormOpen = true" />
+            <UButton icon="i-mdi-notification-clear-all" @click="isClearingPromptOpen = true" />
+        </template>
     </USlideover>
 
+    <PlayerQueueImportForm v-model:is-open="isImportFormOpen" />
+
     <PlaylistSelectorModal :is-open="!!itemToSave" :video="itemToSave" @close="itemToSave = null" />
+
+    <Prompt
+        title="Clear the current queue ?"
+        v-model:is-open="isClearingPromptOpen"
+        @confirm="clearQueue"
+    />
 </template>

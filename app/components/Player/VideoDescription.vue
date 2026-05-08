@@ -1,5 +1,7 @@
 <script setup lang="ts">
-defineProps<{ title: string; text?: string }>();
+const props = defineProps<{ title: string; text?: string }>();
+
+const content = computed(() => (props.text ? wrapURLs(props.text) : ''));
 </script>
 
 <template>
@@ -7,7 +9,8 @@ defineProps<{ title: string; text?: string }>();
         <slot />
 
         <template #body>
-            <div class="whitespace-pre-wrap" v-if="text" v-html="text" />
+            <a href="">hey</a>
+            <div class="whitespace-pre-wrap [&_a]:text-primary" v-if="content" v-html="content" />
         </template>
     </USlideover>
 </template>

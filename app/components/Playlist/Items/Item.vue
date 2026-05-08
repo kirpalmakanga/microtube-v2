@@ -34,7 +34,7 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
         label: 'Share',
         icon: 'i-mdi-share',
         onSelect: () => {
-            const url = getPlaylistURL(props.id);
+            const url = getVideoURL(props.id);
 
             if (isMobile()) {
                 shareURL({

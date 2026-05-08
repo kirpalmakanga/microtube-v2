@@ -44,5 +44,6 @@ export default defineNuxtConfig({
             }
         }
     },
+    experimental: { viteEnvironmentApi: true },
     compatibilityDate: '2025-01-15'
 });

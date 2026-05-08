@@ -19,6 +19,7 @@ function isSelected(videoId: string) {
         title="Queue"
         :description="`${queue.length} video${queue.length !== 1 ? 's' : ''}`"
         :ui="{ content: 'max-w-2/5', body: 'flex p-0 sm:p-0', footer: 'justify-end' }"
+        inset
     >
         <slot />
 

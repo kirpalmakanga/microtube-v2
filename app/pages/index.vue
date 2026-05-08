@@ -16,7 +16,11 @@ const itemToRemove = ref<Playlist | null>(null);
 
         <Error v-else-if="error" @action="refetch()" />
 
-        <List v-else-if="items" :items="items" @reached-bottom="hasNextPage && loadNextPage()">
+        <List
+            v-else-if="items"
+            :items="items"
+            @reached-bottom="hasNextPage && !isLoading && loadNextPage()"
+        >
             <template #item="{ item }">
                 <PlaylistsListItem
                     v-bind="item"

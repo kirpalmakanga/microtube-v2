@@ -48,7 +48,11 @@ useAppTitle(computed(() => playlistData.value?.title || ''));
 
         <Error v-else-if="playlistItemsError" @action="refetchPlaylistItems()" />
 
-        <List v-else-if="items" :items="items" @load-more="hasNextPage && loadNextPage()">
+        <List
+            v-else-if="items"
+            :items="items"
+            @load-more="hasNextPage && !arePlaylistItemsLoading && loadNextPage()"
+        >
             <template #item="{ item, index }">
                 <PlaylistItemsItem
                     :index="index + 1"

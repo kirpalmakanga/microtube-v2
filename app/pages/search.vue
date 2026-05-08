@@ -33,7 +33,11 @@ watch(search, () => refetch());
             :text="`Search for &quot;${search.query}&quot; gave no results.`"
         />
 
-        <List v-else-if="items" :items="items" @load-more="hasNextPage && loadNextPage()">
+        <List
+            v-else-if="items"
+            :items="items"
+            @load-more="hasNextPage && !isLoading && loadNextPage()"
+        >
             <template #item="{ item }">
                 <SearchResultsItem
                     v-bind="item"

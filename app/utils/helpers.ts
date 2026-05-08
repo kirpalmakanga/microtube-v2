@@ -1,17 +1,5 @@
 import { format } from 'date-fns';
 
-export const preventDefault = (func?: (e: Event) => void) => (e: Event) => {
-    e.preventDefault();
-
-    if (func) func(e);
-};
-
-export const stopPropagation = (func?: (e: Event) => void) => (e: Event) => {
-    e.stopPropagation();
-
-    if (func) func(e);
-};
-
 export const getThumbnails = (thumbnails: Thumbnails, size: string): string => {
     const { [size]: { url = '' } = {} } = thumbnails;
 

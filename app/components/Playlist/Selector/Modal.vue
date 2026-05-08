@@ -1,6 +1,6 @@
 <script setup lang="ts">
 defineEmits<{ close: [e: void] }>();
-const props = defineProps<{ isOpen: boolean; video: Video | null }>();
+const props = defineProps<{ isOpen?: boolean; video: Video | null }>();
 
 const isOpen = defineModel<boolean>('open');
 const isFormOpen = ref<boolean>(false);
@@ -24,8 +24,10 @@ watch(
         :ui="{ footer: 'justify-center' }"
         @after:leave="$emit('close')"
     >
+        <slot />
+
         <template #body>
-            <PlaylistSelector v-if="isOpen && video" :video-id="video.id" @saved="isOpen = false" />
+            <PlaylistSelector v-if="video" :video-id="video.id" @saved="isOpen = false" />
         </template>
 
         <template #footer>

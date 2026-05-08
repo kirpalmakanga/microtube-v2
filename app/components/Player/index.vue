@@ -221,15 +221,19 @@ watch(
             <div class="grow"></div>
 
             <div class="flex gap-2">
-                <UButton icon="i-mdi-bookmark" />
+                <template v-if="currentVideo">
+                    <PlaylistSelectorModal :video="currentVideo">
+                        <UButton icon="i-mdi-bookmark" />
+                    </PlaylistSelectorModal>
 
-                <PlayerVideoDescription
-                    v-if="currentVideo"
-                    :title="currentVideo?.title"
-                    :text="currentVideo.description"
-                >
-                    <UButton icon="i-mdi-information" />
-                </PlayerVideoDescription>
+                    <PlayerVideoDescription
+                        v-if="currentVideo"
+                        :title="currentVideo?.title"
+                        :text="currentVideo.description"
+                    >
+                        <UButton icon="i-mdi-information" />
+                    </PlayerVideoDescription>
+                </template>
 
                 <PlayerQueue>
                     <div class="relative">

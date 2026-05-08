@@ -41,7 +41,6 @@ function isSelected(videoId: string) {
                 >
                     <PlayerQueueItem
                         v-bind="item"
-                        :index="index"
                         :is-playing="false"
                         :is-selected="isSelected(item.id)"
                         @select="!isSelected(item.id) && setSelectedItem(item.id)"
@@ -52,7 +51,7 @@ function isSelected(videoId: string) {
                     <div
                         class="absolute left-0 top-0 bottom-0 flex shrink-0 items-center justify-center w-10 text-sm group-hover:invisible"
                     >
-                        {{ index }}
+                        {{ index + 1 }}
                     </div>
 
                     <div

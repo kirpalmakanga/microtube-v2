@@ -16,7 +16,7 @@ function isSelected(videoId: string) {
     <USlideover
         title="Queue"
         :description="`${queue.length} video${queue.length !== 1 ? 's' : ''}`"
-        :ui="{ content: 'max-w-2/3', body: 'flex p-0 sm:p-0' }"
+        :ui="{ content: 'max-w-2/5', body: 'flex p-0 sm:p-0' }"
     >
         <slot />
 

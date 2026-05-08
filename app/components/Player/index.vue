@@ -221,20 +221,6 @@ watch(
             <div class="grow"></div>
 
             <div class="flex gap-2">
-                <template v-if="currentVideo">
-                    <PlaylistSelectorModal :video="currentVideo">
-                        <UButton icon="i-mdi-bookmark" />
-                    </PlaylistSelectorModal>
-
-                    <PlayerVideoDescription
-                        v-if="currentVideo"
-                        :title="currentVideo?.title"
-                        :text="currentVideo.description"
-                    >
-                        <UButton icon="i-mdi-information" />
-                    </PlayerVideoDescription>
-                </template>
-
                 <PlayerQueue>
                     <div class="relative">
                         <UButton
@@ -253,12 +239,26 @@ watch(
                     </div>
                 </PlayerQueue>
 
-                <UButton icon="i-mdi-monitor" @click="toggleScreen" />
+                <template v-if="currentVideo">
+                    <PlaylistSelectorModal :video="currentVideo">
+                        <UButton icon="i-mdi-bookmark" />
+                    </PlaylistSelectorModal>
 
-                <UButton
-                    :icon="isFullscreen ? 'i-mdi-arrow-collapse' : 'i-mdi-arrow-expand'"
-                    @click="toggleFullscreen"
-                />
+                    <PlayerVideoDescription
+                        v-if="currentVideo"
+                        :title="currentVideo?.title"
+                        :text="currentVideo.description"
+                    >
+                        <UButton icon="i-mdi-information" />
+                    </PlayerVideoDescription>
+
+                    <UButton icon="i-mdi-monitor" @click="toggleScreen" />
+
+                    <UButton
+                        :icon="isFullscreen ? 'i-mdi-arrow-collapse' : 'i-mdi-arrow-expand'"
+                        @click="toggleFullscreen"
+                    />
+                </template>
             </div>
         </div>
     </div>

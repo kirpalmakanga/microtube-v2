@@ -41,7 +41,7 @@ function handleSubmit() {
 <template>
     <UForm :validate="validate" :state="state" @submit="handleSubmit">
         <UFieldGroup>
-            <UInput placeholder="Search" variant="soft" v-model="state.query" />
+            <UInput placeholder="Search" variant="soft" v-model="state.query" @keydown.stop />
 
             <USelect variant="soft" :items="menuOptions" v-model="state.forMine" />
 

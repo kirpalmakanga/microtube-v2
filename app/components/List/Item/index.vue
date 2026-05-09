@@ -23,7 +23,7 @@ defineEmits<{ click: [e: void] }>();
 <template>
     <UContextMenu :items="menuOptions" :disabled="!menuOptions">
         <UCard
-            class="hover:bg-elevated/25 transition-colors"
+            class="hover:bg-elevated/25 transition-colors cursor-pointer"
             variant="soft"
             :ui="{ body: 'flex items-center' }"
             @click="$emit('click')"

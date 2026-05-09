@@ -22,3 +22,7 @@
         @apply whitespace-nowrap text-ellipsis overflow-hidden;
     }
 }
+
+button {
+    @apply cursor-pointer;
+}

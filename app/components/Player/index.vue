@@ -3,7 +3,7 @@ import { onKeyStroke, useFullscreen } from '@vueuse/core';
 import { type YouTubePlayerInstance, type YoutubePlayerOptions } from '~/services/youtube-player';
 
 const playerStore = usePlayerStore();
-const { currentVideo, video, newItemCount } = storeToRefs(playerStore);
+const { currentVideo, previousVideo, nextVideo, video, newItemCount } = storeToRefs(playerStore);
 const { resetNewItemCount, moveInQueue } = playerStore;
 
 const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
@@ -126,7 +126,7 @@ watch(
     () => state.isPlaying,
     () => {
         if (state.isPlaying && youtubePlayer.value) {
-            currentTimeWatcher = setInterval(fetchCurrentTime, 200);
+            currentTimeWatcher = setInterval(fetchCurrentTime, 100);
         } else if (currentTimeWatcher) {
             clearInterval(currentTimeWatcher);
 
@@ -146,16 +146,16 @@ watch(
 </script>
 
 <template>
-    <div class="flex flex-col justify-end bg-elevated/70 overflow-hidden" ref="playerWrapper">
+    <div class="flex flex-col justify-end bg-elevated/70 overflow-hidden group" ref="playerWrapper">
         <YoutubePlayer
             v-if="currentVideo"
             ref="youtubePlayer"
-            class="fixed left-0 right-0 transition-opacity z-51"
+            class="fixed left-0 right-0 transition-opacity z-51 after:content-[''] after:absolute after:inset-0"
             :class="{
                 'top-16 bottom-31': !isFullscreen,
                 'top-0 bottom-0': isFullscreen,
                 invisible: !state.isScreenVisible,
-                visible: state.isScreenVisible
+                visible: isFullscreen || state.isScreenVisible
             }"
             :videoId="currentVideo.id"
             :options="playerOptions"
@@ -165,7 +165,12 @@ watch(
             @click="togglePlay"
         />
 
-        <div class="flex flex-col gap-4 px-6 py-4 h-31 bg-elevated shadow z-52 overflow-hidden">
+        <div
+            class="flex flex-col gap-4 px-6 py-4 h-31 bg-elevated shadow z-52 overflow-hidden"
+            :class="{
+                'translate-y-full group-hover:translate-y-0 transition-transform': isFullscreen
+            }"
+        >
             <p class="ellipsis leading-none shrink-0">{{ currentVideo?.title }}</p>
 
             <PlayerSeekbar
@@ -205,11 +210,11 @@ watch(
                         />
                     </div>
 
-                    <span class="class flex gap-1 text-sm leading-none">
+                    <span v-if="currentVideo" class="class flex gap-1 text-sm leading-none">
                         <span>{{ formatTime(state.currentTime) }}</span>
 
                         <span>/</span>
-                        <span>{{ formatTime(currentVideo?.duration || 0) }}</span>
+                        <span>{{ formatTime(currentVideo.duration || 0) }}</span>
                     </span>
                 </div>
 
@@ -247,7 +252,7 @@ watch(
                             <UButton icon="i-mdi-information" />
                         </PlayerVideoDescription>
 
-                        <UButton icon="i-mdi-monitor" @click="toggleScreen" />
+                        <UButton v-if="!isFullscreen" icon="i-mdi-monitor" @click="toggleScreen" />
 
                         <UButton
                             :icon="isFullscreen ? 'i-mdi-arrow-collapse' : 'i-mdi-arrow-expand'"

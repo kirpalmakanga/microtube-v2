@@ -11,12 +11,16 @@ onMounted(async () => {
         query: { code }
     } = route;
 
-    if (code) {
-        const data = await logIn(code as string);
+    try {
+        if (!code) throw new Error('Missing authorization code');
 
-        setUser(data);
-    } else {
-        captureError(new Error('Missing authorization code'));
+        const userData = await logIn(code as string);
+
+        setUser(userData);
+
+        router.replace('/');
+    } catch (error) {
+        captureError(error);
     }
 });
 

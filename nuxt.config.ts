@@ -29,6 +29,9 @@ export default defineNuxtConfig({
     vite: {
         server: {
             allowedHosts: true
+        },
+        optimizeDeps: {
+            include: ['axios', 'firebase/app', 'firebase/auth', 'firebase/database', 'date-fns']
         }
     },
     runtimeConfig: {

@@ -152,7 +152,7 @@ watch(
             ref="youtubePlayer"
             class="fixed left-0 right-0 transition-opacity z-51 after:content-[''] after:absolute after:inset-0"
             :class="{
-                'top-16 bottom-31': !isFullscreen,
+                'top-16 bottom-37': !isFullscreen,
                 'top-0 bottom-0': isFullscreen,
                 invisible: !state.isScreenVisible,
                 visible: isFullscreen || state.isScreenVisible
@@ -166,12 +166,26 @@ watch(
         />
 
         <div
-            class="flex flex-col gap-4 px-6 py-4 h-31 bg-elevated shadow z-52 overflow-hidden"
+            class="flex flex-col gap-4 px-6 py-4 h-37 bg-elevated shadow z-52 overflow-hidden"
             :class="{
                 'translate-y-full group-hover:translate-y-0 transition-transform': isFullscreen
             }"
         >
-            <p class="ellipsis leading-none shrink-0">{{ currentVideo?.title }}</p>
+            <div class="h-10">
+                <p class="font-bold ellipsis leading-none shrink-0 mb-1">
+                    {{ currentVideo?.title || 'No selected video.' }}
+                </p>
+                <p class="ellipsis leading-none shrink-0">
+                    <NuxtLink
+                        v-if="currentVideo"
+                        class="text-sm opacity-70 hover:opacity-60"
+                        :to="`/channel/${currentVideo?.channelId}`"
+                    >
+                        {{ currentVideo?.channelTitle }}
+                    </NuxtLink>
+                    <template></template>
+                </p>
+            </div>
 
             <PlayerSeekbar
                 class="shrink-0"

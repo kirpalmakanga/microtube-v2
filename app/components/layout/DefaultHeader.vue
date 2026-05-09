@@ -1,6 +1,42 @@
 <script setup lang="ts">
+import type { DropdownMenuItem } from '@nuxt/ui';
+
 const authStore = useAuthStore();
-const { picture } = storeToRefs(authStore);
+const { isSignedIn, picture } = storeToRefs(authStore);
+const { signOut } = authStore;
+
+const colorMode = useColorMode();
+
+const isDark = computed({
+    get() {
+        return colorMode.value === 'dark';
+    },
+    set(_isDark) {
+        colorMode.preference = _isDark ? 'dark' : 'light';
+    }
+});
+
+const menuConfig = {
+    align: 'end',
+    side: 'bottom'
+} as const;
+
+const menuOptions = computed<DropdownMenuItem[]>(() => [
+    {
+        label: `Theme: ${isDark.value ? 'Dark' : 'Light'}`,
+        icon: isDark.value ? 'i-mdi-moon-waning-crescent' : 'i-mdi-white-balance-sunny',
+        onSelect: () => {
+            isDark.value = !isDark.value;
+        }
+    },
+    { type: 'separator' },
+    {
+        label: 'Sign out',
+        icon: 'i-mdi-sign-out',
+        color: 'error',
+        onSelect: signOut
+    }
+]);
 </script>
 
 <template>
@@ -13,12 +49,12 @@ const { picture } = storeToRefs(authStore);
             </NuxtLink>
         </template>
 
-        <template #right>
+        <template v-if="isSignedIn" #right>
             <SearchForm />
 
-            <UColorModeButton />
-
-            <UButton color="neutral" variant="ghost"><UAvatar :src="picture" /></UButton>
+            <UDropdownMenu :content="menuConfig" :items="menuOptions">
+                <button><UAvatar :src="picture" /></button>
+            </UDropdownMenu>
         </template>
     </UHeader>
 </template>

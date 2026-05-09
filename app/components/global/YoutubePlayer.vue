@@ -71,7 +71,6 @@ async function createPlayer() {
     }
 
     try {
-        console.log('createPlayer');
         youtubePlayer.value = await createYoutubePlayer(containerId, {
             ...props.options,
             videoId: props.videoId,

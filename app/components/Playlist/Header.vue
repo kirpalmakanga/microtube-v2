@@ -18,7 +18,7 @@ defineProps<{
 
         <div class="flex flex-col grow gap-2">
             <h1 class="text-lg font-bold leading-none">{{ title }}</h1>
-            <p class="opacity-70 leading-none">
+            <p class="text-sm opacity-70 leading-none">
                 <NuxtLink :to="`/channel/${channelId}`">{{ channelTitle }}</NuxtLink>
             </p>
             <p class="text-xs opacity-50 leading-none">

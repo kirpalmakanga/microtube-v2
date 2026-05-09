@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { error } from '#build/ui';
+
 const props = defineProps<{
     src?: string;
     imgClass?: string;
@@ -8,51 +10,54 @@ const props = defineProps<{
 const isLoading = ref<boolean>(true);
 const hasError = ref<boolean>(false);
 
-watch(
-    () => props.src,
-    async () => {
-        try {
-            if (!props.src) return;
+const image = useTemplateRef<HTMLImageElement>('image');
 
-            const img = new Image();
+function onLoad() {
+    isLoading.value = false;
+}
 
-            img.src = props.src;
+function onError(error: Error) {
+    captureError(error);
 
-            if (!img.complete) {
-                await new Promise((resolve, reject) => {
-                    img.onload = resolve;
-                    img.onerror = reject;
-                });
-            }
-        } catch (e) {
-            hasError.value = true;
-        } finally {
-            isLoading.value = false;
-        }
-    },
-    { immediate: true }
-);
+    hasError.value = true;
+}
 </script>
 
 <template>
-    <span class="relative flex items-center justify-center overflow-hidden">
-        <Transition name="fade" mode="out-in">
-            <UIcon
-                v-if="!src || isLoading || hasError"
-                class="size-1/2"
-                :class="{ 'animate-pulse': isLoading }"
-                name="i-mi-image"
-            />
+    <span class="relative flex overflow-hidden">
+        <img
+            ref="image"
+            class="block transition-opacity object-cover object-center w-full h-full"
+            :class="{
+                [imgClass || '']: !!imgClass,
+                'opacity-0': isLoading
+            }"
+            :src="src"
+            :alt="altText"
+            loading="lazy"
+            @load="onLoad"
+            @error="onError"
+        />
 
-            <img
-                v-else-if="!isLoading"
-                class="block transition-opacity object-cover object-center w-full h-full"
-                :class="{
-                    [imgClass || '']: !!imgClass
-                }"
-                :src="src"
-                :alt="altText"
-            />
+        <Transition name="fade" v-if="!src || isLoading || hasError">
+            <span class="absolute inset-0 flex items-center justify-center bg-inherit">
+                <UIcon
+                    class="size-1/2"
+                    :class="{ 'animate-pulse': isLoading }"
+                    :name="hasError ? 'i-mdi:image-broken-variant' : 'i-mdi-image'"
+                />
+            </span>
         </Transition>
     </span>
 </template>
+
+<style lang="scss" scoped>
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.15s;
+}
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+</style>

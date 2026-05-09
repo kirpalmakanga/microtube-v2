@@ -183,7 +183,6 @@ watch(
                     >
                         {{ currentVideo?.channelTitle }}
                     </NuxtLink>
-                    <template></template>
                 </p>
             </div>
 

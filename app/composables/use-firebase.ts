@@ -30,7 +30,7 @@ export function useFirebase() {
         signOutOfDatabase: () => {
             return signOut(getAuth());
         },
-        saveData: (path: string, data: string | object) => {
+        saveData: (path: string, data: string | object | null) => {
             return set(getRef(path), data);
         },
         subscribeToData: (path: string, callback: Function) => {

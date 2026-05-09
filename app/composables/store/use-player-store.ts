@@ -6,7 +6,7 @@ interface PlayerState {
     currentTime: number;
     queue: Video[];
     newItemCount: number;
-    selectedItemId: string;
+    selectedItemId: string | null;
     video: Video | null;
 }
 
@@ -17,7 +17,7 @@ function getInitialState(): PlayerState {
         newItemCount: 0,
         currentTime: 0,
         queue: [],
-        selectedItemId: '',
+        selectedItemId: null,
         video: null
     };
 }
@@ -113,7 +113,9 @@ export const usePlayerStore = defineStore(
             await setQueue(state.queue.filter(({ id }) => id !== targetId));
 
             if (targetId === state.selectedItemId) {
-                await saveData(selectedItemIdPath.value, '');
+                await saveData(selectedItemIdPath.value, null);
+
+                state.selectedItemId = null;
             }
         }
 

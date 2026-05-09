@@ -36,18 +36,19 @@ const state = reactive<PlayerState>(getInitialPlayerState());
 
 const youtubePlayer = useTemplateRef<YouTubePlayerInstance>('youtubePlayer');
 
-let youtubeVolume = ref<number>(100);
+const isStartup = ref<boolean>(true);
+
+const youtubeVolume = ref<number>(100);
 
 let currentTimeWatcher: ReturnType<typeof setInterval> | null = null;
 
-const playerOptions: YoutubePlayerOptions = {
+const playerOptions = computed<YoutubePlayerOptions>(() => ({
     playerVars: {
-        modestbranding: 1,
-        iv_load_policy: 3,
-        controls: 0,
-        autoplay: 1
+        enablejsapi: 1,
+        autoplay: isStartup.value ? 0 : 1,
+        controls: 0
     }
-};
+}));
 
 function isSingleVideo() {
     return !!video.value?.id;
@@ -150,16 +151,17 @@ watch(
         <YoutubePlayer
             v-if="currentVideo"
             ref="youtubePlayer"
-            class="fixed left-0 right-0 transition-opacity z-51 after:content-[''] after:absolute after:inset-0"
+            class="fixed left-0 right-0 z-51 after:content-[''] after:absolute after:inset-0"
             :class="{
                 'top-16 bottom-37': !isFullscreen,
                 'top-0 bottom-0': isFullscreen,
                 invisible: !state.isScreenVisible,
-                visible: isFullscreen || state.isScreenVisible
+                visible: state.isScreenVisible
             }"
             :videoId="currentVideo.id"
             :options="playerOptions"
             v-model:playing="state.isPlaying"
+            @ready="isStartup = false"
             @buffering="handleBuffering"
             @ended="handleVideoEnd"
             @click="togglePlay"

@@ -6,12 +6,6 @@ import {
     type YoutubePlayerOptions
 } from '~/services/youtube-player';
 
-interface NewOptions {
-    videoId: string;
-    startSeconds?: number;
-    endSeconds?: number;
-}
-
 const props = defineProps<{
     videoId: string;
     options?: YoutubePlayerOptions;
@@ -29,7 +23,45 @@ const emit = defineEmits<{
 const containerId = 'youtube-player';
 const youtubePlayer = ref<YouTubePlayerInstance | null>(null);
 const isPlaying = defineModel<boolean>('playing', { default: false });
-let isStartup: boolean = true;
+
+const { ENDED, PLAYING, PAUSED, BUFFERING, UNSTARTED } = PLAYBACK_STATES;
+
+function onStateChange({ data }: { [key: string]: any }) {
+    switch (data) {
+        case UNSTARTED:
+            emit('unstarted');
+            break;
+
+        case ENDED:
+            emit('ended');
+            break;
+
+        case PLAYING:
+            isPlaying.value = true;
+
+            emit('playing');
+            break;
+
+        case PAUSED:
+            isPlaying.value = false;
+
+            emit('paused');
+            break;
+
+        case BUFFERING:
+            emit('buffering');
+            break;
+
+        default:
+            return;
+    }
+}
+
+function onReady() {
+    if (youtubePlayer.value) {
+        emit('ready', youtubePlayer.value);
+    }
+}
 
 async function createPlayer() {
     if (youtubePlayer.value) {
@@ -38,51 +70,15 @@ async function createPlayer() {
         return;
     }
 
-    const { ENDED, PLAYING, PAUSED, BUFFERING, UNSTARTED } = PLAYBACK_STATES;
-
     try {
+        console.log('createPlayer');
         youtubePlayer.value = await createYoutubePlayer(containerId, {
             ...props.options,
             videoId: props.videoId,
             events: {
-                onReady: () => youtubePlayer.value && emit('ready', youtubePlayer.value),
-                onError: captureError,
-                onStateChange({ data }: { [key: string]: any }) {
-                    switch (data) {
-                        case UNSTARTED:
-                            if (!isStartup) {
-                                youtubePlayer.value?.playVideo();
-                            } else {
-                                isStartup = false;
-                            }
-
-                            emit('unstarted');
-                            break;
-
-                        case ENDED:
-                            emit('ended');
-                            break;
-
-                        case PLAYING:
-                            isPlaying.value = true;
-
-                            emit('playing');
-                            break;
-
-                        case PAUSED:
-                            isPlaying.value = false;
-
-                            emit('paused');
-                            break;
-
-                        case BUFFERING:
-                            emit('buffering');
-                            break;
-
-                        default:
-                            return;
-                    }
-                }
+                onReady,
+                onStateChange,
+                onError: captureError
             }
         });
     } catch (error: unknown) {
@@ -111,30 +107,12 @@ async function updateVideo() {
         return;
     }
 
-    const newOpts: NewOptions = { videoId };
-    let autoplay = false;
-
-    if (options && 'playerVars' in options) {
-        const { playerVars = {} } = options;
-
-        autoplay = playerVars.autoplay === 1;
-
-        if ('start' in playerVars) {
-            newOpts.startSeconds = playerVars.start;
-        }
-        if ('end' in playerVars) {
-            newOpts.endSeconds = playerVars.end;
-        }
-    }
-
-    if (autoplay) {
-        youtubePlayer.value.loadVideoById(newOpts);
+    if (options?.playerVars?.autoplay) {
+        youtubePlayer.value.loadVideoById({ videoId });
     } else {
-        youtubePlayer.value.cueVideoById(newOpts);
+        youtubePlayer.value.cueVideoById({ videoId });
     }
 }
-
-watch(() => props.options, resetPlayer, { deep: true });
 
 watch(() => props.videoId, updateVideo);
 

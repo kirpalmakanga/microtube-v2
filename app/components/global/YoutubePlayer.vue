@@ -25,11 +25,19 @@ const youtubePlayer = ref<YouTubePlayerInstance | null>(null);
 const isPlayerReady = ref<boolean>(false);
 const isPlaying = defineModel<boolean>('playing', { default: false });
 
+let isStartup: boolean = true;
+
 const { ENDED, PLAYING, PAUSED, BUFFERING, UNSTARTED } = PLAYBACK_STATES;
 
 function onStateChange({ data }: { [key: string]: any }) {
     switch (data) {
         case UNSTARTED:
+            if (!isStartup) {
+                youtubePlayer.value?.playVideo();
+            } else {
+                isStartup = false;
+            }
+
             emit('unstarted');
             break;
 

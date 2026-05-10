@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onKeyStroke, useFullscreen, useInterval, useIntervalFn } from '@vueuse/core';
+import { useFullscreen, useIntervalFn } from '@vueuse/core';
 import { type YouTubePlayerInstance, type YoutubePlayerOptions } from '~/services/youtube-player';
 
 const playerStore = usePlayerStore();
@@ -61,6 +61,14 @@ function togglePlay() {
     }
 }
 
+function goToPreviousTrack() {
+    moveInQueue(-1);
+}
+
+function goToNextTrack() {
+    moveInQueue(1);
+}
+
 function setVolume(volume: number) {
     state.volume = volume;
 
@@ -117,9 +125,10 @@ function handleWheelVolume({ deltaY }: WheelEvent) {
     }
 }
 
-onKeyStroke('m', toggleMute);
-onKeyStroke('s', toggleScreen);
-onKeyStroke(' ', togglePlay);
+function getCurrentThumbnail() {
+    if (currentVideo.value) return getThumbnails(currentVideo.value?.thumbnails, 'default');
+    return null;
+}
 
 const { pause: pauseTimewatcher, resume: resumeTimeWatcher } = useIntervalFn(
     fetchCurrentTime,
@@ -145,12 +154,47 @@ watch(
 
 watch(
     () => currentVideo.value?.id,
-    () => {
-        if (!currentVideo.value?.id) {
+    (currentVideoId, previousVideoId) => {
+        if (!currentVideoId) {
             Object.assign(state, getInitialPlayerState());
+        }
+
+        if (currentVideoId && !previousVideoId) {
+            togglePlay();
         }
     }
 );
+
+defineShortcuts({
+    shift_k: togglePlay,
+    shift_p: goToPreviousTrack,
+    shift_n: goToNextTrack,
+    m: toggleMute,
+    s: toggleScreen,
+    f: toggleFullscreen
+});
+
+// useMediaSession(
+//     computed(() => {
+//         const artwork = getCurrentThumbnail();
+
+//         return {
+//             metadata: {
+//                 ...(artwork && {
+//                     artwork: [
+//                         {
+//                             src: artwork
+//                         }
+//                     ]
+//                 })
+//             },
+//             actions: {
+//                 previoustrack: goToPreviousTrack,
+//                 nexttrack: goToNextTrack
+//             }
+//         };
+//     })
+// );
 </script>
 
 <template>
@@ -203,24 +247,32 @@ watch(
 
             <div class="flex">
                 <div class="flex items-center gap-2">
-                    <UButton
-                        :icon="state.isPlaying ? 'i-mdi-pause' : 'i-mdi-play'"
-                        @click="togglePlay"
-                    />
+                    <UTooltip :text="state.isPlaying ? 'Pause' : 'Play'" :kbds="['shift', 'k']">
+                        <UButton
+                            :icon="state.isPlaying ? 'i-mdi-pause' : 'i-mdi-play'"
+                            @click="togglePlay"
+                        />
+                    </UTooltip>
 
                     <UFieldGroup>
-                        <UButton icon="i-mdi-skip-previous" @click="moveInQueue(-1)" />
-                        <UButton icon="i-mdi-skip-next" @click="moveInQueue(1)" />
+                        <UTooltip text="Previous" :kbds="['shift', 'p']">
+                            <UButton icon="i-mdi-skip-previous" @click="moveInQueue(-1)" />
+                        </UTooltip>
+                        <UTooltip text="Next" :kbds="['shift', 'n']">
+                            <UButton icon="i-mdi-skip-next" @click="moveInQueue(1)" />
+                        </UTooltip>
                     </UFieldGroup>
 
                     <div
                         class="group flex gap-1 overflow-hidden transition-all w-8 hover:w-37 z-1"
                         @wheel="handleWheelVolume"
                     >
-                        <UButton
-                            :icon="state.volume > 0 ? 'i-mdi-volume' : 'i-mdi-volume-off'"
-                            @click="toggleMute"
-                        />
+                        <UTooltip text="Mute" :kbds="['m']">
+                            <UButton
+                                :icon="state.volume > 0 ? 'i-mdi-volume' : 'i-mdi-volume-off'"
+                                @click="toggleMute"
+                            />
+                        </UTooltip>
 
                         <USlider
                             v-if="!isMobile()"
@@ -244,10 +296,12 @@ watch(
                 <div class="flex gap-2">
                     <PlayerQueue>
                         <div class="relative">
-                            <UButton
-                                icon="i-mdi-view-list"
-                                @click="newItemCount && resetNewItemCount()"
-                            />
+                            <UTooltip text="Open queue" :kbds="['q']">
+                                <UButton
+                                    icon="i-mdi-view-list"
+                                    @click="newItemCount && resetNewItemCount()"
+                                />
+                            </UTooltip>
 
                             <UBadge
                                 v-if="newItemCount"
@@ -262,7 +316,9 @@ watch(
 
                     <template v-if="currentVideo">
                         <PlaylistSelectorModal :video="currentVideo">
-                            <UButton icon="i-mdi-bookmark" />
+                            <UTooltip text="Save to playlist">
+                                <UButton icon="i-mdi-bookmark" />
+                            </UTooltip>
                         </PlaylistSelectorModal>
 
                         <PlayerVideoDescription
@@ -270,15 +326,28 @@ watch(
                             :title="currentVideo?.title"
                             :text="currentVideo.description"
                         >
-                            <UButton icon="i-mdi-information" />
+                            <UTooltip text="Description">
+                                <UButton icon="i-mdi-information" />
+                            </UTooltip>
                         </PlayerVideoDescription>
 
-                        <UButton v-if="!isFullscreen" icon="i-mdi-monitor" @click="toggleScreen" />
+                        <UTooltip text="Toggle screen" :kbds="['s']">
+                            <UButton
+                                v-if="!isFullscreen"
+                                icon="i-mdi-monitor"
+                                @click="toggleScreen"
+                            />
+                        </UTooltip>
 
-                        <UButton
-                            :icon="isFullscreen ? 'i-mdi-arrow-collapse' : 'i-mdi-arrow-expand'"
-                            @click="toggleFullscreen"
-                        />
+                        <UTooltip
+                            :text="isFullscreen ? 'Exit full screen' : 'Full screen'"
+                            :kbds="['f']"
+                        >
+                            <UButton
+                                :icon="isFullscreen ? 'i-mdi-arrow-collapse' : 'i-mdi-arrow-expand'"
+                                @click="toggleFullscreen"
+                            />
+                        </UTooltip>
                     </template>
                 </div>
             </div>

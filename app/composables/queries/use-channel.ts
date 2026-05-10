@@ -1,4 +1,10 @@
-import { getChannel, getChannelVideos, type GetChannelVideosReturn } from '~/services/youtube';
+import {
+    getChannel,
+    getChannelVideos,
+    subscribeToChannel,
+    unsubscribeFromChannel,
+    type GetChannelVideosReturn
+} from '~/services/youtube';
 
 export function useChannel(channelId: MaybeRef<string>) {
     return useQuery({
@@ -19,6 +25,46 @@ export function useChannelVideos(channelId: MaybeRef<string>) {
         initialPageParam: null,
         getNextPageParam: ({ nextPageToken }) => {
             return nextPageToken;
+        }
+    });
+}
+
+export function useSubscribeToChannel() {
+    const queryCache = useQueryCache();
+
+    return useMutation({
+        mutation: async ({ channelId }: { channelId: string }) => {
+            await subscribeToChannel(channelId);
+
+            return { channelId };
+        },
+        onSuccess: async ({ channelId }) => {
+            await queryCache.invalidateQueries({
+                key: ['channel', channelId]
+            });
+        }
+    });
+}
+
+export function useUnsubscribeFromChannel() {
+    const queryCache = useQueryCache();
+
+    return useMutation({
+        mutation: async ({
+            channelId,
+            subscriptionId
+        }: {
+            channelId: string;
+            subscriptionId: string;
+        }) => {
+            await unsubscribeFromChannel(subscriptionId);
+
+            return { channelId };
+        },
+        onSuccess: async ({ channelId }) => {
+            await queryCache.invalidateQueries({
+                key: ['channel', channelId]
+            });
         }
     });
 }

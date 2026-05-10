@@ -151,12 +151,11 @@ watch(
         <YoutubePlayer
             v-if="currentVideo"
             ref="youtubePlayer"
-            class="fixed left-0 right-0 z-51 after:content-[''] after:absolute after:inset-0"
+            class="fixed left-0 right-0 z-51 transition-transform after:content-[''] after:absolute after:inset-0"
             :class="{
                 'top-16 bottom-37': !isFullscreen,
                 'top-0 bottom-0': isFullscreen,
-                invisible: !state.isScreenVisible,
-                visible: state.isScreenVisible
+                'translate-y-[150%]': !state.isScreenVisible
             }"
             :videoId="currentVideo.id"
             :options="playerOptions"

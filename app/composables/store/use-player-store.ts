@@ -1,21 +1,17 @@
 import { getPlaylistItems, getVideo, getVideosFromIds } from '~/services/youtube';
 
 interface PlayerState {
-    isScreenVisible: boolean;
     volume: number;
-    currentTime: number;
-    queue: Video[];
-    newItemCount: number;
-    selectedItemId: string | null;
     video: Video | null;
+    queue: Video[];
+    selectedItemId: string | null;
+    newItemCount: number;
 }
 
 function getInitialState(): PlayerState {
     return {
-        isScreenVisible: false,
         volume: 100,
         newItemCount: 0,
-        currentTime: 0,
         queue: [],
         selectedItemId: null,
         video: null
@@ -205,7 +201,8 @@ export const usePlayerStore = defineStore(
     },
     {
         persist: {
-            storage: piniaPluginPersistedstate.localStorage()
+            storage: piniaPluginPersistedstate.localStorage(),
+            pick: ['volume', 'queue', 'selectedItemId']
         }
     }
 );

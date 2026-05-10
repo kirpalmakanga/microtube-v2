@@ -173,9 +173,6 @@ defineShortcuts({
     s: toggleScreen,
     f: toggleFullscreen
 });
-
-navigator.mediaSession.setActionHandler('nexttrack', goToNextTrack);
-navigator.mediaSession.setActionHandler('previoustrack', goToPreviousTrack);
 </script>
 
 <template>

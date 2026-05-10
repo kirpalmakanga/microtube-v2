@@ -18,29 +18,29 @@
     "dependencies": {
         "@iconify-json/mdi": "^1.2.3",
         "@iconify-json/svg-spinners": "^1.2.4",
-        "@nuxt/ui": "^4.7.0",
-        "@pinia/colada-nuxt": "^1.0.0",
+        "@nuxt/ui": "^4.7.1",
+        "@pinia/colada-nuxt": "^1.0.1",
         "@pinia/nuxt": "^0.11.3",
         "@vueuse/core": "^14.3.0",
         "@vueuse/integrations": "^14.3.0",
         "axios": "^1.16.0",
         "date-fns": "^4.1.0",
-        "firebase": "^12.12.1",
+        "firebase": "^12.13.0",
         "googleapis": "^171.4.0",
-        "nuxt": "^4.4.2",
+        "nuxt": "^4.4.4",
         "pinia": "^3.0.4",
         "pinia-plugin-persistedstate": "^4.7.1",
         "sortablejs": "^1.15.7",
-        "tailwindcss": "^4.2.4"
+        "tailwindcss": "^4.3.0"
     },
     "devDependencies": {
         "@pinia/colada-devtools": "^1.0.0",
         "oxfmt": "^0.47.0",
-        "oxlint": "^1.62.0",
+        "oxlint": "^1.63.0",
         "oxlint-tsgolint": "^0.22.1",
         "sass": "^1.99.0",
         "typescript": "^6.0.3",
-        "vue-tsc": "^3.2.7"
+        "vue-tsc": "^3.2.8"
     },
     "packageManager": "pnpm@11.0.8"
 }

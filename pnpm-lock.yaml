@@ -18,8 +18,8 @@ importers:
         specifier: ^4.7.1
         version: 4.7.1(@internationalized/date@3.12.1)(@internationalized/number@3.6.6)(@tiptap/extensions@3.23.1(@tiptap/core@3.23.1(@tiptap/pm@3.23.1))(@tiptap/pm@3.23.1))(@tiptap/y-tiptap@3.0.3(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))(axios@1.16.0)(db0@0.3.4)(embla-carousel@8.6.0)(ioredis@5.10.1)(magicast@0.5.2)(sortablejs@1.15.7)(tailwindcss@4.3.0)(typescript@6.0.3)(vite@7.3.3(@types/node@25.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.47.1)(yaml@2.8.4))(vue-router@5.0.6(@pinia/colada@1.2.1(pinia@3.0.4(typescript@6.0.3)(vue@3.5.34(typescript@6.0.3)))(vue@3.5.34(typescript@6.0.3)))(@vue/compiler-sfc@3.5.34)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.34(typescript@6.0.3)))(vue@3.5.34(typescript@6.0.3)))(vue@3.5.34(typescript@6.0.3))(yjs@13.6.30)
       '@pinia/colada-nuxt':
-        specifier: ^1.0.1
-        version: 1.0.1(@pinia/colada@1.2.1(pinia@3.0.4(typescript@6.0.3)(vue@3.5.34(typescript@6.0.3)))(vue@3.5.34(typescript@6.0.3)))(magicast@0.5.2)
+        specifier: 1.0.0
+        version: 1.0.0(@pinia/colada@1.2.1(pinia@3.0.4(typescript@6.0.3)(vue@3.5.34(typescript@6.0.3)))(vue@3.5.34(typescript@6.0.3)))(magicast@0.5.2)
       '@pinia/nuxt':
         specifier: ^0.11.3
         version: 0.11.3(magicast@0.5.2)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.34(typescript@6.0.3)))
@@ -1774,10 +1774,10 @@ packages:
   '@pinia/colada-devtools@1.0.0':
     resolution: {integrity: sha512-DS23RyFqQ+Gy2B4Wu5GjRLEeCRKZCnP0txjFxN04CMyt6quYudCdq4JnFByT6Km2aNd/TjjENFdfJK/gd8A+Sg==}
 
-  '@pinia/colada-nuxt@1.0.1':
-    resolution: {integrity: sha512-Jhyz4pTrBS8UMh9Bz43oKQEJalWx2hTc+27oWKJMpaIs/Yghj593WW+8NF3YPGCNiqYLIgyofwgL4DAExpkluw==}
+  '@pinia/colada-nuxt@1.0.0':
+    resolution: {integrity: sha512-yxu6ZbzL4rjnue3jB8lxpv94FLF6CCzCsQvBdNu+MdMsFBVCCWsYRFcCIj0GIac3Zw7qrESCXUdi2qLqEYujMw==}
     peerDependencies:
-      '@pinia/colada': '>=1.3.0'
+      '@pinia/colada': '>=1.2.0'
 
   '@pinia/colada@1.2.1':
     resolution: {integrity: sha512-bld1LhCtct0TdYYyy8tEHFEeW0AZGRfdCMOLwdTD/Usqg7aGvDLj+GKsl9QcK4ZrFAL2HulbhLEHTy9ESZs12Q==}
@@ -7008,7 +7008,7 @@ snapshots:
 
   '@pinia/colada-devtools@1.0.0': {}
 
-  '@pinia/colada-nuxt@1.0.1(@pinia/colada@1.2.1(pinia@3.0.4(typescript@6.0.3)(vue@3.5.34(typescript@6.0.3)))(vue@3.5.34(typescript@6.0.3)))(magicast@0.5.2)':
+  '@pinia/colada-nuxt@1.0.0(@pinia/colada@1.2.1(pinia@3.0.4(typescript@6.0.3)(vue@3.5.34(typescript@6.0.3)))(vue@3.5.34(typescript@6.0.3)))(magicast@0.5.2)':
     dependencies:
       '@nuxt/kit': 4.4.4(magicast@0.5.2)
       '@pinia/colada': 1.2.1(pinia@3.0.4(typescript@6.0.3)(vue@3.5.34(typescript@6.0.3)))(vue@3.5.34(typescript@6.0.3))

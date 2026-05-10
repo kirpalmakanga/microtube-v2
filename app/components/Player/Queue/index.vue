@@ -5,6 +5,7 @@ const { queue, selectedItemId } = storeToRefs(playerStore);
 const { clearQueue, removeQueueItem, setSelectedItem } = playerStore;
 const list = shallowRef(queue);
 
+const isOpen = ref<boolean>(false);
 const itemToSave = ref<Video | null>(null);
 const isImportFormOpen = ref<boolean>(false);
 const isClearingPromptOpen = ref<boolean>(false);
@@ -12,10 +13,15 @@ const isClearingPromptOpen = ref<boolean>(false);
 function isSelected(videoId: string) {
     return videoId === selectedItemId.value;
 }
+
+defineShortcuts({
+    q: () => (isOpen.value = !isOpen.value)
+});
 </script>
 
 <template>
     <USlideover
+        v-model:open="isOpen"
         title="Queue"
         :description="`${queue.length} video${queue.length !== 1 ? 's' : ''}`"
         :ui="{ content: 'max-w-2/5', body: 'flex p-0 sm:p-0', footer: 'justify-end' }"

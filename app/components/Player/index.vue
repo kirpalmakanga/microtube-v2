@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onKeyStroke, useFullscreen } from '@vueuse/core';
+import { onKeyStroke, useFullscreen, useInterval, useIntervalFn } from '@vueuse/core';
 import { type YouTubePlayerInstance, type YoutubePlayerOptions } from '~/services/youtube-player';
 
 const playerStore = usePlayerStore();
@@ -39,8 +39,6 @@ const youtubePlayer = useTemplateRef<YouTubePlayerInstance>('youtubePlayer');
 const isStartup = ref<boolean>(true);
 
 const youtubeVolume = ref<number>(100);
-
-let currentTimeWatcher: ReturnType<typeof setInterval> | null = null;
 
 const playerOptions = computed<YoutubePlayerOptions>(() => ({
     playerVars: {
@@ -123,15 +121,24 @@ onKeyStroke('m', toggleMute);
 onKeyStroke('s', toggleScreen);
 onKeyStroke(' ', togglePlay);
 
+const {
+    pause: pauseTimewatcher,
+    resume: resumeTimeWatcher,
+    isActive: isTimeWatcherActive
+} = useIntervalFn(fetchCurrentTime, 100, {
+    immediate: false,
+    immediateCallback: true
+});
+
 watch(
     () => state.isPlaying,
     () => {
-        if (state.isPlaying && youtubePlayer.value) {
-            currentTimeWatcher = setInterval(fetchCurrentTime, 100);
-        } else if (currentTimeWatcher) {
-            clearInterval(currentTimeWatcher);
+        if (!youtubePlayer.value) return;
 
-            currentTimeWatcher = null;
+        if (state.isPlaying) {
+            resumeTimeWatcher();
+        } else if (isTimeWatcherActive.value) {
+            pauseTimewatcher();
         }
     }
 );

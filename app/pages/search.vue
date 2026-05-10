@@ -27,15 +27,10 @@ watch(search, () => refetch());
 
         <Error v-else-if="error" @action="refetch()" />
 
-        <Placeholder
-            v-else-if="items && !items.length"
-            icon="i-mdi-format-list-bulleted"
-            :text="`Search for &quot;${search.query}&quot; gave no results.`"
-        />
-
         <List
             v-else-if="items"
             :items="items"
+            :empty-message="`Search for &quot;${search.query}&quot; gave no results.`"
             @load-more="hasNextPage && !isLoading && loadNextPage()"
         >
             <template #item="{ item }">

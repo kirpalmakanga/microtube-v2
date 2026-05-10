@@ -21,15 +21,10 @@ watch(channelId, () => refetch());
 
         <Error v-else-if="error" @action="refetch()" />
 
-        <Placeholder
-            v-else-if="items && !items.length"
-            icon="i-mdi-format-list-bulleted"
-            :text="`This channel doesn't have videos yet.`"
-        />
-
         <List
             v-else-if="items"
             :items="items"
+            empty-message="This channel doesn't have videos yet."
             @load-more="hasNextPage && !isLoading && loadNextPage()"
         >
             <template #item="{ item }">

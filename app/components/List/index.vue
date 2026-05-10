@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T extends unknown">
-const props = withDefaults(defineProps<{ items: T[]; itemKey?: string }>(), {
+const props = withDefaults(defineProps<{ items: T[]; itemKey?: string; emptyMessage?: string }>(), {
     itemKey: 'id'
 });
 
@@ -13,7 +13,7 @@ function getItemKey(item: T) {
 </script>
 
 <template>
-    <ScrollContainer @reached-bottom="$emit('load-more')">
+    <ScrollContainer v-if="items.length" @reached-bottom="$emit('load-more')">
         <ul class="flex flex-col p-6 gap-6">
             <li v-for="(item, index) of items" :key="getItemKey(item)">
                 <slot name="item" :item="item" :index="index" />
@@ -23,4 +23,6 @@ function getItemKey(item: T) {
             </li>
         </ul>
     </ScrollContainer>
+
+    <Placeholder v-else-if="emptyMessage" icon="i-mdi-format-list-bulleted" :text="emptyMessage" />
 </template>

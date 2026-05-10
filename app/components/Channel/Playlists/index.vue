@@ -20,6 +20,7 @@ const { queuePlaylist } = usePlayerStore();
         <List
             v-else-if="items"
             :items="items"
+            empty-message="This channel doesn't have playlists yet."
             @reached-bottom="hasNextPage && !isLoading && loadNextPage()"
         >
             <template #item="{ item }">

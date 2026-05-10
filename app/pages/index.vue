@@ -19,6 +19,7 @@ const itemToRemove = ref<Playlist | null>(null);
         <List
             v-else-if="items"
             :items="items"
+            empty-message="You haven't created playlists yet."
             @reached-bottom="hasNextPage && !isLoading && loadNextPage()"
         >
             <template #item="{ item }">

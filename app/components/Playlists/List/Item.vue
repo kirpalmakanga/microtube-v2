@@ -8,6 +8,7 @@ const props = defineProps<{
     title: string;
     thumbnails: Thumbnails;
     itemCount: number;
+    canBeRemoved?: boolean;
 }>();
 
 const copy = useCopy();
@@ -34,13 +35,17 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
             }
         }
     },
-    { type: 'separator' },
-    {
-        label: 'Delete',
-        icon: 'i-mdi-delete-forever',
-        color: 'error',
-        onSelect: () => emit('remove')
-    }
+    ...(props.canBeRemoved
+        ? ([
+              { type: 'separator' },
+              {
+                  label: 'Delete',
+                  icon: 'i-mdi-delete-forever',
+                  color: 'error',
+                  onSelect: () => emit('remove')
+              }
+          ] as ContextMenuItem[])
+        : [])
 ]);
 </script>
 

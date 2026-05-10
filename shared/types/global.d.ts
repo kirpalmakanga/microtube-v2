@@ -55,7 +55,9 @@ declare global {
     interface Channel {
         id: string;
         title: string;
+        description: string;
         thumbnails: Thumbnails;
+        subscriptionId?: string;
     }
 }
 

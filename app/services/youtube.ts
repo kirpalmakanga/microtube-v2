@@ -380,29 +380,26 @@ export async function getSubscriptions({ pageToken = '', mine = false }) {
 }
 
 /* Channels */
-export async function getChannel(id: string) {
+export async function getChannel(id: string): Promise<Channel> {
     const { items } = await request('get', 'channels', {
         id,
         part: 'snippet, contentDetails'
     });
-
-    if (!items.length) {
-        return {};
-    }
-
     const {
-        snippet: { title: channelTitle, thumbnails, description }
-    } = items[0];
-
-    const {
-        items: [{ id: subscriptionId } = { id: '' }]
+        items: [{ id: subscriptionId } = {}]
     } = await request('get', 'subscriptions', {
         mine: true,
         forChannelId: id,
         part: 'id'
     });
 
-    return { channelTitle, subscriptionId, description, thumbnails };
+    return { ...parseChannelData(items[0]), subscriptionId };
+}
+
+export interface GetChannelVideosReturn {
+    items: Video[];
+    nextPageToken: string | null;
+    totalResults: number;
 }
 
 export async function getChannelVideos({
@@ -410,8 +407,8 @@ export async function getChannelVideos({
     pageToken
 }: {
     channelId: string;
-    pageToken: string;
-}) {
+    pageToken: string | null;
+}): Promise<GetChannelVideosReturn> {
     const { items, nextPageToken, pageInfo } = await request('get', 'search', {
         part: 'snippet',
         type: 'video',

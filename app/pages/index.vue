@@ -24,6 +24,7 @@ const itemToRemove = ref<Playlist | null>(null);
             <template #item="{ item }">
                 <PlaylistsListItem
                     v-bind="item"
+                    :can-be-removed="true"
                     @queue="queuePlaylist(item.id)"
                     @remove="itemToRemove = item"
                 />

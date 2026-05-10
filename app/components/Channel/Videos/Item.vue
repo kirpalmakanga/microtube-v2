@@ -58,10 +58,6 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
         <template #content>
             <h2 class="font-bold text-light-50 font-montserrat ellipsis">{{ title }}</h2>
 
-            <p class="text-sm text-light-50 opacity-70 hover:opacity-60 font-montserrat ellipsis">
-                <NuxtLink :to="`/channel/${channelId}`" @click.stop>{{ channelTitle }}</NuxtLink>
-            </p>
-
             <p class="text-xs text-light-50 opacity-50 font-montserrat ellipsis">
                 {{ formatDate(publishedAt, 'MMMM do yyyy') }}
             </p>

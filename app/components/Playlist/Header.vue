@@ -10,13 +10,15 @@ defineProps<{
 </script>
 
 <template>
-    <div class="flex bg-elevated/80 p-6 gap-6 shadow">
-        <Img
-            class="aspect-video h-28 rounded-md"
-            :src="getThumbnails(thumbnails, 'medium') || getThumbnails(thumbnails, 'default')"
-        />
+    <LayoutPageHeader>
+        <template #thumbnail>
+            <Img
+                class="aspect-video h-28 rounded-md bg-slate-900 shrink-0"
+                :src="getThumbnails(thumbnails, 'medium') || getThumbnails(thumbnails, 'default')"
+            />
+        </template>
 
-        <div class="flex flex-col grow gap-2">
+        <template #content>
             <h1 class="text-lg font-bold leading-none">{{ title }}</h1>
             <p class="text-sm opacity-70 leading-none">
                 <NuxtLink :to="`/channel/${channelId}`">{{ channelTitle }}</NuxtLink>
@@ -24,6 +26,6 @@ defineProps<{
             <p class="text-xs opacity-50 leading-none">
                 Playlist • {{ `${itemCount} video${itemCount !== 1 ? 's' : ''}` }}
             </p>
-        </div>
-    </div>
+        </template>
+    </LayoutPageHeader>
 </template>

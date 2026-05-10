@@ -121,14 +121,14 @@ onKeyStroke('m', toggleMute);
 onKeyStroke('s', toggleScreen);
 onKeyStroke(' ', togglePlay);
 
-const {
-    pause: pauseTimewatcher,
-    resume: resumeTimeWatcher,
-    isActive: isTimeWatcherActive
-} = useIntervalFn(fetchCurrentTime, 100, {
-    immediate: false,
-    immediateCallback: true
-});
+const { pause: pauseTimewatcher, resume: resumeTimeWatcher } = useIntervalFn(
+    fetchCurrentTime,
+    100,
+    {
+        immediate: false,
+        immediateCallback: true
+    }
+);
 
 watch(
     () => state.isPlaying,
@@ -137,7 +137,7 @@ watch(
 
         if (state.isPlaying) {
             resumeTimeWatcher();
-        } else if (isTimeWatcherActive.value) {
+        } else {
             pauseTimewatcher();
         }
     }

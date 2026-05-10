@@ -23,7 +23,7 @@ interface YoutubePlaylist {
 
 interface YoutubeChannel {
     id: string;
-    snippet: { title: string; thumbnails: Thumbnails };
+    snippet: { title: string; description: string; thumbnails: Thumbnails };
 }
 
 export const parseVideoData = ({
@@ -60,9 +60,10 @@ export const parsePlaylistData = ({
 
 export const parseChannelData = ({
     id,
-    snippet: { title, thumbnails }
+    snippet: { title, description, thumbnails }
 }: YoutubeChannel): Channel => ({
     id,
     title,
+    description,
     thumbnails
 });

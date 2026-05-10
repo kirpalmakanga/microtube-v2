@@ -429,7 +429,7 @@ export async function getChannelVideos({
     };
 }
 
-export async function subscribeToChannel(channelId: string) {
+export async function subscribeToChannel(channelId: string): Promise<string> {
     const { id } = await request(
         'post',
         'subscriptions',
@@ -447,6 +447,6 @@ export async function subscribeToChannel(channelId: string) {
     return id;
 }
 
-export async function unsubscribeFromChannel(id: string) {
-    return request('delete', 'subscriptions', { id });
+export async function unsubscribeFromChannel(subscriptionId: string) {
+    await request('delete', 'subscriptions', { id: subscriptionId });
 }

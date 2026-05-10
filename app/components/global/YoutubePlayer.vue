@@ -22,6 +22,7 @@ const emit = defineEmits<{
 
 const containerId = 'youtube-player';
 const youtubePlayer = ref<YouTubePlayerInstance | null>(null);
+const isPlayerReady = ref<boolean>(false);
 const isPlaying = defineModel<boolean>('playing', { default: false });
 
 const { ENDED, PLAYING, PAUSED, BUFFERING, UNSTARTED } = PLAYBACK_STATES;
@@ -60,6 +61,8 @@ function onStateChange({ data }: { [key: string]: any }) {
 function onReady() {
     if (youtubePlayer.value) {
         emit('ready', youtubePlayer.value);
+
+        isPlayerReady.value = true;
     }
 }
 
@@ -87,12 +90,6 @@ async function createPlayer() {
 
 function destroyPlayer() {
     youtubePlayer.value?.destroy();
-}
-
-async function resetPlayer() {
-    destroyPlayer();
-
-    createPlayer();
 }
 
 async function updateVideo() {
@@ -128,7 +125,19 @@ defineExpose(youtubePlayer);
 </script>
 
 <template>
-    <div>
-        <div :id="containerId" class="h-full w-full"></div>
+    <div class="bg-black">
+        <div class="h-full w-full">
+            <div :id="containerId" class="h-full w-full"></div>
+        </div>
+
+        <Transition name="fade">
+            <div
+                v-if="!isPlayerReady"
+                class="bg-inherit absolute inset-0 flex flex-col items-center justify-center gap-2"
+            >
+                <UIcon class="size-12" name="i-svg-spinners-90-ring-with-bg" />
+                <p>Initializing player</p>
+            </div>
+        </Transition>
     </div>
 </template>

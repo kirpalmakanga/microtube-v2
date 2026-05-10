@@ -174,6 +174,8 @@ defineShortcuts({
     f: toggleFullscreen
 });
 
+navigator.mediaSession.setActionHandler('nexttrack', goToNextTrack);
+
 // useMediaSession(
 //     computed(() => {
 //         const artwork = getCurrentThumbnail();

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useFullscreen, useIntervalFn } from '@vueuse/core';
-import { type YouTubePlayerInstance, type YoutubePlayerOptions } from '~/services/youtube-player';
+import { type YoutubePlayerOptions } from '~/services/youtube-player';
 
 const playerStore = usePlayerStore();
 const { currentVideo, previousVideo, nextVideo, video, newItemCount } = storeToRefs(playerStore);
@@ -174,27 +174,8 @@ defineShortcuts({
     f: toggleFullscreen
 });
 
-useMediaSession(
-    computed(() => {
-        const artwork = getCurrentThumbnail();
-
-        return {
-            metadata: {
-                ...(artwork && {
-                    artwork: [
-                        {
-                            src: artwork
-                        }
-                    ]
-                })
-            },
-            actions: {
-                previoustrack: goToPreviousTrack,
-                nexttrack: goToNextTrack
-            }
-        };
-    })
-);
+navigator.mediaSession.setActionHandler('nexttrack', goToNextTrack);
+navigator.mediaSession.setActionHandler('previoustrack', goToPreviousTrack);
 </script>
 
 <template>

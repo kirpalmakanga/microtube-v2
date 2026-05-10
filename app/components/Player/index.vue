@@ -174,29 +174,27 @@ defineShortcuts({
     f: toggleFullscreen
 });
 
-navigator.mediaSession.setActionHandler('nexttrack', goToNextTrack);
+useMediaSession(
+    computed(() => {
+        const artwork = getCurrentThumbnail();
 
-// useMediaSession(
-//     computed(() => {
-//         const artwork = getCurrentThumbnail();
-
-//         return {
-//             metadata: {
-//                 ...(artwork && {
-//                     artwork: [
-//                         {
-//                             src: artwork
-//                         }
-//                     ]
-//                 })
-//             },
-//             actions: {
-//                 previoustrack: goToPreviousTrack,
-//                 nexttrack: goToNextTrack
-//             }
-//         };
-//     })
-// );
+        return {
+            metadata: {
+                ...(artwork && {
+                    artwork: [
+                        {
+                            src: artwork
+                        }
+                    ]
+                })
+            },
+            actions: {
+                previoustrack: goToPreviousTrack,
+                nexttrack: goToNextTrack
+            }
+        };
+    })
+);
 </script>
 
 <template>

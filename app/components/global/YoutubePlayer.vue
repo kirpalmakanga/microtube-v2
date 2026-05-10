@@ -121,7 +121,25 @@ onMounted(createPlayer);
 
 onBeforeUnmount(destroyPlayer);
 
-defineExpose(youtubePlayer);
+export interface YoutubePlayerExposed {
+    isPlayerReady: Ref<boolean>;
+    setVolume: (volume: number) => void;
+    getCurrentTime: () => number | undefined;
+    seekTo: (time: number) => void;
+}
+
+defineExpose<YoutubePlayerExposed>({
+    isPlayerReady,
+    setVolume: (volume: number) => {
+        youtubePlayer.value?.setVolume(volume);
+    },
+    getCurrentTime: () => {
+        return youtubePlayer.value?.getCurrentTime();
+    },
+    seekTo: (time: number) => {
+        youtubePlayer.value?.seekTo(time, true);
+    }
+});
 </script>
 
 <template>

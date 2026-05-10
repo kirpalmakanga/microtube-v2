@@ -34,7 +34,7 @@ function getInitialPlayerState(): PlayerState {
 
 const state = reactive<PlayerState>(getInitialPlayerState());
 
-const youtubePlayer = useTemplateRef<YouTubePlayerInstance>('youtubePlayer');
+const youtubePlayer = useTemplateRef('youtubePlayer');
 
 const isStartup = ref<boolean>(true);
 
@@ -103,7 +103,7 @@ function fetchCurrentTime() {
 function handleSeeking(currentTime: number) {
     state.currentTime = currentTime;
 
-    youtubePlayer.value?.seekTo(currentTime, true);
+    youtubePlayer.value?.seekTo(currentTime);
 }
 
 function handleBuffering() {
@@ -142,7 +142,7 @@ const { pause: pauseTimewatcher, resume: resumeTimeWatcher } = useIntervalFn(
 watch(
     () => state.isPlaying,
     () => {
-        if (!youtubePlayer.value) return;
+        if (!youtubePlayer.value?.isPlayerReady) return;
 
         if (state.isPlaying) {
             resumeTimeWatcher();

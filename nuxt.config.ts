@@ -31,7 +31,15 @@ export default defineNuxtConfig({
             allowedHosts: true
         },
         optimizeDeps: {
-            include: ['axios', 'firebase/app', 'firebase/auth', 'firebase/database', 'date-fns']
+            include: [
+                'axios',
+                'firebase/app',
+                'firebase/auth',
+                'firebase/database',
+                'date-fns',
+                '@vueuse/core',
+                '@vueuse/integrations/useSortable/component'
+            ]
         }
     },
     runtimeConfig: {

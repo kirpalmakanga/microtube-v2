@@ -20,6 +20,7 @@ function onError(error: Error) {
     captureError(error);
 
     hasError.value = true;
+    isLoading.value = false;
 }
 </script>
 
@@ -30,7 +31,7 @@ function onError(error: Error) {
             class="block transition-opacity object-cover object-center w-full h-full"
             :class="{
                 [imgClass || '']: !!imgClass,
-                'opacity-0': isLoading
+                'opacity-0': isLoading || hasError
             }"
             :src="src"
             :alt="altText"

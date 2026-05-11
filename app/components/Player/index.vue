@@ -152,9 +152,7 @@ watch(
 watch(
     () => currentVideo.value?.id,
     (currentVideoId, previousVideoId) => {
-        if (!currentVideoId) {
-            Object.assign(state, getInitialPlayerState());
-        }
+        Object.assign(state, getInitialPlayerState());
 
         if (currentVideoId && !previousVideoId) {
             togglePlay();

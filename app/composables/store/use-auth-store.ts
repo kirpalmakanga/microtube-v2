@@ -1,38 +1,25 @@
-import { getAuthorizationUrl, refreshAccessToken } from '~/services/youtube';
+import { logIn, refreshAccessToken } from '~/services/youtube';
 import { captureError } from '~/utils/helpers';
 
-interface AuthState {
-    id: string;
-    name: string;
-    picture: string;
-    accessToken: string;
-    refreshToken: string;
-    idToken: string;
-    isSignedIn: boolean;
-}
-
-export const getInitialState = (): AuthState => ({
+export const getInitialState = (): User => ({
     id: '',
     name: '',
     picture: '',
     accessToken: '',
     refreshToken: '',
-    idToken: '',
-    isSignedIn: false
+    idToken: ''
 });
 
 export const useAuthStore = defineStore(
     'auth',
     () => {
         const { signIntoDatabase, signOutOfDatabase } = useFirebase();
-        const state = reactive<AuthState>(getInitialState());
+        const state = reactive<User>(getInitialState());
 
-        async function signIn() {
-            window.location.href = await getAuthorizationUrl();
-        }
+        async function signIn(code: string) {
+            const user = await logIn(code);
 
-        function setUser(data: User) {
-            Object.assign(state, data, { isSignedIn: true });
+            Object.assign(state, user);
         }
 
         async function signOut() {
@@ -70,7 +57,7 @@ export const useAuthStore = defineStore(
 
         return {
             ...toRefs(state),
-            setUser,
+            isSignedIn: computed(() => !!state.accessToken),
             signIn,
             signOut,
             refreshTokens

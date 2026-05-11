@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import { logIn } from '~/services/youtube';
-
+const { signIn } = useAuthStore();
 const router = useRouter();
 const route = useRoute();
-
-const { setUser } = useAuthStore();
 
 onMounted(async () => {
     const {
@@ -14,9 +11,7 @@ onMounted(async () => {
     try {
         if (!code) throw new Error('Missing authorization code');
 
-        const userData = await logIn(code as string);
-
-        setUser(userData);
+        await signIn(code as string);
 
         router.replace('/');
     } catch (error) {

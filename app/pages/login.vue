@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { signIn } = useAuthStore();
+import { getAuthorizationUrl, refreshAccessToken } from '~/services/youtube';
 const toast = useToast();
 
 const isSigningIn = ref<boolean>(false);
@@ -10,7 +10,7 @@ async function handleSignIn() {
     isSigningIn.value = true;
 
     try {
-        await signIn();
+        window.location.href = await getAuthorizationUrl();
     } catch (error) {
         captureError(error);
 

@@ -24,7 +24,7 @@ export const usePlayerStore = defineStore(
         const authStore = useAuthStore();
         const { id: userId } = storeToRefs(authStore);
 
-        const { saveData, subscribeToData } = useFirebase();
+        const { saveData } = useFirebase();
 
         const toast = useToast();
 

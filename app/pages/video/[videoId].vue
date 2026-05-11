@@ -15,3 +15,5 @@ onBeforeUnmount(() => {
     video.value = null;
 });
 </script>
+
+<template></template>

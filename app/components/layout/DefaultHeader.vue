@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui';
 
+const router = useRouter();
+const colorMode = useColorMode();
+
 const authStore = useAuthStore();
 const { isSignedIn, picture } = storeToRefs(authStore);
 const { signOut } = authStore;
-
-const colorMode = useColorMode();
 
 const isDark = computed({
     get() {
@@ -34,7 +35,11 @@ const menuOptions = computed<DropdownMenuItem[]>(() => [
         label: 'Sign out',
         icon: 'i-mdi-sign-out',
         color: 'error',
-        onSelect: signOut
+        onSelect: async () => {
+            await signOut();
+
+            await router.push('/login');
+        }
     }
 ]);
 </script>

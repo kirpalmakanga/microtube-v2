@@ -38,24 +38,6 @@ export const usePlayerStore = defineStore(
         const queuePath = computed(() => `users/${currentUserId.value}/queue`);
         const selectedItemIdPath = computed(() => `users/${currentUserId.value}/selectedItemId`);
 
-        function subscribeToQueue() {
-            subscribeToData(queuePath.value, (queue = []) => {
-                const { queue: currentQueue } = state;
-
-                if (!isEqual(queue, currentQueue)) {
-                    state.queue = queue;
-                }
-            });
-        }
-
-        function subscribeToCurrentQueueId() {
-            subscribeToData(selectedItemIdPath.value, (videoId = '') => {
-                if (videoId !== state.selectedItemId) {
-                    state.selectedItemId = videoId;
-                }
-            });
-        }
-
         async function setQueue(queue: Video[]) {
             state.queue = queue;
 
@@ -174,6 +156,18 @@ export const usePlayerStore = defineStore(
             if (selectedItem) await setSelectedItem(selectedItem.id);
         }
 
+        useFirebaseData<Video[]>(queuePath.value, (queue) => {
+            if (!isEqual(queue, state.queue)) {
+                state.queue = queue;
+            }
+        });
+
+        useFirebaseData<string | null>(selectedItemIdPath, (videoId) => {
+            if (videoId !== state.selectedItemId) {
+                state.selectedItemId = videoId;
+            }
+        });
+
         return {
             ...toRefs(state),
             currentVideo: computed(() => {
@@ -183,8 +177,6 @@ export const usePlayerStore = defineStore(
             }),
             previousVideo: computed(() => state.queue[selectedItemIndex.value - 1]),
             nextVideo: computed(() => state.queue[selectedItemIndex.value + 1]),
-            subscribeToQueue,
-            subscribeToCurrentQueueId,
             setQueue,
             queueItems,
             queueItem,

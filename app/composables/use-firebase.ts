@@ -43,3 +43,30 @@ export function useFirebase() {
         }
     };
 }
+
+export function useFirebaseData<T>(path: MaybeRef<string>, callback: (data: T) => void) {
+    const { subscribeToData } = useFirebase();
+    let unsubscribe: (() => void) | null = null;
+
+    function clean() {
+        unsubscribe?.();
+
+        unsubscribe = null;
+    }
+
+    function init() {
+        clean();
+
+        unsubscribe = subscribeToData(toValue(path), (value: T | undefined) => {
+            if (typeof value !== 'undefined') callback(value);
+        });
+    }
+
+    if (isRef(path)) {
+        watch(path, init);
+    } else {
+        init();
+    }
+
+    onUnmounted(clean);
+}

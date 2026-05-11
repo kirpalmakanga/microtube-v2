@@ -177,6 +177,7 @@ export const usePlayerStore = defineStore(
             }),
             previousVideo: computed(() => state.queue[selectedItemIndex.value - 1]),
             nextVideo: computed(() => state.queue[selectedItemIndex.value + 1]),
+            isSingleVideo: computed(() => !!state.video),
             setQueue,
             queueItems,
             queueItem,

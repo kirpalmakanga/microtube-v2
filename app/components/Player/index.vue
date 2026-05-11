@@ -3,7 +3,8 @@ import { useFullscreen, useIntervalFn } from '@vueuse/core';
 import { type YoutubePlayerOptions } from '~/services/youtube-player';
 
 const playerStore = usePlayerStore();
-const { currentVideo, previousVideo, nextVideo, video, newItemCount } = storeToRefs(playerStore);
+const { currentVideo, previousVideo, nextVideo, newItemCount, isSingleVideo } =
+    storeToRefs(playerStore);
 const { resetNewItemCount, moveInQueue } = playerStore;
 
 const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
@@ -47,10 +48,6 @@ const playerOptions = computed<YoutubePlayerOptions>(() => ({
         controls: 0
     }
 }));
-
-function isSingleVideo() {
-    return !!video.value?.id;
-}
 
 function togglePlay() {
     if (currentVideo.value?.id) {
@@ -111,7 +108,7 @@ function handleBuffering() {
 }
 
 function handleVideoEnd() {
-    if (!isSingleVideo()) {
+    if (!isSingleVideo.value) {
         moveInQueue(1);
     }
 }
@@ -184,7 +181,7 @@ defineShortcuts({
             :class="{
                 'top-16 bottom-37': !isFullscreen,
                 'top-0 bottom-0': isFullscreen,
-                'translate-y-[150%]': !state.isScreenVisible
+                'translate-y-[150%]': !state.isScreenVisible && !isFullscreen && !isSingleVideo
             }"
             :videoId="currentVideo.id"
             :options="playerOptions"
@@ -232,7 +229,7 @@ defineShortcuts({
                         />
                     </UTooltip>
 
-                    <UFieldGroup>
+                    <UFieldGroup v-if="!isSingleVideo">
                         <UTooltip text="Previous" :kbds="['shift', 'p']">
                             <UButton icon="i-mdi-skip-previous" @click="moveInQueue(-1)" />
                         </UTooltip>
@@ -272,7 +269,7 @@ defineShortcuts({
                 <div class="grow"></div>
 
                 <div class="flex gap-2">
-                    <PlayerQueue>
+                    <PlayerQueue v-if="!isSingleVideo">
                         <div class="relative">
                             <UTooltip text="Open queue" :kbds="['q']">
                                 <UButton
@@ -309,7 +306,7 @@ defineShortcuts({
                             </UTooltip>
                         </PlayerVideoDescription>
 
-                        <UTooltip text="Toggle screen" :kbds="['s']">
+                        <UTooltip v-if="!isSingleVideo" text="Toggle screen" :kbds="['s']">
                             <UButton
                                 v-if="!isFullscreen"
                                 icon="i-mdi-monitor"

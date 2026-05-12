@@ -117,16 +117,6 @@ export const chunk = (array: any[] = [], size: number) => {
     return chunks;
 };
 
-export const debounce = (callback: (...args: any[]) => void, delay: number) => {
-    let timer: ReturnType<typeof setTimeout>;
-
-    return (...args: any[]) => {
-        clearTimeout(timer);
-
-        timer = setTimeout(() => callback(...args), delay);
-    };
-};
-
 export function pick<T extends object, K extends keyof T>(base: T, ...keys: K[]): Pick<T, K> {
     if (!keys.length) return base;
 

@@ -38,7 +38,8 @@ export default defineNuxtConfig({
                 'firebase/database',
                 'date-fns',
                 '@vueuse/core',
-                '@vueuse/integrations/useSortable/component'
+                '@vueuse/integrations/useSortable/component',
+                'googleapis'
             ]
         }
     },

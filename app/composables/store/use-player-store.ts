@@ -1,6 +1,7 @@
 import { getPlaylistItems, getVideo, getVideosFromIds } from '~/services/youtube';
 
-interface PlayerState {
+interface PlayerStoreState {
+    isScreenVisible: boolean;
     volume: number;
     video: Video | null;
     queue: Video[];
@@ -8,13 +9,14 @@ interface PlayerState {
     newItemCount: number;
 }
 
-function getInitialState(): PlayerState {
+function getInitialState(): PlayerStoreState {
     return {
+        isScreenVisible: false,
         volume: 100,
-        newItemCount: 0,
+        video: null,
         queue: [],
         selectedItemId: null,
-        video: null
+        newItemCount: 0
     };
 }
 
@@ -28,7 +30,7 @@ export const usePlayerStore = defineStore(
 
         const toast = useToast();
 
-        const state = reactive<PlayerState>(getInitialState());
+        const state = reactive<PlayerStoreState>(getInitialState());
 
         const selectedItemIndex = computed(() =>
             state.queue.findIndex(({ id }) => id === state.selectedItemId)

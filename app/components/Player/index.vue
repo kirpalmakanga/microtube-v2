@@ -3,32 +3,33 @@ import { useFullscreen, useIntervalFn } from '@vueuse/core';
 import { type YoutubePlayerOptions } from '~/services/youtube-player';
 
 const playerStore = usePlayerStore();
-const { currentVideo, previousVideo, nextVideo, newItemCount, isSingleVideo } =
-    storeToRefs(playerStore);
+const {
+    currentVideo,
+    previousVideo,
+    nextVideo,
+    newItemCount,
+    isSingleVideo,
+    isScreenVisible,
+    volume
+} = storeToRefs(playerStore);
 const { resetNewItemCount, moveInQueue } = playerStore;
 
 const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
 interface PlayerState {
     isPlaying: boolean;
-    isBuffering: boolean;
     isMuted: boolean;
     isQueueVisible: boolean;
-    isScreenVisible: boolean;
     isDescriptionVisible: boolean;
-    volume: number;
     currentTime: number;
 }
 
 function getInitialPlayerState(): PlayerState {
     return {
         isPlaying: false,
-        isBuffering: false,
         isMuted: false,
         isQueueVisible: false,
-        isScreenVisible: false,
         isDescriptionVisible: false,
-        volume: 100,
         currentTime: 0
     };
 }
@@ -39,7 +40,7 @@ const youtubePlayer = useTemplateRef('youtubePlayer');
 
 const isStartup = ref<boolean>(true);
 
-const youtubeVolume = ref<number>(100);
+const volumeBeforeMuting = ref<number>(100);
 
 const playerOptions = computed<YoutubePlayerOptions>(() => ({
     playerVars: {
@@ -50,12 +51,7 @@ const playerOptions = computed<YoutubePlayerOptions>(() => ({
 }));
 
 function togglePlay() {
-    if (currentVideo.value?.id) {
-        Object.assign(state, {
-            isPlaying: !state.isPlaying,
-            isBuffering: false
-        });
-    }
+    state.isPlaying = !state.isPlaying;
 }
 
 function goToPreviousTrack() {
@@ -66,45 +62,26 @@ function goToNextTrack() {
     moveInQueue(1);
 }
 
-function setVolume(volume: number) {
-    state.volume = volume;
-
-    youtubePlayer.value?.setVolume(state.volume);
-}
-
 function toggleMute() {
     state.isMuted = !state.isMuted;
 
     if (state.isMuted) {
-        youtubeVolume.value = state.volume;
+        volumeBeforeMuting.value = volume.value;
 
-        setVolume(0);
+        volume.value = 0;
     } else {
-        setVolume(youtubeVolume.value);
+        volume.value = volumeBeforeMuting.value;
     }
 }
 
 function toggleScreen() {
-    const isScreenVisible = !state.isScreenVisible;
-
-    Object.assign(state, {
-        isScreenVisible,
-        ...(isScreenVisible ? { isQueueVisible: false, isDescriptionVisible: false } : {})
-    });
-}
-
-function fetchCurrentTime() {
-    state.currentTime = youtubePlayer.value?.getCurrentTime() || 0;
+    isScreenVisible.value = !isScreenVisible.value;
 }
 
 function handleSeeking(currentTime: number) {
     state.currentTime = currentTime;
 
     youtubePlayer.value?.seekTo(currentTime);
-}
-
-function handleBuffering() {
-    state.isBuffering = true;
 }
 
 function handleVideoEnd() {
@@ -114,12 +91,21 @@ function handleVideoEnd() {
 }
 
 function handleWheelVolume({ deltaY }: WheelEvent) {
-    const newVolume = state.volume + (deltaY < 0 ? 5 : -5);
-    const inRange = newVolume >= 0 && newVolume <= 100;
+    volume.value = limitNumberWithinRange(volume.value + (deltaY < 0 ? 5 : -5), 0, 100);
+}
 
-    if (inRange) {
-        setVolume(newVolume);
-    }
+function getVolumeIcon() {
+    if (state.isMuted) return 'i-mdi-volume-off';
+
+    if (volume.value <= 25) return 'i-mdi-volume-low';
+
+    if (volume.value <= 50) return 'i-mdi-volume-medium';
+
+    return 'i-mdi-volume';
+}
+
+function fetchCurrentTime() {
+    state.currentTime = youtubePlayer.value?.getCurrentTime() || 0;
 }
 
 const { pause: pauseTimewatcher, resume: resumeTimeWatcher } = useIntervalFn(
@@ -168,13 +154,14 @@ defineShortcuts({
             :class="{
                 'top-16 bottom-37': !isFullscreen,
                 'top-0 bottom-0': isFullscreen,
-                'translate-y-[150%]': !state.isScreenVisible && !isFullscreen && !isSingleVideo
+                'translate-y-[150%]': !isScreenVisible && !isFullscreen && !isSingleVideo
             }"
             :videoId="currentVideo.id"
             :options="playerOptions"
+            :volume="volume"
             v-model:playing="state.isPlaying"
+            v-model:current-time="state.currentTime"
             @ready="isStartup = false"
-            @buffering="handleBuffering"
             @ended="handleVideoEnd"
             @click="togglePlay"
         />
@@ -241,7 +228,7 @@ defineShortcuts({
                     >
                         <UTooltip text="Mute" :kbds="['m']">
                             <UButton
-                                :icon="state.volume > 0 ? 'i-mdi-volume' : 'i-mdi-volume-off'"
+                                :icon="getVolumeIcon()"
                                 :disabled="!currentVideo"
                                 @click="toggleMute"
                             />
@@ -252,7 +239,7 @@ defineShortcuts({
                             class="w-24 z-0 shrink-0"
                             :min="0"
                             :max="100"
-                            v-model="state.volume"
+                            v-model="volume"
                         />
                     </div>
 

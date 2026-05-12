@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { FormError, SelectItem } from '@nuxt/ui';
 
+const { isScreenVisible } = storeToRefs(usePlayerStore());
+
 const router = useRouter();
 const route = useRoute();
 
@@ -31,6 +33,8 @@ function validate(state: Partial<SearchFormData>): FormError[] {
 }
 
 function handleSubmit() {
+    isScreenVisible.value = false;
+
     router.push({
         path: '/search',
         query: state

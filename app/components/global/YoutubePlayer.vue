@@ -9,6 +9,7 @@ import {
 const props = defineProps<{
     videoId: string;
     options?: YoutubePlayerOptions;
+    volume?: number;
 }>();
 
 const emit = defineEmits<{
@@ -71,6 +72,14 @@ function onReady() {
         emit('ready', youtubePlayer.value);
 
         isPlayerReady.value = true;
+
+        setPlayerVolume();
+    }
+}
+
+function setPlayerVolume() {
+    if (typeof props.volume !== 'undefined' && youtubePlayer.value) {
+        youtubePlayer.value.setVolume(props.volume);
     }
 }
 
@@ -121,22 +130,20 @@ watch(isPlaying, () => {
 
 watch(() => props.videoId, updateVideo);
 
+watch(() => props.volume, setPlayerVolume);
+
 onMounted(createPlayer);
 
 onBeforeUnmount(destroyPlayer);
 
 export interface YoutubePlayerExposed {
     isPlayerReady: Ref<boolean>;
-    setVolume: (volume: number) => void;
     getCurrentTime: () => number | undefined;
     seekTo: (time: number) => void;
 }
 
 defineExpose<YoutubePlayerExposed>({
     isPlayerReady,
-    setVolume: (volume: number) => {
-        youtubePlayer.value?.setVolume(volume);
-    },
     getCurrentTime: () => {
         return youtubePlayer.value?.getCurrentTime();
     },

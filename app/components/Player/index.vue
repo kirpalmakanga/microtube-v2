@@ -205,20 +205,24 @@ defineShortcuts({
                     </UTooltip>
 
                     <UFieldGroup v-if="!isSingleVideo">
-                        <UTooltip text="Previous" :kbds="['shift', 'p']">
+                        <PlayerVideoPreview
+                            text="Previous"
+                            :kbds="['shift', 'p']"
+                            :video="previousVideo"
+                        >
                             <UButton
                                 icon="i-mdi-skip-previous"
                                 @click="moveInQueue(-1)"
-                                :disabled="!currentVideo"
+                                :disabled="!previousVideo"
                             />
-                        </UTooltip>
-                        <UTooltip text="Next" :kbds="['shift', 'n']">
+                        </PlayerVideoPreview>
+                        <PlayerVideoPreview text="Next" :kbds="['shift', 'n']" :video="nextVideo">
                             <UButton
                                 icon="i-mdi-skip-next"
                                 @click="moveInQueue(1)"
-                                :disabled="!currentVideo"
+                                :disabled="!nextVideo"
                             />
-                        </UTooltip>
+                        </PlayerVideoPreview>
                     </UFieldGroup>
 
                     <div

@@ -48,7 +48,7 @@ defineEmits<{ click: [e: void] }>();
 
                     <span
                         v-if="badge"
-                        class="absolute bottom-2 right-2 bg-gray-800/70 font-semibold font-montserrat text-xs rounded px-2 py-1"
+                        class="absolute bottom-2 right-2 bg-gray-800/70 font-semibold text-xs rounded px-2 py-1"
                     >
                         {{ badge }}
                     </span>

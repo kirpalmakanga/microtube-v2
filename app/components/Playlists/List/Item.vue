@@ -58,7 +58,7 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
         @click="$router.push(`/playlist/${id}`)"
     >
         <template #content>
-            <h2 class="font-bold text-light-50 font-montserrat ellipsis">{{ title }}</h2>
+            <h2 class="font-bold ellipsis">{{ title }}</h2>
         </template>
     </ListItem>
 </template>

@@ -56,13 +56,13 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
         @click="$router.push(`/video/${id}`)"
     >
         <template #content>
-            <h2 class="font-bold text-light-50 font-montserrat ellipsis">{{ title }}</h2>
+            <h2 class="font-bold ellipsis">{{ title }}</h2>
 
-            <p class="text-sm text-light-50 opacity-70 hover:opacity-60 font-montserrat ellipsis">
+            <p class="text-sm opacity-70 hover:opacity-60 ellipsis">
                 <NuxtLink :to="`/channel/${channelId}`" @click.stop>{{ channelTitle }}</NuxtLink>
             </p>
 
-            <p class="text-xs text-light-50 opacity-50 font-montserrat ellipsis">
+            <p class="text-xs opacity-50 ellipsis">
                 {{ formatDate(publishedAt, 'MMMM do yyyy') }}
             </p>
         </template>

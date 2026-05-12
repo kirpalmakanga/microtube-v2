@@ -1,14 +1,11 @@
 <script setup lang="ts">
 const props = defineProps<{
+    id: string;
     title: string;
     description: string;
     thumbnails: Thumbnails;
     subscriptionId?: string;
 }>();
-
-const route = useRoute();
-
-const channelId = computed<string>(() => route.params.channelId as string);
 
 const { mutate: subscribeToChannel } = useSubscribeToChannel();
 
@@ -18,7 +15,7 @@ const isUnsubscribePromptOpen = ref<boolean>(false);
 
 function toggleSubscription() {
     if (props.subscriptionId) isUnsubscribePromptOpen.value = true;
-    else subscribeToChannel({ channelId: channelId.value });
+    else subscribeToChannel({ channelId: props.id });
 }
 </script>
 
@@ -48,7 +45,7 @@ function toggleSubscription() {
         :is-open="isUnsubscribePromptOpen"
         :title="`Unsubscribe from channel &quot;${title}&quot; ?`"
         confirm-text="Remove"
-        @confirm="unsubscribeFromChannel({ channelId, subscriptionId })"
+        @confirm="unsubscribeFromChannel({ channelId: id, subscriptionId })"
         @close="isUnsubscribePromptOpen = false"
     />
 </template>

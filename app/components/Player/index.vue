@@ -122,11 +122,6 @@ function handleWheelVolume({ deltaY }: WheelEvent) {
     }
 }
 
-function getCurrentThumbnail() {
-    if (currentVideo.value) return getThumbnails(currentVideo.value?.thumbnails, 'default');
-    return null;
-}
-
 const { pause: pauseTimewatcher, resume: resumeTimeWatcher } = useIntervalFn(
     fetchCurrentTime,
     100,
@@ -139,8 +134,6 @@ const { pause: pauseTimewatcher, resume: resumeTimeWatcher } = useIntervalFn(
 watch(
     () => state.isPlaying,
     () => {
-        if (!youtubePlayer.value?.isPlayerReady) return;
-
         if (state.isPlaying) {
             resumeTimeWatcher();
         } else {
@@ -151,12 +144,8 @@ watch(
 
 watch(
     () => currentVideo.value?.id,
-    (currentVideoId, previousVideoId) => {
+    () => {
         Object.assign(state, getInitialPlayerState());
-
-        if (currentVideoId && !previousVideoId) {
-            togglePlay();
-        }
     }
 );
 

@@ -103,27 +103,23 @@ function destroyPlayer() {
 async function updateVideo() {
     if (!youtubePlayer.value) return;
 
-    const { videoId, options } = props;
+    const { videoId } = props;
 
-    if (!videoId) {
-        youtubePlayer.value.stopVideo();
+    if (videoId) {
+        youtubePlayer.value.loadVideoById({ videoId });
 
         return;
     }
 
-    if (options?.playerVars?.autoplay) {
-        youtubePlayer.value.loadVideoById({ videoId });
-    } else {
-        youtubePlayer.value.cueVideoById({ videoId });
-    }
+    youtubePlayer.value.stopVideo();
 }
-
-watch(() => props.videoId, updateVideo);
 
 watch(isPlaying, () => {
     if (isPlaying.value) youtubePlayer.value?.playVideo();
     else youtubePlayer.value?.pauseVideo();
 });
+
+watch(() => props.videoId, updateVideo);
 
 onMounted(createPlayer);
 

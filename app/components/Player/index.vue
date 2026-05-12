@@ -12,7 +12,7 @@ const {
     isScreenVisible,
     volume
 } = storeToRefs(playerStore);
-const { resetNewItemCount, moveInQueue } = playerStore;
+const { resetNewItemCount, skipToNext, skipToPrevious } = playerStore;
 
 const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
@@ -54,14 +54,6 @@ function togglePlay() {
     state.isPlaying = !state.isPlaying;
 }
 
-function goToPreviousTrack() {
-    moveInQueue(-1);
-}
-
-function goToNextTrack() {
-    moveInQueue(1);
-}
-
 function toggleMute() {
     state.isMuted = !state.isMuted;
 
@@ -85,8 +77,8 @@ function handleSeeking(currentTime: number) {
 }
 
 function handleVideoEnd() {
-    if (!isSingleVideo.value) {
-        moveInQueue(1);
+    if (!isSingleVideo.value && nextVideo.value) {
+        skipToNext();
     }
 }
 
@@ -137,8 +129,8 @@ watch(
 
 defineShortcuts({
     shift_k: togglePlay,
-    shift_p: goToPreviousTrack,
-    shift_n: goToNextTrack,
+    shift_p: skipToPrevious,
+    shift_n: skipToNext,
     m: toggleMute,
     s: toggleScreen,
     f: toggleFullscreen
@@ -212,14 +204,14 @@ defineShortcuts({
                         >
                             <UButton
                                 icon="i-mdi-skip-previous"
-                                @click="moveInQueue(-1)"
+                                @click="skipToPrevious"
                                 :disabled="!previousVideo"
                             />
                         </PlayerVideoPreview>
                         <PlayerVideoPreview text="Next" :kbds="['shift', 'n']" :video="nextVideo">
                             <UButton
                                 icon="i-mdi-skip-next"
-                                @click="moveInQueue(1)"
+                                @click="skipToNext"
                                 :disabled="!nextVideo"
                             />
                         </PlayerVideoPreview>

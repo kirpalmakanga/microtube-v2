@@ -194,7 +194,8 @@ export const usePlayerStore = defineStore(
             resetNewItemCount,
             clearVideo,
             fetchVideo,
-            moveInQueue
+            skipToPrevious: () => moveInQueue(-1),
+            skipToNext: () => moveInQueue(1)
         };
     },
     {

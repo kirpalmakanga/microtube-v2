@@ -42,8 +42,6 @@ export const usePlayerStore = defineStore(
 
         async function setQueue(queue: Video[]) {
             state.queue = queue;
-
-            await saveData(queuePath.value, queue);
         }
 
         function isInQueue(videoId: string) {
@@ -61,8 +59,6 @@ export const usePlayerStore = defineStore(
                 queue,
                 newItemCount: newItemCount + items.length
             });
-
-            await saveData(queuePath.value, queue);
 
             return items;
         }
@@ -169,6 +165,13 @@ export const usePlayerStore = defineStore(
                 state.selectedItemId = videoId;
             }
         });
+
+        watch(
+            () => state.queue,
+            async () => {
+                await saveData(queuePath.value, state.queue);
+            }
+        );
 
         return {
             ...toRefs(state),

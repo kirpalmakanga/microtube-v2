@@ -21,6 +21,10 @@
     .ellipsis {
         @apply whitespace-nowrap text-ellipsis overflow-hidden;
     }
+
+    .ui-container {
+        @apply w-full max-w-(--ui-container) mx-auto;
+    }
 }
 
 button {

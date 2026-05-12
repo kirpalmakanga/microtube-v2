@@ -159,152 +159,160 @@ defineShortcuts({
         />
 
         <div
-            class="flex flex-col gap-4 px-6 py-4 h-37 bg-elevated shadow z-52 overflow-hidden"
+            class="bg-elevated shadow z-52"
             :class="{
                 'translate-y-full group-hover:translate-y-0 transition-transform': isFullscreen
             }"
         >
-            <div class="h-10">
-                <p class="font-bold ellipsis leading-none shrink-0 mb-1">
-                    {{ currentVideo?.title || 'No selected video.' }}
-                </p>
-                <p class="ellipsis leading-none shrink-0">
-                    <NuxtLink
-                        v-if="currentVideo"
-                        class="text-sm opacity-70 hover:opacity-60"
-                        :to="`/channel/${currentVideo?.channelId}`"
-                    >
-                        {{ currentVideo?.channelTitle }}
-                    </NuxtLink>
-                </p>
-            </div>
-
-            <PlayerSeekbar
-                class="shrink-0"
-                :position="state.currentTime"
-                :duration="currentVideo?.duration || 0"
-                @update="handleSeeking"
-            />
-
-            <div class="flex">
-                <div class="flex items-center gap-2">
-                    <UTooltip :text="state.isPlaying ? 'Pause' : 'Play'" :kbds="['shift', 'k']">
-                        <UButton
-                            :icon="state.isPlaying ? 'i-mdi-pause' : 'i-mdi-play'"
-                            :disabled="!currentVideo"
-                            @click="togglePlay"
-                        />
-                    </UTooltip>
-
-                    <UFieldGroup v-if="!isSingleVideo">
-                        <PlayerVideoPreview
-                            text="Previous"
-                            :kbds="['shift', 'p']"
-                            :video="previousVideo"
+            <div class="ui-container flex flex-col gap-4 px-6 py-4 h-37 overflow-hidden4">
+                <div class="h-10">
+                    <p class="font-bold ellipsis leading-none shrink-0 mb-1">
+                        {{ currentVideo?.title || 'No selected video.' }}
+                    </p>
+                    <p class="ellipsis leading-none shrink-0">
+                        <NuxtLink
+                            v-if="currentVideo"
+                            class="text-sm opacity-70 hover:opacity-60"
+                            :to="`/channel/${currentVideo?.channelId}`"
                         >
-                            <UButton
-                                icon="i-mdi-skip-previous"
-                                @click="skipToPrevious"
-                                :disabled="!previousVideo"
-                            />
-                        </PlayerVideoPreview>
-                        <PlayerVideoPreview text="Next" :kbds="['shift', 'n']" :video="nextVideo">
-                            <UButton
-                                icon="i-mdi-skip-next"
-                                @click="skipToNext"
-                                :disabled="!nextVideo"
-                            />
-                        </PlayerVideoPreview>
-                    </UFieldGroup>
+                            {{ currentVideo?.channelTitle }}
+                        </NuxtLink>
+                    </p>
+                </div>
 
-                    <div
-                        class="group flex gap-1 overflow-hidden transition-all w-8 z-1"
-                        :class="{ 'hover:w-37': !!currentVideo }"
-                        @wheel="handleWheelVolume"
-                    >
-                        <UTooltip text="Mute" :kbds="['m']">
+                <PlayerSeekbar
+                    class="shrink-0"
+                    :position="state.currentTime"
+                    :duration="currentVideo?.duration || 0"
+                    @update="handleSeeking"
+                />
+
+                <div class="flex">
+                    <div class="flex items-center gap-2">
+                        <UTooltip :text="state.isPlaying ? 'Pause' : 'Play'" :kbds="['shift', 'k']">
                             <UButton
-                                :icon="getVolumeIcon()"
+                                :icon="state.isPlaying ? 'i-mdi-pause' : 'i-mdi-play'"
                                 :disabled="!currentVideo"
-                                @click="toggleMute"
+                                @click="togglePlay"
                             />
                         </UTooltip>
 
-                        <USlider
-                            v-if="currentVideo && !isMobile()"
-                            class="w-24 z-0 shrink-0"
-                            :min="0"
-                            :max="100"
-                            v-model="volume"
-                        />
-                    </div>
-
-                    <span v-if="currentVideo" class="class flex gap-1 text-sm leading-none">
-                        <span>{{ formatTime(state.currentTime) }}</span>
-
-                        <span>/</span>
-                        <span>{{ formatTime(currentVideo.duration || 0) }}</span>
-                    </span>
-                </div>
-
-                <div class="grow"></div>
-
-                <div class="flex gap-2">
-                    <PlayerQueue v-if="!isSingleVideo">
-                        <div class="relative">
-                            <UTooltip text="Open queue" :kbds="['q']">
+                        <UFieldGroup v-if="!isSingleVideo">
+                            <PlayerVideoPreview
+                                text="Previous"
+                                :kbds="['shift', 'p']"
+                                :video="previousVideo"
+                            >
                                 <UButton
-                                    icon="i-mdi-view-list"
-                                    @click="newItemCount && resetNewItemCount()"
+                                    icon="i-mdi-skip-previous"
+                                    @click="skipToPrevious"
+                                    :disabled="!previousVideo"
+                                />
+                            </PlayerVideoPreview>
+                            <PlayerVideoPreview
+                                text="Next"
+                                :kbds="['shift', 'n']"
+                                :video="nextVideo"
+                            >
+                                <UButton
+                                    icon="i-mdi-skip-next"
+                                    @click="skipToNext"
+                                    :disabled="!nextVideo"
+                                />
+                            </PlayerVideoPreview>
+                        </UFieldGroup>
+
+                        <div
+                            class="group flex gap-1 overflow-hidden transition-all w-8 z-1"
+                            :class="{ 'hover:w-37': !!currentVideo }"
+                            @wheel="handleWheelVolume"
+                        >
+                            <UTooltip text="Mute" :kbds="['m']">
+                                <UButton
+                                    :icon="getVolumeIcon()"
+                                    :disabled="!currentVideo"
+                                    @click="toggleMute"
                                 />
                             </UTooltip>
 
-                            <UBadge
-                                v-if="newItemCount"
-                                class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2"
-                                color="error"
-                                size="sm"
-                            >
-                                {{ newItemCount }}
-                            </UBadge>
+                            <USlider
+                                v-if="currentVideo && !isMobile()"
+                                class="w-24 z-0 shrink-0"
+                                :min="0"
+                                :max="100"
+                                v-model="volume"
+                            />
                         </div>
-                    </PlayerQueue>
 
-                    <template v-if="currentVideo">
-                        <PlaylistSelectorModal :video="currentVideo">
-                            <UTooltip text="Save to playlist">
-                                <UButton icon="i-mdi-bookmark" />
+                        <span v-if="currentVideo" class="class flex gap-1 text-sm leading-none">
+                            <span>{{ formatTime(state.currentTime) }}</span>
+
+                            <span>/</span>
+                            <span>{{ formatTime(currentVideo.duration || 0) }}</span>
+                        </span>
+                    </div>
+
+                    <div class="grow"></div>
+
+                    <div class="flex gap-2">
+                        <PlayerQueue v-if="!isSingleVideo">
+                            <div class="relative">
+                                <UTooltip text="Open queue" :kbds="['q']">
+                                    <UButton
+                                        icon="i-mdi-view-list"
+                                        @click="newItemCount && resetNewItemCount()"
+                                    />
+                                </UTooltip>
+
+                                <UBadge
+                                    v-if="newItemCount"
+                                    class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2"
+                                    color="error"
+                                    size="sm"
+                                >
+                                    {{ newItemCount }}
+                                </UBadge>
+                            </div>
+                        </PlayerQueue>
+
+                        <template v-if="currentVideo">
+                            <PlaylistSelectorModal :video="currentVideo">
+                                <UTooltip text="Save to playlist">
+                                    <UButton icon="i-mdi-bookmark" />
+                                </UTooltip>
+                            </PlaylistSelectorModal>
+
+                            <PlayerVideoDescription
+                                v-if="currentVideo"
+                                :title="currentVideo?.title"
+                                :text="currentVideo.description"
+                            >
+                                <UTooltip text="Description">
+                                    <UButton icon="i-mdi-information" />
+                                </UTooltip>
+                            </PlayerVideoDescription>
+
+                            <UTooltip v-if="!isSingleVideo" text="Toggle screen" :kbds="['s']">
+                                <UButton
+                                    v-if="!isFullscreen"
+                                    icon="i-mdi-monitor"
+                                    @click="toggleScreen"
+                                />
                             </UTooltip>
-                        </PlaylistSelectorModal>
 
-                        <PlayerVideoDescription
-                            v-if="currentVideo"
-                            :title="currentVideo?.title"
-                            :text="currentVideo.description"
-                        >
-                            <UTooltip text="Description">
-                                <UButton icon="i-mdi-information" />
+                            <UTooltip
+                                :text="isFullscreen ? 'Exit full screen' : 'Full screen'"
+                                :kbds="['f']"
+                            >
+                                <UButton
+                                    :icon="
+                                        isFullscreen ? 'i-mdi-arrow-collapse' : 'i-mdi-arrow-expand'
+                                    "
+                                    @click="toggleFullscreen"
+                                />
                             </UTooltip>
-                        </PlayerVideoDescription>
-
-                        <UTooltip v-if="!isSingleVideo" text="Toggle screen" :kbds="['s']">
-                            <UButton
-                                v-if="!isFullscreen"
-                                icon="i-mdi-monitor"
-                                @click="toggleScreen"
-                            />
-                        </UTooltip>
-
-                        <UTooltip
-                            :text="isFullscreen ? 'Exit full screen' : 'Full screen'"
-                            :kbds="['f']"
-                        >
-                            <UButton
-                                :icon="isFullscreen ? 'i-mdi-arrow-collapse' : 'i-mdi-arrow-expand'"
-                                @click="toggleFullscreen"
-                            />
-                        </UTooltip>
-                    </template>
+                        </template>
+                    </div>
                 </div>
             </div>
         </div>

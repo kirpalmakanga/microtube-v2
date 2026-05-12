@@ -8,7 +8,7 @@ defineProps<{ text: string; video?: Video; kbds?: string[] }>();
 
         <template v-if="video" #content>
             <div class="flex flex-col gap-2 overflow-hidden w-48">
-                <p class="text-center">
+                <p class="flex items-center text-sm justify-center">
                     <span class="mr-2">{{ text }}</span>
                     <UKbd v-if="kbds">{{ kbds.join(' + ') }}</UKbd>
                 </p>
@@ -20,7 +20,7 @@ defineProps<{ text: string; video?: Video; kbds?: string[] }>();
                     "
                     :alt="video.title"
                 />
-                <p class="text-sm">Previous: {{ video.title }}</p>
+                <p class="text-sm">{{ video.title }}</p>
             </div>
         </template>
     </UTooltip>

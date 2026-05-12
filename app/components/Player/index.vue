@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useFullscreen, useIntervalFn } from '@vueuse/core';
+import { useFullscreen, useIntervalFn, useThrottleFn, useTimeout } from '@vueuse/core';
 import { type YoutubePlayerOptions } from '~/services/youtube-player';
 
 const playerStore = usePlayerStore();
@@ -135,10 +135,30 @@ defineShortcuts({
     s: toggleScreen,
     f: toggleFullscreen
 });
+
+const {
+    start: startHideControlsTimer,
+    stop: stopHideControlsTimer,
+    isPending: areControlsVisible
+} = useTimeout(5000, { immediate: false, controls: true });
+
+const startHideControlsTimerThrottled = useThrottleFn(startHideControlsTimer, 100);
+
+watch(isFullscreen, () => {
+    if (isFullscreen.value) {
+        startHideControlsTimer();
+    } else {
+        stopHideControlsTimer();
+    }
+});
 </script>
 
 <template>
-    <div class="flex flex-col justify-end bg-elevated/70 overflow-hidden group" ref="playerWrapper">
+    <div
+        class="flex flex-col justify-end bg-elevated/70 overflow-hidden group"
+        ref="playerWrapper"
+        @mousemove="isFullscreen && startHideControlsTimerThrottled()"
+    >
         <YoutubePlayer
             v-if="currentVideo"
             ref="youtubePlayer"
@@ -159,10 +179,8 @@ defineShortcuts({
         />
 
         <div
-            class="bg-elevated shadow z-52"
-            :class="{
-                'translate-y-full group-hover:translate-y-0 transition-transform': isFullscreen
-            }"
+            class="bg-elevated shadow z-52 transition-transform"
+            :class="{ 'translate-y-full': isFullscreen && !areControlsVisible }"
         >
             <div class="ui-container flex flex-col gap-4 px-6 py-4 h-37 overflow-hidden4">
                 <div class="h-10">

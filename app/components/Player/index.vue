@@ -144,13 +144,16 @@ const {
 
 const startHideControlsTimerThrottled = useThrottleFn(startHideControlsTimer, 100);
 
-watch(isFullscreen, () => {
-    if (isFullscreen.value) {
-        startHideControlsTimer();
-    } else {
-        stopHideControlsTimer();
+watch(
+    () => [isFullscreen.value, state.isQueueVisible],
+    () => {
+        if (isFullscreen.value) {
+            startHideControlsTimer();
+        } else {
+            stopHideControlsTimer();
+        }
     }
-});
+);
 </script>
 
 <template>
@@ -180,7 +183,9 @@ watch(isFullscreen, () => {
 
         <div
             class="bg-elevated shadow z-52 transition-transform"
-            :class="{ 'translate-y-full': isFullscreen && !areControlsVisible }"
+            :class="{
+                'translate-y-full': isFullscreen && !areControlsVisible && !state.isQueueVisible
+            }"
         >
             <div class="ui-container flex flex-col gap-4 px-6 py-4 h-37 overflow-hidden4">
                 <div class="h-10">
@@ -273,7 +278,7 @@ watch(isFullscreen, () => {
                     <div class="grow"></div>
 
                     <div class="flex gap-2">
-                        <PlayerQueue v-if="!isSingleVideo">
+                        <PlayerQueue v-if="!isSingleVideo" v-model:is-open="state.isQueueVisible">
                             <div class="relative">
                                 <UTooltip text="Open queue" :kbds="['q']">
                                     <UButton

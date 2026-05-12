@@ -5,7 +5,7 @@ const { queue, selectedItemId } = storeToRefs(playerStore);
 const { clearQueue, removeQueueItem, setSelectedItem } = playerStore;
 const list = shallowRef(queue);
 
-const isOpen = ref<boolean>(false);
+const isOpen = defineModel<boolean>('isOpen', { default: false });
 const itemToSave = ref<Video | null>(null);
 const isImportFormOpen = ref<boolean>(false);
 const isClearingPromptOpen = ref<boolean>(false);

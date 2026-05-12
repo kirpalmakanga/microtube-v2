@@ -101,8 +101,6 @@ export const parseVideoId = (url: string) => {
     return parts[2] !== undefined ? parts[2].split(/[^0-9a-z_\-]/i)[0] : parts[0];
 };
 
-export const delay = (t: number) => new Promise((resolve) => setTimeout(resolve, t));
-
 export const splitLines = (str: string) => str.match(/[^\r\n]+/g) || [];
 
 export const chunk = (array: any[] = [], size: number) => {
@@ -117,20 +115,6 @@ export const chunk = (array: any[] = [], size: number) => {
     }
 
     return chunks;
-};
-
-export const throttle = (callback: (...args: any[]) => void, delay = 50) => {
-    let lastCall = 0;
-
-    return (...args: any[]) => {
-        const now = Date.now();
-
-        if (now - lastCall >= delay) {
-            lastCall = now;
-
-            callback(...args);
-        }
-    };
 };
 
 export const debounce = (callback: (...args: any[]) => void, delay: number) => {
@@ -193,50 +177,16 @@ export const loadScript = (src: string) => {
     });
 };
 
-export const setImmediateInterval = (handler: Function, timeout?: number): number => {
-    handler();
+export const getVideoURL = (id: string) => `${window.location.origin}/video/${id}`;
 
-    return setInterval(handler, timeout);
-};
+export const getPlaylistURL = (id: string) => `${window.location.origin}/playlist/${id}`;
 
-export const getVideoURL = (id: string) => `https://youtu.be/${id}`;
-
-export const getPlaylistURL = (id: string) => `https://youtube.com/playlist?list=${id}`;
-
-interface ShareConfig {
+interface ShareURLConfig {
     title: string;
     url: string;
 }
 
-export const shareURL = (config: ShareConfig) => navigator.share(config);
-
-export const copyText = (text: string) => navigator.clipboard.writeText(text);
-
-function isObject(item: unknown) {
-    return item !== null && typeof item === 'object' && !Array.isArray(item);
-}
-
-export const mergeDeep = (
-    target: { [key: string]: any },
-    ...sources: { [key: string]: any }[]
-): object => {
-    if (!sources.length) return target;
-
-    const source = sources.shift();
-
-    if (isObject(target) && isObject(source)) {
-        for (const key in source) {
-            if (isObject(source[key])) {
-                if (!target[key]) Object.assign(target, { [key]: {} });
-                mergeDeep(target[key], source[key]);
-            } else {
-                Object.assign(target, { [key]: source[key] });
-            }
-        }
-    }
-
-    return mergeDeep(target, ...sources);
-};
+export const shareURL = (config: ShareURLConfig) => navigator.share(config);
 
 export function isEqual(a: unknown, b: unknown): boolean {
     if (a === b) return true;

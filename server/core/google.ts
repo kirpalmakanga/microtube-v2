@@ -1,4 +1,4 @@
-import { AuthPlus, oauth2 } from 'googleapis/build/src/apis/oauth2';
+import { AuthPlus, oauth2 } from 'googleapis/build/src/apis/oauth2/index';
 
 const { OAuth2 } = new AuthPlus();
 

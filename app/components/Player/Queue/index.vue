@@ -24,7 +24,7 @@ defineShortcuts({
         v-model:open="isOpen"
         title="Queue"
         :description="`${queue.length} video${queue.length !== 1 ? 's' : ''}`"
-        :ui="{ content: 'max-w-2/5', body: 'flex p-0 sm:p-0', footer: 'justify-end' }"
+        :ui="{ content: 'max-w-2/5', body: 'flex p-0 sm:p-0 scroll-smooth', footer: 'justify-end' }"
         inset
     >
         <slot />

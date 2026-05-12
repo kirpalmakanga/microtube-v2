@@ -223,32 +223,43 @@ defineShortcuts({
                     <UTooltip :text="state.isPlaying ? 'Pause' : 'Play'" :kbds="['shift', 'k']">
                         <UButton
                             :icon="state.isPlaying ? 'i-mdi-pause' : 'i-mdi-play'"
+                            :disabled="!currentVideo"
                             @click="togglePlay"
                         />
                     </UTooltip>
 
                     <UFieldGroup v-if="!isSingleVideo">
                         <UTooltip text="Previous" :kbds="['shift', 'p']">
-                            <UButton icon="i-mdi-skip-previous" @click="moveInQueue(-1)" />
+                            <UButton
+                                icon="i-mdi-skip-previous"
+                                @click="moveInQueue(-1)"
+                                :disabled="!currentVideo"
+                            />
                         </UTooltip>
                         <UTooltip text="Next" :kbds="['shift', 'n']">
-                            <UButton icon="i-mdi-skip-next" @click="moveInQueue(1)" />
+                            <UButton
+                                icon="i-mdi-skip-next"
+                                @click="moveInQueue(1)"
+                                :disabled="!currentVideo"
+                            />
                         </UTooltip>
                     </UFieldGroup>
 
                     <div
-                        class="group flex gap-1 overflow-hidden transition-all w-8 hover:w-37 z-1"
+                        class="group flex gap-1 overflow-hidden transition-all w-8 z-1"
+                        :class="{ 'hover:w-37': !!currentVideo }"
                         @wheel="handleWheelVolume"
                     >
                         <UTooltip text="Mute" :kbds="['m']">
                             <UButton
                                 :icon="state.volume > 0 ? 'i-mdi-volume' : 'i-mdi-volume-off'"
+                                :disabled="!currentVideo"
                                 @click="toggleMute"
                             />
                         </UTooltip>
 
                         <USlider
-                            v-if="!isMobile()"
+                            v-if="currentVideo && !isMobile()"
                             class="w-24 z-0 shrink-0"
                             :min="0"
                             :max="100"

@@ -15,7 +15,7 @@ const isUnsubscribePromptOpen = ref<boolean>(false);
 
 function toggleSubscription() {
     if (props.subscriptionId) isUnsubscribePromptOpen.value = true;
-    else subscribeToChannel({ channelId: props.id });
+    else subscribeToChannel({ title: props.title, channelId: props.id });
 }
 </script>
 
@@ -45,7 +45,7 @@ function toggleSubscription() {
         :is-open="isUnsubscribePromptOpen"
         :title="`Unsubscribe from channel &quot;${title}&quot; ?`"
         confirm-text="Remove"
-        @confirm="unsubscribeFromChannel({ channelId: id, subscriptionId })"
+        @confirm="unsubscribeFromChannel({ title, channelId: id, subscriptionId })"
         @close="isUnsubscribePromptOpen = false"
     />
 </template>

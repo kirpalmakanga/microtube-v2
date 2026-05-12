@@ -4,7 +4,7 @@ const {
 } = useRoute();
 
 const {
-    data: playlistData,
+    data: playlist,
     isPending: isPlaylistPending,
     isLoading: isPlaylistLoading,
     error: playlistError,
@@ -27,10 +27,10 @@ const { queueItem } = usePlayerStore();
 
 const { mutate: removePlaylistItem } = useRemovePlaylistItem();
 
-const itemToBeSaved = ref<PlaylistItem | null>(null);
-const itemToBeRemoved = ref<PlaylistItem | null>(null);
+const itemToSave = ref<PlaylistItem | null>(null);
+const itemToRemove = ref<PlaylistItem | null>(null);
 
-useAppTitle(computed(() => playlistData.value?.title || ''));
+useAppTitle(computed(() => playlist.value?.title || ''));
 </script>
 
 <template>
@@ -39,7 +39,7 @@ useAppTitle(computed(() => playlistData.value?.title || ''));
 
         <Error v-else-if="playlistError" @action="refetchPlaylist()" />
 
-        <PlaylistHeader v-else-if="playlistData" v-bind="playlistData" />
+        <PlaylistHeader v-else-if="playlist" v-bind="playlist" />
 
         <PlaylistItemsLoader
             class="p-6"
@@ -59,8 +59,8 @@ useAppTitle(computed(() => playlistData.value?.title || ''));
                     :index="index + 1"
                     v-bind="item"
                     @queue="queueItem(item)"
-                    @save="itemToBeSaved = item"
-                    @remove="itemToBeRemoved = item"
+                    @save="itemToSave = item"
+                    @remove="itemToRemove = item"
                 />
             </template>
 
@@ -70,17 +70,14 @@ useAppTitle(computed(() => playlistData.value?.title || ''));
         </List>
     </div>
 
-    <PlaylistSelectorModal
-        :is-open="!!itemToBeSaved"
-        :video="itemToBeSaved"
-        @close="itemToBeSaved = null"
-    />
+    <PlaylistSelectorModal :is-open="!!itemToSave" :video="itemToSave" @close="itemToSave = null" />
 
     <Prompt
-        :is-open="!!itemToBeRemoved"
-        :title="`Remove playlist item &quot;${itemToBeRemoved?.title}&quot; ?`"
+        v-if="playlist"
+        :is-open="!!itemToRemove"
+        :title="`Remove playlist item &quot;${itemToRemove?.title}&quot; ?`"
         confirm-text="Remove"
-        @confirm="itemToBeRemoved && removePlaylistItem(itemToBeRemoved)"
-        @close="itemToBeRemoved = null"
+        @confirm="itemToRemove && removePlaylistItem({ playlist, video: itemToRemove })"
+        @close="itemToRemove = null"
     />
 </template>

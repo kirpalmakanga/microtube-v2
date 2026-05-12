@@ -39,11 +39,10 @@ export function useAddPlaylistItem() {
 
             return playlist;
         },
-
         onSuccess: async ({ id, title }) => {
             toast.add({
                 title: `Added to playlist "${title}"`,
-                orientation: 'horizontal'
+                color: 'success'
             });
 
             await Promise.all([
@@ -58,23 +57,37 @@ export function useAddPlaylistItem() {
                     'all'
                 )
             ]);
+        },
+        onError: (error, { playlist: { title } }) => {
+            captureError(error);
+
+            toast.add({
+                title: `Error: Failed to add item to playlist "${title}"`,
+                color: 'error'
+            });
         }
     });
 }
 
 export function useRemovePlaylistItem() {
+    const toast = useToast();
     const queryCache = useQueryCache();
 
     return useMutation({
-        mutation: async ({ playlistId, playlistItemId }: PlaylistItem) => {
-            await removePlaylistItem(playlistItemId);
+        mutation: async ({ playlist, video }: { playlist: Playlist; video: Video }) => {
+            await removePlaylistItem(video.id);
 
-            return { playlistId };
+            return { playlist, video };
         },
-        onSuccess: async ({ playlistId }) => {
+        onSuccess: async ({ playlist: { id }, video: { title } }) => {
+            toast.add({
+                title: `Successfully removed "${title}" from playlist`,
+                color: 'success'
+            });
+
             await Promise.all([
                 queryCache.invalidateQueries({
-                    key: ['playlistItems', playlistId]
+                    key: ['playlistItems', id]
                 }),
                 queryCache.invalidateQueries(
                     {
@@ -84,6 +97,14 @@ export function useRemovePlaylistItem() {
                     'all'
                 )
             ]);
+        },
+        onError: (error, { video: { title } }) => {
+            captureError(error);
+
+            toast.add({
+                title: `Error: Failed remove "${title}" from playlist`,
+                color: 'error'
+            });
         }
     });
 }

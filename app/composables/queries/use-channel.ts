@@ -30,40 +30,60 @@ export function useChannelVideos(channelId: MaybeRef<string>) {
 }
 
 export function useSubscribeToChannel() {
+    const toast = useToast();
     const queryCache = useQueryCache();
 
     return useMutation({
-        mutation: async ({ channelId }: { channelId: string }) => {
+        mutation: async ({ title, channelId }: { title: string; channelId: string }) => {
             await subscribeToChannel(channelId);
 
-            return { channelId };
+            return { title, channelId };
         },
         onSuccess: async ({ channelId }) => {
             await queryCache.invalidateQueries({
                 key: ['channel', channelId]
+            });
+        },
+        onError: (error, { title }) => {
+            captureError(error);
+
+            toast.add({
+                title: `Error: Failed to subscribe to channel "${title}"`,
+                color: 'error'
             });
         }
     });
 }
 
 export function useUnsubscribeFromChannel() {
+    const toast = useToast();
     const queryCache = useQueryCache();
 
     return useMutation({
         mutation: async ({
+            title,
             channelId,
             subscriptionId
         }: {
+            title: string;
             channelId: string;
             subscriptionId: string;
         }) => {
             await unsubscribeFromChannel(subscriptionId);
 
-            return { channelId };
+            return { title, channelId };
         },
         onSuccess: async ({ channelId }) => {
             await queryCache.invalidateQueries({
                 key: ['channel', channelId]
+            });
+        },
+        onError: (error, { title }) => {
+            captureError(error);
+
+            toast.add({
+                title: `Error: Failed to unsubscribe from channel "${title}"`,
+                color: 'error'
             });
         }
     });

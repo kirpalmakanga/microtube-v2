@@ -31,6 +31,25 @@ button {
     }
 }
 
+::-webkit-scrollbar {
+    @apply w-2;
+}
+::-webkit-scrollbar-track {
+    @apply bg-stone-100;
+}
+::-webkit-scrollbar-thumb {
+    @apply bg-stone-300;
+}
+
+@media (prefers-color-scheme: dark) {
+    ::-webkit-scrollbar-track {
+        @apply bg-neutral-700;
+    }
+    ::-webkit-scrollbar-thumb {
+        @apply bg-neutral-500;
+    }
+}
+
 .fade-enter-active,
 .fade-leave-active {
     transition: opacity 0.15s;

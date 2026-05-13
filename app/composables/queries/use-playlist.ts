@@ -74,8 +74,8 @@ export function useRemovePlaylistItem() {
     const queryCache = useQueryCache();
 
     return useMutation({
-        mutation: async ({ playlist, video }: { playlist: Playlist; video: Video }) => {
-            await removePlaylistItem(video.id);
+        mutation: async ({ playlist, video }: { playlist: Playlist; video: PlaylistItem }) => {
+            await removePlaylistItem(video.playlistItemId);
 
             return { playlist, video };
         },

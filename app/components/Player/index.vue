@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import { useFullscreen, useIntervalFn, useThrottleFn, useTimeout } from '@vueuse/core';
+import {
+    useEventListener,
+    useFullscreen,
+    useIntervalFn,
+    useThrottleFn,
+    useTimeout
+} from '@vueuse/core';
 import { type YoutubePlayerOptions } from '~/services/youtube-player';
 
 const playerStore = usePlayerStore();
@@ -154,6 +160,12 @@ watch(
         }
     }
 );
+
+useEventListener(document, 'mouseleave', () => {
+    if (isFullscreen.value) {
+        stopHideControlsTimer();
+    }
+});
 </script>
 
 <template>
@@ -161,6 +173,7 @@ watch(
         class="flex flex-col justify-end bg-elevated/70 overflow-hidden group"
         ref="playerWrapper"
         @mousemove="isFullscreen && startHideControlsTimerThrottled()"
+        @mouseleave="isFullscreen && stopHideControlsTimer"
     >
         <YoutubePlayer
             v-if="currentVideo"

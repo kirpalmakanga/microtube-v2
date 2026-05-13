@@ -47,7 +47,12 @@ function handleSubmit() {
 </script>
 
 <template>
-    <UModal v-model:open="isOpen" title="New Playlist" @after:leave="reset">
+    <UModal
+        v-model:open="isOpen"
+        title="New Playlist"
+        @after:leave="reset"
+        :ui="{ footer: 'justify-end' }"
+    >
         <slot />
 
         <template #body>

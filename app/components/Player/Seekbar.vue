@@ -30,16 +30,22 @@ function handleMouseLeave() {
 function handleMouseUp() {
     emit('update', seekingPosition.value * props.duration);
 }
+
+function getContainerEvents() {
+    if (props.duration) {
+        return {
+            mousemove: handleMouseMove,
+            mouseleave: handleMouseLeave,
+            mouseup: handleMouseUp
+        };
+    }
+
+    return null;
+}
 </script>
 
 <template>
-    <div
-        ref="container"
-        class="relative w-full h-3"
-        @mousemove="handleMouseMove"
-        @mouseleave="handleMouseLeave"
-        @mouseup="handleMouseUp"
-    >
+    <div ref="container" class="relative w-full h-3" v-on="getContainerEvents()">
         <div class="absolute top-0 left-0 right-0 h-full -translate-y-full"></div>
 
         <div class="relative w-full h-full overflow-hidden rounded-full bg-zinc-100">

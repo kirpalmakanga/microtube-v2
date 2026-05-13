@@ -201,10 +201,6 @@ export function isEqual(a: unknown, b: unknown): boolean {
     return false;
 }
 
-export function nextFrame() {
-    return new Promise((resolve) => requestAnimationFrame(resolve));
-}
-
 export function limitNumberWithinRange(value: number, min: number, max: number) {
     return Math.min(Math.max(value, min), max);
 }

@@ -14,6 +14,8 @@ watch(data, () => {
 onBeforeUnmount(() => {
     video.value = null;
 });
+
+useAppTitle(computed(() => video.value?.title));
 </script>
 
 <template></template>

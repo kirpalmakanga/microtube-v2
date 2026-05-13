@@ -30,7 +30,7 @@ const { mutate: removePlaylistItem } = useRemovePlaylistItem();
 const itemToSave = ref<PlaylistItem | null>(null);
 const itemToRemove = ref<PlaylistItem | null>(null);
 
-useAppTitle(computed(() => playlist.value?.title || ''));
+useAppTitle(computed(() => playlist.value?.title));
 </script>
 
 <template>

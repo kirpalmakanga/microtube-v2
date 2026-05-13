@@ -23,6 +23,7 @@ const virtualizeSettings: ScrollAreaVirtualizeOptions = {
     overscan: 10,
     gap: 16,
     estimateSize: 160,
+    skipMeasurement: true,
     getItemKey
 };
 

@@ -51,6 +51,7 @@ useAppTitle(computed(() => playlist.value?.title || ''));
         <List
             v-else-if="items"
             :items="items"
+            :is-loading="arePlaylistItemsLoading"
             empty-message="No videos in this playlist yet"
             @load-more="hasNextPage && !arePlaylistItemsLoading && loadNextPage()"
         >

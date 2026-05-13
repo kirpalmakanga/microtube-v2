@@ -17,13 +17,14 @@ watch(channelId, () => refetch());
 
 <template>
     <div class="flex flex-col grow">
-        <ChannelVideosLoader v-if="isPending || (error && isLoading)" />
+        <ChannelVideosLoader v-if="isPending || (error && isLoading)" class="p-6" />
 
         <Error v-else-if="error" @action="refetch()" />
 
         <List
             v-else-if="items"
             :items="items"
+            :is-loading="isLoading"
             empty-message="This channel doesn't have videos yet."
             @load-more="hasNextPage && !isLoading && loadNextPage()"
         >

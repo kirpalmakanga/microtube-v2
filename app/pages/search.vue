@@ -23,13 +23,14 @@ watch(search, () => refetch());
 
 <template>
     <div class="flex flex-col grow">
-        <SearchResultsLoader v-if="isPending || (error && isLoading)" />
+        <SearchResultsLoader v-if="isPending || (error && isLoading)" class="p-6" />
 
         <Error v-else-if="error" @action="refetch()" />
 
         <List
             v-else-if="items"
             :items="items"
+            :is-loading="isLoading"
             :empty-message="`Search for &quot;${search.query}&quot; gave no results.`"
             @load-more="hasNextPage && !isLoading && loadNextPage()"
         >

@@ -13,15 +13,16 @@ const { queuePlaylist } = usePlayerStore();
 
 <template>
     <div class="flex flex-col grow">
-        <PlaylistsListLoader v-if="isPending || (error && isLoading)" />
+        <PlaylistsListLoader v-if="isPending || (error && isLoading)" class="p-6" />
 
         <Error v-else-if="error" @action="refetch()" />
 
         <List
             v-else-if="items"
             :items="items"
+            :is-loading="isLoading"
             empty-message="This channel doesn't have playlists yet."
-            @reached-bottom="hasNextPage && !isLoading && loadNextPage()"
+            @load-more="hasNextPage && !isLoading && loadNextPage()"
         >
             <template #item="{ item }">
                 <PlaylistsListItem v-bind="item" @queue="queuePlaylist(item.id)" />

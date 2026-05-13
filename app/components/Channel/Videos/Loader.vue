@@ -1,5 +1,5 @@
 <template>
-    <div class="p-6">
+    <div>
         <UCard variant="soft" :ui="{ body: 'flex items-center' }">
             <div class="flex grow overflow-hidden gap-4">
                 <USkeleton class="aspect-video h-28" />

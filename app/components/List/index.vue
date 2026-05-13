@@ -1,28 +1,55 @@
 <script setup lang="ts" generic="T extends unknown">
-const props = withDefaults(defineProps<{ items: T[]; itemKey?: string; emptyMessage?: string }>(), {
-    itemKey: 'id'
-});
+import type { ScrollAreaVirtualizeOptions } from '@nuxt/ui';
+import { useInfiniteScroll } from '@vueuse/core';
 
-function itemHasKey(item: T, key: any): key is keyof typeof item {
-    return item && typeof item === 'object' && item.hasOwnProperty(key);
+const emit = defineEmits<{ 'load-more': [e: void] }>();
+
+const props = withDefaults(
+    defineProps<{ items: T[]; itemKey?: string; emptyMessage?: string; isLoading?: boolean }>(),
+    {
+        itemKey: 'id'
+    }
+);
+
+const scrollContainer = useTemplateRef('scrollContainer');
+
+function getItemKey() {
+    return props.itemKey;
 }
 
-function getItemKey(item: T) {
-    return itemHasKey(item, props.itemKey) ? item[props.itemKey] : item;
-}
+const list = computed(() => [...props.items, ...(props.isLoading ? [null] : [])]);
+
+const virtualizeSettings: ScrollAreaVirtualizeOptions = {
+    overscan: 10,
+    gap: 16,
+    estimateSize: 160,
+    getItemKey
+};
+
+useInfiniteScroll(
+    computed(() => scrollContainer.value?.$el),
+    () => emit('load-more'),
+    {
+        behavior: 'smooth',
+        distance: 300,
+        throttle: 100
+    }
+);
 </script>
 
 <template>
-    <ScrollContainer v-if="items.length" @reached-bottom="$emit('load-more')">
-        <ul class="flex flex-col p-6 gap-6">
-            <li v-for="(item, index) of items" :key="getItemKey(item)">
-                <slot name="item" :item="item" :index="index" />
-            </li>
-            <li v-if="$slots.loader">
-                <slot name="loader" />
-            </li>
-        </ul>
-    </ScrollContainer>
+    <div v-if="items.length" class="relative flex grow">
+        <UScrollArea
+            ref="scrollContainer"
+            class="absolute inset-0 grow p-6"
+            :virtualize="virtualizeSettings"
+            :items="list"
+            v-slot="{ item, index }"
+        >
+            <slot v-if="item !== null" name="item" :item="item" :index="index" />
+            <slot v-else-if="isLoading && $slots.loader" name="loader" />
+        </UScrollArea>
+    </div>
 
     <Placeholder v-else-if="emptyMessage" icon="i-mdi-format-list-bulleted" :text="emptyMessage" />
 </template>

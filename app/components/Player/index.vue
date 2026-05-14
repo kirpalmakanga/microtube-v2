@@ -175,7 +175,7 @@ useEventListener(document, 'mouseleave', () => {
             :class="{
                 'top-16 bottom-37': !isFullscreen,
                 'top-0 bottom-0': isFullscreen,
-                'translate-y-[150%]': !isScreenVisible && !isFullscreen && !isSingleVideo
+                'translate-y-full': !isScreenVisible && !isFullscreen && !isSingleVideo
             }"
             :videoId="currentVideo.id"
             :options="playerOptions"

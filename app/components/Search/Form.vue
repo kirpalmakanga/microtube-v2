@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import type { FormError, SelectItem } from '@nuxt/ui';
 
+defineEmits<{ submit: [e: void] }>();
+
 const { isScreenVisible } = storeToRefs(usePlayerStore());
 
 const router = useRouter();
 const route = useRoute();
 
-interface SearchFormData {
+export interface SearchFormData {
     query: string;
     forMine: number;
 }
@@ -23,8 +25,6 @@ const menuOptions = computed<SelectItem[]>(() => [
     },
     { label: 'My videos', value: 1 }
 ]);
-
-defineEmits<{ submit: [q: { query: string; forMine: number }] }>();
 
 function validate(state: Partial<SearchFormData>): FormError[] {
     const errors = [];
@@ -44,12 +44,26 @@ function handleSubmit() {
 
 <template>
     <UForm :validate="validate" :state="state" @submit="handleSubmit">
-        <UFieldGroup>
-            <UInput placeholder="Search" variant="soft" v-model="state.query" @keydown.stop />
+        <UFieldGroup class="relative overflow-hidden w-full bg-default rounded-md shadow">
+            <UInput
+                class="w-full"
+                placeholder="Search"
+                variant="soft"
+                size="xl"
+                v-model="state.query"
+                autofocus
+                @keydown.stop
+            />
 
             <USelect variant="soft" :items="menuOptions" v-model="state.forMine" />
 
-            <UButton variant="soft" color="neutral" icon="i-mdi-search" type="submit" />
+            <UButton
+                v-if="!isMobile()"
+                variant="soft"
+                color="neutral"
+                icon="i-mdi-search"
+                type="submit"
+            />
         </UFieldGroup>
     </UForm>
 </template>

@@ -45,7 +45,7 @@ const menuOptions = computed<DropdownMenuItem[]>(() => [
 </script>
 
 <template>
-    <UHeader :ui="{ container: 'lg:px-6' }" :toggle="false">
+    <UHeader class="bg-default" :ui="{ container: 'lg:px-6' }" :toggle="false">
         <template #left>
             <NuxtLink class="flex items-center gap-1" to="/">
                 <UIcon class="size-8" name="i-mdi-youtube" />
@@ -55,7 +55,9 @@ const menuOptions = computed<DropdownMenuItem[]>(() => [
         </template>
 
         <template v-if="isSignedIn" #right>
-            <SearchForm />
+            <NuxtLink v-if="$route.name !== 'search'" class="flex items-center gap-1" to="/search">
+                <UIcon class="size-6" name="i-mdi-search" />
+            </NuxtLink>
 
             <UDropdownMenu :content="menuConfig" :items="menuOptions">
                 <button><UAvatar :src="picture" /></button>

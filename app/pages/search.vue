@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { SearchFormData } from '~/components/Search/Form.vue';
+
 const route = useRoute();
 
 const search = computed(() => {
@@ -7,50 +9,16 @@ const search = computed(() => {
     return {
         query: route.query.query as string,
         forMine: isNaN(forMine) ? 0 : forMine
-    };
+    } as SearchFormData;
 });
-
-const { data, isPending, isLoading, error, refetch, hasNextPage, loadNextPage } = useSearch(search);
-
-const items = computed(() => data.value?.pages.flatMap(({ items }) => items));
-
-const { queueItem } = usePlayerStore();
-
-const selectedItem = ref<Video | null>(null);
-
-watch(search, () => refetch());
 </script>
 
 <template>
     <div class="flex flex-col grow">
-        <SearchResultsLoader v-if="isPending || (error && isLoading)" class="p-6" />
+        <div class="p-4 md:p-6 bg-slate-600/80"><SearchForm /></div>
 
-        <Error v-else-if="error" @action="refetch()" />
-
-        <List
-            v-else-if="items"
-            :items="items"
-            :is-loading="isLoading"
-            :empty-message="`Search for &quot;${search.query}&quot; gave no results.`"
-            @load-more="hasNextPage && !isLoading && loadNextPage()"
-        >
-            <template #item="{ item }">
-                <SearchResultsItem
-                    v-bind="item"
-                    @queue="queueItem(item)"
-                    @save="selectedItem = item"
-                />
-            </template>
-
-            <template v-if="isLoading" #loader>
-                <SearchResultsLoader />
-            </template>
-        </List>
+        <template v-if="search.query">
+            <SearchResults v-bind="search" />
+        </template>
     </div>
-
-    <PlaylistSelectorModal
-        :is-open="!!selectedItem"
-        :video="selectedItem"
-        @close="selectedItem = null"
-    />
 </template>

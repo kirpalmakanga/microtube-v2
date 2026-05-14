@@ -48,6 +48,10 @@ export const usePlayerStore = defineStore(
             await saveData(selectedItemIdPath.value, videoId);
         }
 
+        function isSelectedItem(videoId: string | null) {
+            return videoId === state.selectedItemId;
+        }
+
         function isInQueue(videoId: string) {
             return state.queue.find(({ id: queueItemId }) => queueItemId === videoId);
         }
@@ -158,9 +162,9 @@ export const usePlayerStore = defineStore(
             }
         });
 
-        useFirebaseData<string | null>(selectedItemIdPath, (videoId) => {
-            if (videoId !== state.selectedItemId) {
-                state.selectedItemId = videoId;
+        useFirebaseData<string | null>(selectedItemIdPath, (selectedId) => {
+            if (!isSelectedItem(selectedId)) {
+                state.selectedItemId = selectedId;
             }
         });
 
@@ -178,6 +182,7 @@ export const usePlayerStore = defineStore(
             queueItem,
             queuePlaylist,
             setSelectedItem,
+            isSelectedItem,
             importVideos,
             removeQueueItem,
             clearQueue,

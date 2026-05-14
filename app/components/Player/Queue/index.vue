@@ -2,7 +2,7 @@
 import { useSortable, type UseSortableOptions } from '@vueuse/integrations/useSortable';
 const playerStore = usePlayerStore();
 const { queue, selectedItemId } = storeToRefs(playerStore);
-const { clearQueue, removeQueueItem, setSelectedItem } = playerStore;
+const { isSelectedItem, clearQueue, removeQueueItem, setSelectedItem } = playerStore;
 
 const isOpen = defineModel<boolean>('isOpen', { default: false });
 const itemToSave = ref<Video | null>(null);
@@ -16,10 +16,6 @@ const sortableOptions: UseSortableOptions = {
     ghostClass: 'invisible',
     watchElement: true
 };
-
-function isSelected(videoId: string) {
-    return videoId === selectedItemId.value;
-}
 
 const list = useTemplateRef('list');
 
@@ -35,7 +31,11 @@ defineShortcuts({
         v-model:open="isOpen"
         title="Queue"
         :description="`${queue.length} video${queue.length !== 1 ? 's' : ''}`"
-        :ui="{ content: 'max-w-2/5', body: 'flex p-0 sm:p-0 scroll-smooth', footer: 'justify-end' }"
+        :ui="{
+            content: 'md:max-w-2/5',
+            body: 'flex p-0 sm:p-0 scroll-smooth',
+            footer: 'justify-end'
+        }"
         inset
     >
         <slot />
@@ -50,8 +50,8 @@ defineShortcuts({
                     <PlayerQueueItem
                         v-bind="item"
                         :is-playing="false"
-                        :is-selected="isSelected(item.id)"
-                        @select="!isSelected(item.id) && setSelectedItem(item.id)"
+                        :is-selected="isSelectedItem(item.id)"
+                        @select="!isSelectedItem(item.id) && setSelectedItem(item.id)"
                         @save="itemToSave = item"
                         @remove="removeQueueItem(item.id)"
                     />

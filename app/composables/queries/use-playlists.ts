@@ -46,10 +46,13 @@ export function useCreateplaylist() {
                 ]
             });
 
-            await queryCache.invalidateQueries({
-                key: ['playlists', 'mine'],
-                exact: true
-            });
+            await queryCache.invalidateQueries(
+                {
+                    key: ['playlists', 'mine'],
+                    exact: true
+                },
+                'all'
+            );
         },
         onError: (error, { title }) => {
             captureError(error);

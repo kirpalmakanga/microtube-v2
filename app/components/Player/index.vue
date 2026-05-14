@@ -252,6 +252,7 @@ useEventListener(document, 'mouseleave', () => {
                         </UFieldGroup>
 
                         <div
+                            v-if="!isMobile()"
                             class="group flex gap-1 overflow-hidden transition-all w-8 z-1"
                             :class="{ 'hover:w-37': !!currentVideo }"
                             @wheel="handleWheelVolume"
@@ -265,7 +266,7 @@ useEventListener(document, 'mouseleave', () => {
                             </UTooltip>
 
                             <USlider
-                                v-if="currentVideo && !isMobile()"
+                                v-if="currentVideo"
                                 class="w-24 z-0 shrink-0"
                                 :min="0"
                                 :max="100"
@@ -285,14 +286,14 @@ useEventListener(document, 'mouseleave', () => {
 
                     <div class="flex gap-2">
                         <PlayerQueue v-if="!isSingleVideo" v-model:is-open="state.isQueueVisible">
-                            <UTooltip text="Open queue" :kbds="['q']">
+                            <UTooltip text="Open queue" :kbds="['q']" :disabled="isMobile()">
                                 <UButton icon="i-mdi-view-list" />
                             </UTooltip>
                         </PlayerQueue>
 
                         <template v-if="currentVideo">
                             <PlaylistSelectorModal :video="currentVideo">
-                                <UTooltip text="Save to playlist">
+                                <UTooltip text="Save to playlist" :disabled="isMobile()">
                                     <UButton icon="i-mdi-bookmark" />
                                 </UTooltip>
                             </PlaylistSelectorModal>
@@ -302,12 +303,17 @@ useEventListener(document, 'mouseleave', () => {
                                 :title="currentVideo?.title"
                                 :text="currentVideo.description"
                             >
-                                <UTooltip text="Description">
+                                <UTooltip text="Description" :disabled="isMobile()">
                                     <UButton icon="i-mdi-information" />
                                 </UTooltip>
                             </PlayerVideoDescription>
 
-                            <UTooltip v-if="!isSingleVideo" text="Toggle screen" :kbds="['s']">
+                            <UTooltip
+                                v-if="!isSingleVideo"
+                                text="Toggle screen"
+                                :kbds="['s']"
+                                :disabled="isMobile()"
+                            >
                                 <UButton
                                     v-if="!isFullscreen"
                                     icon="i-mdi-monitor"
@@ -318,6 +324,7 @@ useEventListener(document, 'mouseleave', () => {
                             <UTooltip
                                 :text="isFullscreen ? 'Exit full screen' : 'Full screen'"
                                 :kbds="['f']"
+                                :disabled="isMobile()"
                             >
                                 <UButton
                                     :icon="

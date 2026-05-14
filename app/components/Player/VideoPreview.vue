@@ -3,7 +3,7 @@ defineProps<{ text: string; video?: Video; kbds?: string[] }>();
 </script>
 
 <template>
-    <UTooltip :kbds="kbds" :ui="{ content: 'h-auto p-3' }" :disabled="!video">
+    <UTooltip :kbds="kbds" :ui="{ content: 'h-auto p-3' }" :disabled="isMobile() || !video">
         <slot />
 
         <template v-if="video" #content>

@@ -17,25 +17,39 @@ export function useFirebase() {
     const {
         public: { firebaseConfig }
     } = useRuntimeConfig();
+    const isSignedIntoDatabase = ref<boolean>(false);
 
     if (!app.value) app.value = initializeApp(firebaseConfig);
 
     return {
-        signIntoDatabase: (idToken: string, accessToken: string) => {
-            return signInWithCredential(
-                getAuth(),
-                GoogleAuthProvider.credential(idToken, accessToken)
-            );
+        isSignedIntoDatabase,
+        signIntoDatabase: async (idToken: string, accessToken: string) => {
+            try {
+                await signInWithCredential(
+                    getAuth(),
+                    GoogleAuthProvider.credential(idToken, accessToken)
+                );
+
+                isSignedIntoDatabase.value = true;
+            } catch (error) {
+                captureError(error);
+            }
         },
-        signOutOfDatabase: () => {
-            return signOut(getAuth());
+        signOutOfDatabase: async () => {
+            await signOut(getAuth());
+
+            isSignedIntoDatabase.value = false;
         },
         saveData: (path: string, data: string | object | null) => {
             return set(getRef(path), data);
         },
-        subscribeToData: (path: string, callback: Function) => {
+        subscribeToData: <T extends unknown>(path: string, callback: (data: T) => void) => {
             const reference = getRef(path);
-            const handler = (snapshot: DataSnapshot) => callback(snapshot.val() || undefined);
+            const handler = (snapshot: DataSnapshot) => {
+                const value = snapshot.val();
+
+                if (typeof value !== 'undefined') callback(value);
+            };
 
             onValue(reference, handler);
 
@@ -45,7 +59,7 @@ export function useFirebase() {
 }
 
 export function useFirebaseData<T>(path: MaybeRef<string>, callback: (data: T) => void) {
-    const { subscribeToData } = useFirebase();
+    const { isSignedIntoDatabase, subscribeToData } = useFirebase();
     let unsubscribe: (() => void) | null = null;
 
     function clean() {
@@ -57,16 +71,16 @@ export function useFirebaseData<T>(path: MaybeRef<string>, callback: (data: T) =
     function init() {
         clean();
 
-        unsubscribe = subscribeToData(toValue(path), (value: T | undefined) => {
-            if (typeof value !== 'undefined') callback(value);
-        });
+        unsubscribe = subscribeToData<T>(toValue(path), callback);
     }
 
-    if (isRef(path)) {
-        watch(path, init);
-    } else {
-        init();
-    }
-
-    onUnmounted(clean);
+    watch(
+        [isSignedIntoDatabase, ...(isRef(path) ? [path] : [])],
+        () => {
+            if (isSignedIntoDatabase.value) {
+                init();
+            }
+        },
+        { immediate: true }
+    );
 }

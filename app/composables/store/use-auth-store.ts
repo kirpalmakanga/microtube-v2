@@ -13,7 +13,7 @@ export const getInitialState = (): User => ({
 export const useAuthStore = defineStore(
     'auth',
     () => {
-        const { signIntoDatabase, signOutOfDatabase } = useFirebase();
+        const { isSignedIntoDatabase, signIntoDatabase, signOutOfDatabase } = useFirebase();
         const state = reactive<User>(getInitialState());
 
         async function signIn(code: string) {
@@ -40,16 +40,16 @@ export const useAuthStore = defineStore(
 
         watch(
             () => state.accessToken,
-            async (accessToken) => {
-                if (accessToken) {
+            async () => {
+                if (state.accessToken) {
                     try {
-                        await signIntoDatabase(state.idToken, accessToken);
+                        await signIntoDatabase(state.idToken, state.accessToken);
                     } catch (error) {
                         captureError(error);
 
                         await refreshTokens();
                     }
-                } else {
+                } else if (isSignedIntoDatabase.value) {
                     await signOutOfDatabase();
                 }
             }

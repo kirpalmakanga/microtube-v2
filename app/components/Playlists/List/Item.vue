@@ -14,11 +14,15 @@ const props = defineProps<{
 const copy = useCopy();
 
 const menuOptions = computed<ContextMenuItem[]>(() => [
-    {
-        label: 'Add to queue',
-        icon: 'i-mdi-plus-circle',
-        onSelect: () => props.itemCount && emit('queue')
-    },
+    ...(props.itemCount
+        ? [
+              {
+                  label: 'Add to queue',
+                  icon: 'i-mdi-plus-circle',
+                  onSelect: () => props.itemCount && emit('queue')
+              }
+          ]
+        : []),
     {
         label: 'Share',
         icon: 'i-mdi-share',

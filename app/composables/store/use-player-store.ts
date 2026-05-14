@@ -40,8 +40,14 @@ export const usePlayerStore = defineStore(
         const queuePath = computed(() => `users/${currentUserId.value}/queue`);
         const selectedItemIdPath = computed(() => `users/${currentUserId.value}/selectedItemId`);
 
-        async function setQueue(queue: Video[]) {
-            state.queue = queue;
+        function saveQueueToDatabase() {
+            return saveData(queuePath.value, state.queue);
+        }
+
+        async function setSelectedItem(videoId: string | null) {
+            state.selectedItemId = videoId;
+
+            await saveData(selectedItemIdPath.value, videoId);
         }
 
         function isInQueue(videoId: string) {
@@ -60,6 +66,8 @@ export const usePlayerStore = defineStore(
                 newItemCount: newItemCount + items.length
             });
 
+            await saveQueueToDatabase();
+
             return items;
         }
 
@@ -67,10 +75,26 @@ export const usePlayerStore = defineStore(
             return queueItems([data]);
         }
 
-        async function setSelectedItem(videoId: string) {
-            state.selectedItemId = videoId;
+        async function removeQueueItem(targetId: string) {
+            state.queue = state.queue.filter(({ id }) => id !== targetId);
 
-            await saveData(selectedItemIdPath.value, videoId);
+            await saveQueueToDatabase();
+
+            if (targetId === state.selectedItemId) {
+                await setSelectedItem(null);
+            }
+        }
+
+        async function clearQueue() {
+            state.queue = state.queue.filter(({ id }) => id === state.selectedItemId);
+
+            await saveQueueToDatabase();
+        }
+
+        async function moveInQueue(direction: -1 | 1) {
+            const { [selectedItemIndex.value + direction]: selectedItem } = state.queue;
+
+            if (selectedItem) await setSelectedItem(selectedItem.id);
         }
 
         async function importVideos(ids: string[]) {
@@ -85,22 +109,8 @@ export const usePlayerStore = defineStore(
             }
         }
 
-        async function removeQueueItem(targetId: string) {
-            await setQueue(state.queue.filter(({ id }) => id !== targetId));
-
-            if (targetId === state.selectedItemId) {
-                await saveData(selectedItemIdPath.value, null);
-
-                state.selectedItemId = null;
-            }
-        }
-
         function resetNewItemCount() {
             state.newItemCount = 0;
-        }
-
-        function clearQueue() {
-            state.queue = state.queue.filter(({ id }) => id === state.selectedItemId);
         }
 
         function clearVideo() {
@@ -109,8 +119,6 @@ export const usePlayerStore = defineStore(
 
         async function fetchVideo(videoId: string) {
             try {
-                clearVideo();
-
                 state.video = await getVideo(videoId);
             } catch (error) {
                 captureError(error);
@@ -148,15 +156,9 @@ export const usePlayerStore = defineStore(
             }
         }
 
-        async function moveInQueue(direction: -1 | 1) {
-            const { [selectedItemIndex.value + direction]: selectedItem } = state.queue;
-
-            if (selectedItem) await setSelectedItem(selectedItem.id);
-        }
-
         useFirebaseData<Video[]>(queuePath.value, (queue) => {
             if (!isEqual(queue, state.queue)) {
-                state.queue = queue;
+                state.queue = queue || [];
             }
         });
 
@@ -165,13 +167,6 @@ export const usePlayerStore = defineStore(
                 state.selectedItemId = videoId;
             }
         });
-
-        watch(
-            () => state.queue,
-            async () => {
-                await saveData(queuePath.value, state.queue);
-            }
-        );
 
         return {
             ...toRefs(state),
@@ -183,7 +178,6 @@ export const usePlayerStore = defineStore(
             previousVideo: computed(() => state.queue[selectedItemIndex.value - 1]),
             nextVideo: computed(() => state.queue[selectedItemIndex.value + 1]),
             isSingleVideo: computed(() => !!state.video),
-            setQueue,
             queueItems,
             queueItem,
             queuePlaylist,

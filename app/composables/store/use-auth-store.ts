@@ -52,7 +52,8 @@ export const useAuthStore = defineStore(
                 } else if (isSignedIntoDatabase.value) {
                     await signOutOfDatabase();
                 }
-            }
+            },
+            { immediate: true }
         );
 
         return {

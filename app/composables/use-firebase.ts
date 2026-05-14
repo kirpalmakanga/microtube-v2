@@ -13,11 +13,12 @@ const getRef = (path: string) => databaseRef(getDatabase(), path);
 
 const app = ref<FirebaseApp | null>(null);
 
+const isSignedIntoDatabase = ref<boolean>(false);
+
 export function useFirebase() {
     const {
         public: { firebaseConfig }
     } = useRuntimeConfig();
-    const isSignedIntoDatabase = ref<boolean>(false);
 
     if (!app.value) app.value = initializeApp(firebaseConfig);
 
@@ -43,13 +44,9 @@ export function useFirebase() {
         saveData: (path: string, data: string | object | null) => {
             return set(getRef(path), data);
         },
-        subscribeToData: <T extends unknown>(path: string, callback: (data: T) => void) => {
+        subscribeToData: <T extends unknown>(path: string, callback: (data: T | null) => void) => {
             const reference = getRef(path);
-            const handler = (snapshot: DataSnapshot) => {
-                const value = snapshot.val();
-
-                if (typeof value !== 'undefined') callback(value);
-            };
+            const handler = (snapshot: DataSnapshot) => callback(snapshot.val());
 
             onValue(reference, handler);
 
@@ -58,7 +55,7 @@ export function useFirebase() {
     };
 }
 
-export function useFirebaseData<T>(path: MaybeRef<string>, callback: (data: T) => void) {
+export function useFirebaseData<T>(path: MaybeRef<string>, callback: (data: T | null) => void) {
     const { isSignedIntoDatabase, subscribeToData } = useFirebase();
     let unsubscribe: (() => void) | null = null;
 

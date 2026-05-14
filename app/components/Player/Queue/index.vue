@@ -1,18 +1,29 @@
 <script setup lang="ts">
-import { UseSortable } from '@vueuse/integrations/useSortable/component';
+import { useSortable, type UseSortableOptions } from '@vueuse/integrations/useSortable';
 const playerStore = usePlayerStore();
 const { queue, selectedItemId } = storeToRefs(playerStore);
 const { clearQueue, removeQueueItem, setSelectedItem } = playerStore;
-const list = shallowRef(queue);
 
 const isOpen = defineModel<boolean>('isOpen', { default: false });
 const itemToSave = ref<Video | null>(null);
 const isImportFormOpen = ref<boolean>(false);
 const isClearingPromptOpen = ref<boolean>(false);
 
+const sortableOptions: UseSortableOptions = {
+    //@ts-ignore
+    handle: '.handle',
+    animation: 150,
+    ghostClass: 'invisible',
+    watchElement: true
+};
+
 function isSelected(videoId: string) {
     return videoId === selectedItemId.value;
 }
+
+const list = useTemplateRef('list');
+
+useSortable(list, queue, sortableOptions);
 
 defineShortcuts({
     q: () => (isOpen.value = !isOpen.value)
@@ -30,20 +41,10 @@ defineShortcuts({
         <slot />
 
         <template #body>
-            <UseSortable
-                class="w-full"
-                v-model="list"
-                as="ul"
-                :options="{
-                    //@ts-ignore
-                    handle: '.handle',
-                    animation: 150,
-                    ghostClass: 'invisible'
-                }"
-            >
+            <ul ref="list" :options="sortableOptions">
                 <li
                     class="relative flex bg-elevated/50 group"
-                    v-for="(item, index) of list"
+                    v-for="(item, index) of queue"
                     :key="item.id"
                 >
                     <PlayerQueueItem
@@ -67,7 +68,7 @@ defineShortcuts({
                         <UIcon class="size-6" name="i-mdi-drag" />
                     </div>
                 </li>
-            </UseSortable>
+            </ul>
         </template>
 
         <template #footer>

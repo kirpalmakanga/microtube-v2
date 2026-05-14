@@ -40,7 +40,7 @@ function getContainerEvents() {
         };
     }
 
-    return null;
+    return {};
 }
 </script>
 

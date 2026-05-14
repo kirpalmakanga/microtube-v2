@@ -1,5 +1,5 @@
 <template>
-    <div class="flex min-h-screen">
+    <UMain class="flex min-h-dvh">
         <NuxtPage />
-    </div>
+    </UMain>
 </template>

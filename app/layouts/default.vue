@@ -6,7 +6,7 @@ const { isSignedIn } = storeToRefs(authStore);
 <template>
     <LayoutDefaultHeader />
 
-    <UMain class="flex flex-col">
+    <UMain class="flex flex-col min-h-[calc(100dvh-var(--ui-header-height))]">
         <div class="flex flex-col grow ui-container">
             <NuxtPage />
         </div>

@@ -22,8 +22,6 @@ const list = computed(() => [...props.items, ...(props.isLoading ? [null] : [])]
 const virtualizeSettings: ScrollAreaVirtualizeOptions = {
     overscan: 10,
     gap: 16,
-    estimateSize: 160,
-    skipMeasurement: true,
     getItemKey
 };
 
@@ -42,7 +40,7 @@ useInfiniteScroll(
     <div v-if="items.length" class="relative flex grow">
         <UScrollArea
             ref="scrollContainer"
-            class="absolute inset-0 grow p-6"
+            class="absolute inset-0 grow p-4 md:p-6"
             :virtualize="virtualizeSettings"
             :items="list"
             v-slot="{ item, index }"

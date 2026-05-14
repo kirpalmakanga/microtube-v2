@@ -45,7 +45,7 @@ const menuOptions = computed<DropdownMenuItem[]>(() => [
 </script>
 
 <template>
-    <UHeader :toggle="false">
+    <UHeader :ui="{ container: 'lg:px-6' }" :toggle="false">
         <template #left>
             <NuxtLink class="flex items-center gap-1" to="/">
                 <UIcon class="size-8" name="i-mdi-youtube" />

@@ -66,7 +66,7 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
     <LayoutPageHeader>
         <template #thumbnail>
             <Img
-                class="aspect-video h-28 rounded-md bg-slate-900 shrink-0"
+                class="aspect-video h-14 md:h-28 rounded-md bg-slate-900 shrink-0"
                 :src="getThumbnails(thumbnails, 'medium') || getThumbnails(thumbnails, 'default')"
             />
         </template>

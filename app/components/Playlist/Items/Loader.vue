@@ -4,7 +4,7 @@
             <USkeleton class="self center size-4 mr-4" />
 
             <div class="flex grow gap-4">
-                <USkeleton class="aspect-video h-28" />
+                <USkeleton class="aspect-video h-14 md:h-28" />
 
                 <div class="flex flex-col grow gap-1">
                     <USkeleton class="h-4 w-full" />

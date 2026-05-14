@@ -23,7 +23,7 @@ function toggleSubscription() {
     <LayoutPageHeader>
         <template #thumbnail>
             <Img
-                class="size-28 rounded-md bg-slate-900 shrink-0"
+                class="size-14 md:size-28 rounded-md bg-slate-900 shrink-0"
                 :src="getThumbnails(thumbnails, 'medium') || getThumbnails(thumbnails, 'default')"
             />
         </template>

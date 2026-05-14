@@ -218,7 +218,11 @@ useEventListener(document, 'mouseleave', () => {
 
                 <div class="flex">
                     <div class="flex items-center gap-2">
-                        <UTooltip :text="state.isPlaying ? 'Pause' : 'Play'" :kbds="['shift', 'k']">
+                        <UTooltip
+                            :text="state.isPlaying ? 'Pause' : 'Play'"
+                            :kbds="['shift', 'k']"
+                            :disabled="isMobile()"
+                        >
                             <UButton
                                 :icon="state.isPlaying ? 'i-mdi-pause' : 'i-mdi-play'"
                                 :disabled="!currentVideo"

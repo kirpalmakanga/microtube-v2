@@ -19,7 +19,9 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
               {
                   label: 'Add to queue',
                   icon: 'i-mdi-plus-circle',
-                  onSelect: () => props.itemCount && emit('queue')
+                  onSelect: () => {
+                      if (props.itemCount) emit('queue');
+                  }
               }
           ]
         : []),

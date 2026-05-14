@@ -1,12 +1,65 @@
 <script setup lang="ts">
-defineProps<{
+import type { ContextMenuItem } from '@nuxt/ui';
+
+const props = defineProps<{
+    id: string;
     title: string;
     thumbnails: Thumbnails;
     itemCount: number;
     privacyStatus: string;
     channelId: string;
     channelTitle: string;
+    canBeRemoved?: boolean;
 }>();
+
+const emit = defineEmits<{ queue: [e: void]; remove: [e: void] }>();
+
+const router = useRouter();
+
+const copy = useCopy();
+
+const menuOptions = computed<ContextMenuItem[]>(() => [
+    ...(props.itemCount
+        ? [
+              {
+                  label: 'Add to queue',
+                  icon: 'i-mdi-plus-circle',
+                  onSelect: () => {
+                      if (props.itemCount) emit('queue');
+                  }
+              }
+          ]
+        : []),
+    {
+        label: 'Share',
+        icon: 'i-mdi-share',
+        onSelect: () => {
+            const url = getPlaylistURL(props.id);
+
+            if (isMobile()) {
+                shareURL({
+                    title: props.title,
+                    url
+                });
+            } else {
+                copy(url, 'Link copied to clipboard.');
+            }
+        }
+    },
+    ...(props.canBeRemoved
+        ? ([
+              { type: 'separator' },
+              {
+                  label: 'Delete',
+                  icon: 'i-mdi-delete-forever',
+                  color: 'error',
+                  onSelect: () => {
+                      emit('remove');
+                  }
+              }
+          ] as ContextMenuItem[])
+        : [])
+]);
 </script>
 
 <template>
@@ -26,6 +79,10 @@ defineProps<{
             <p class="text-xs opacity-50 leading-none">
                 Playlist • {{ `${itemCount} video${itemCount !== 1 ? 's' : ''}` }}
             </p>
+        </template>
+
+        <template #actions>
+            <MenuButton :menu-options="menuOptions" />
         </template>
     </LayoutPageHeader>
 </template>

@@ -5,5 +5,9 @@
         <div class="flex flex-col grow gap-2 overflow-hidden">
             <slot name="content" />
         </div>
+
+        <div v-if="$slots.actions">
+            <slot name="actions" />
+        </div>
     </div>
 </template>

@@ -126,7 +126,6 @@ export const usePlayerStore = defineStore(
                 toast.add({
                     id: toastId,
                     title: 'Fetching playlist items...',
-                    color: 'info',
                     icon: 'svg-spinners-90-ring-with-bg',
                     progress: false
                 });

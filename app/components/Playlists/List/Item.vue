@@ -64,5 +64,9 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
         <template #content>
             <h2 class="font-bold ellipsis">{{ title }}</h2>
         </template>
+
+        <template #actions>
+            <MenuButton :menu-options="menuOptions" />
+        </template>
     </ListItem>
 </template>

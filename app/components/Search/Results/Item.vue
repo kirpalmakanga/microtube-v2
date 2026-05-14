@@ -66,5 +66,9 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
                 {{ formatDate(publishedAt, 'MMMM do yyyy') }}
             </p>
         </template>
+
+        <template #actions>
+            <MenuButton :menu-options="menuOptions" />
+        </template>
     </ListItem>
 </template>

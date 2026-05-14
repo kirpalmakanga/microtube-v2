@@ -12,11 +12,6 @@ const props = defineProps<{
     menuOptions?: ContextMenuItem[];
 }>();
 
-const menuConfig = {
-    align: 'end',
-    side: 'bottom'
-} as const;
-
 defineEmits<{ click: [e: void] }>();
 </script>
 
@@ -59,16 +54,9 @@ defineEmits<{ click: [e: void] }>();
                 </div>
             </div>
 
-            <UDropdownMenu v-if="menuOptions" :items="menuOptions" :content="menuConfig">
-                <UButton
-                    class="ml-4"
-                    color="neutral"
-                    variant="ghost"
-                    icon="i-mdi-dots-vertical"
-                    size="lg"
-                    @click.stop
-                />
-            </UDropdownMenu>
+            <div v-if="$slots.actions" class="flex gap-2">
+                <slot name="actions" />
+            </div>
         </UCard>
     </UContextMenu>
 </template>

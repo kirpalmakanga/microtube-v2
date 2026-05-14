@@ -9,16 +9,9 @@ import {
 import { type YoutubePlayerOptions } from '~/services/youtube-player';
 
 const playerStore = usePlayerStore();
-const {
-    currentVideo,
-    previousVideo,
-    nextVideo,
-    newItemCount,
-    isSingleVideo,
-    isScreenVisible,
-    volume
-} = storeToRefs(playerStore);
-const { resetNewItemCount, skipToNext, skipToPrevious } = playerStore;
+const { currentVideo, previousVideo, nextVideo, isSingleVideo, isScreenVisible, volume } =
+    storeToRefs(playerStore);
+const { skipToNext, skipToPrevious } = playerStore;
 
 const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
@@ -292,23 +285,9 @@ useEventListener(document, 'mouseleave', () => {
 
                     <div class="flex gap-2">
                         <PlayerQueue v-if="!isSingleVideo" v-model:is-open="state.isQueueVisible">
-                            <div class="relative">
-                                <UTooltip text="Open queue" :kbds="['q']">
-                                    <UButton
-                                        icon="i-mdi-view-list"
-                                        @click="newItemCount && resetNewItemCount()"
-                                    />
-                                </UTooltip>
-
-                                <UBadge
-                                    v-if="newItemCount"
-                                    class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2"
-                                    color="error"
-                                    size="sm"
-                                >
-                                    {{ newItemCount }}
-                                </UBadge>
-                            </div>
+                            <UTooltip text="Open queue" :kbds="['q']">
+                                <UButton icon="i-mdi-view-list" />
+                            </UTooltip>
                         </PlayerQueue>
 
                         <template v-if="currentVideo">

@@ -1,4 +1,4 @@
-import { getPlaylistItems, getVideo, getVideosFromIds } from '~/services/youtube';
+import { getAllPlaylistItems, getVideo, getVideosFromIds } from '~/services/youtube';
 
 interface PlayerStoreState {
     isScreenVisible: boolean;
@@ -6,7 +6,6 @@ interface PlayerStoreState {
     video: Video | null;
     queue: Video[];
     selectedItemId: string | null;
-    newItemCount: number;
 }
 
 function getInitialState(): PlayerStoreState {
@@ -15,8 +14,7 @@ function getInitialState(): PlayerStoreState {
         volume: 100,
         video: null,
         queue: [],
-        selectedItemId: null,
-        newItemCount: 0
+        selectedItemId: null
     };
 }
 
@@ -54,16 +52,14 @@ export const usePlayerStore = defineStore(
             return state.queue.find(({ id: queueItemId }) => queueItemId === videoId);
         }
 
-        async function queueItems(newItems: Video[]) {
-            const items = newItems.filter(({ id }) => !isInQueue(id));
+        async function queueItems(items: Video[]) {
+            const newItems = items.filter(({ id }) => !isInQueue(id));
 
-            const { queue: currentQueue, newItemCount } = state;
+            state.queue = [...state.queue, ...newItems];
 
-            const queue = [...currentQueue, ...items];
-
-            Object.assign(state, {
-                queue,
-                newItemCount: newItemCount + items.length
+            toast.add({
+                title: `${newItems.length} new item(s) added to queue.`,
+                color: 'success'
             });
 
             await saveQueueToDatabase();
@@ -109,10 +105,6 @@ export const usePlayerStore = defineStore(
             }
         }
 
-        function resetNewItemCount() {
-            state.newItemCount = 0;
-        }
-
         function clearVideo() {
             state.video = null;
         }
@@ -128,31 +120,36 @@ export const usePlayerStore = defineStore(
         }
 
         async function queuePlaylist(playlistId: string, play?: boolean) {
-            async function getItems(pageToken: string | null) {
-                const { items, nextPageToken } = await getPlaylistItems({
-                    playlistId,
-                    pageToken
+            const toastId = `fetch-playlist-${playlistId}`;
+
+            try {
+                toast.add({
+                    id: toastId,
+                    title: 'Fetching playlist items...',
+                    color: 'info',
+                    icon: 'svg-spinners-90-ring-with-bg',
+                    progress: false
                 });
 
-                const newItems = await queueItems(items);
+                const items = await getAllPlaylistItems(playlistId, (items, totalItems) => {
+                    toast.update(toastId, {
+                        title: `Fetched ${items.length}/${totalItems} playlist items...`
+                    });
+                });
 
-                if (play && !pageToken && newItems.length) {
-                    const [{ id } = {}] = newItems;
+                await queueItems(items);
+
+                if (play && items.length) {
+                    const [{ id } = {}] = items;
 
                     if (id) await setSelectedItem(id);
                 }
-
-                if (nextPageToken) {
-                    await getItems(nextPageToken);
-                }
-            }
-
-            try {
-                await getItems(null);
             } catch (error) {
                 captureError(error);
 
                 toast.add({ title: 'Error queueing playlist items.', color: 'error' });
+            } finally {
+                toast.remove(toastId);
             }
         }
 
@@ -185,7 +182,6 @@ export const usePlayerStore = defineStore(
             importVideos,
             removeQueueItem,
             clearQueue,
-            resetNewItemCount,
             clearVideo,
             fetchVideo,
             skipToPrevious: () => moveInQueue(-1),

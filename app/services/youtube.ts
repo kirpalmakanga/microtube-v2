@@ -286,6 +286,34 @@ export async function getPlaylistItems({
     };
 }
 
+export async function getAllPlaylistItems(
+    playlistId: string,
+    onUpdate: (items: PlaylistItem[], totalResults: number) => void
+): Promise<PlaylistItem[]> {
+    async function getItemsRecursively(
+        pageToken: string | null,
+        gatheredItems: PlaylistItem[],
+        onUpdate?: (items: PlaylistItem[], totalItems: number) => void
+    ) {
+        const { items, nextPageToken, totalResults } = await getPlaylistItems({
+            playlistId,
+            pageToken
+        });
+
+        gatheredItems.push(...items);
+
+        onUpdate?.(gatheredItems, totalResults);
+
+        if (nextPageToken) {
+            await getItemsRecursively(nextPageToken, gatheredItems, onUpdate);
+        }
+
+        return gatheredItems;
+    }
+
+    return await getItemsRecursively(null, [], onUpdate);
+}
+
 export async function addPlaylistItem(playlistId: string, videoId: string): Promise<string> {
     const { id } = await request(
         'post',

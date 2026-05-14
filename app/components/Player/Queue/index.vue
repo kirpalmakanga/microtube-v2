@@ -32,7 +32,7 @@ defineShortcuts({
         title="Queue"
         :description="`${queue.length} video${queue.length !== 1 ? 's' : ''}`"
         :ui="{
-            content: 'md:max-w-2/5',
+            content: 'max-w-full md:max-w-2/3 lg:max-w-1/2 xl:max-w-2/5',
             body: 'flex p-0 sm:p-0 scroll-smooth',
             footer: 'justify-end'
         }"

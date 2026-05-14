@@ -72,7 +72,7 @@ defineShortcuts({
         </template>
 
         <template #footer>
-            <UButton icon="i-mdi-plus-box" @click="isImportFormOpen = true" />
+            <UButton icon="i-mdi-plus-box-multiple" @click="isImportFormOpen = true" />
             <UButton icon="i-mdi-notification-clear-all" @click="isClearingPromptOpen = true" />
         </template>
     </USlideover>

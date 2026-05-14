@@ -193,7 +193,7 @@ useEventListener(document, 'mouseleave', () => {
                 'translate-y-full': isFullscreen && !areControlsVisible && !state.isQueueVisible
             }"
         >
-            <div class="ui-container flex flex-col gap-4 px-6 py-4 h-37 overflow-hidden4">
+            <div class="ui-container flex flex-col gap-4 px-4 md:px-6 py-4 h-37 overflow-hidden4">
                 <div class="h-10">
                     <p class="font-bold ellipsis leading-none shrink-0 mb-1">
                         {{ currentVideo?.title || 'No selected video.' }}
@@ -209,12 +209,24 @@ useEventListener(document, 'mouseleave', () => {
                     </p>
                 </div>
 
-                <PlayerSeekbar
-                    class="shrink-0"
-                    :position="state.currentTime"
-                    :duration="currentVideo?.duration || 0"
-                    @update="handleSeeking"
-                />
+                <div class="flex items-center gap-2">
+                    <PlayerSeekbar
+                        class="grow"
+                        :position="state.currentTime"
+                        :duration="currentVideo?.duration || 0"
+                        @update="handleSeeking"
+                    />
+
+                    <span v-if="currentVideo" class="class flex gap-1 text-sm leading-none">
+                        <span class="w-14 text-center">
+                            {{ formatTime(state.currentTime) }}
+                        </span>
+                        <span>/</span>
+                        <span class="w-14 text-center">
+                            {{ formatTime(currentVideo.duration || 0) }}
+                        </span>
+                    </span>
+                </div>
 
                 <div class="flex">
                     <div class="flex items-center gap-2">
@@ -277,13 +289,6 @@ useEventListener(document, 'mouseleave', () => {
                                 v-model="volume"
                             />
                         </div>
-
-                        <span v-if="currentVideo" class="class flex gap-1 text-sm leading-none">
-                            <span>{{ formatTime(state.currentTime) }}</span>
-
-                            <span>/</span>
-                            <span>{{ formatTime(currentVideo.duration || 0) }}</span>
-                        </span>
                     </div>
 
                     <div class="grow"></div>

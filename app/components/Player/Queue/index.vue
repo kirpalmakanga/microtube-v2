@@ -41,7 +41,7 @@ defineShortcuts({
         <slot />
 
         <template #body>
-            <ul ref="list" :options="sortableOptions">
+            <ul ref="list" class="w-full" :options="sortableOptions">
                 <li
                     class="relative flex bg-elevated/50 group"
                     v-for="(item, index) of queue"

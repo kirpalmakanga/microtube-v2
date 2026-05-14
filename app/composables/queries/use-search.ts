@@ -1,4 +1,3 @@
-import { query } from 'firebase/database';
 import { searchVideos, type SearchVideosReturn } from '~/services/youtube';
 
 export function useSearch(searchParams: MaybeRef<{ query: string; forMine: number }>) {

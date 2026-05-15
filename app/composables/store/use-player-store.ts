@@ -70,6 +70,14 @@ export const usePlayerStore = defineStore(
         }
 
         function queueItem(data: Video) {
+            if (isInQueue(data.id)) {
+                toast.add({
+                    title: 'Already in queue.'
+                });
+
+                return;
+            }
+
             return queueItems([data]);
         }
 
@@ -176,6 +184,7 @@ export const usePlayerStore = defineStore(
             previousVideo: computed(() => state.queue[selectedItemIndex.value - 1]),
             nextVideo: computed(() => state.queue[selectedItemIndex.value + 1]),
             isSingleVideo: computed(() => !!state.video),
+            isInQueue,
             queueItems,
             queueItem,
             queuePlaylist,

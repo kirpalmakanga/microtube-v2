@@ -12,7 +12,7 @@ const route = useRoute();
 
 const playerStore = usePlayerStore();
 const { currentVideo, previousVideo, nextVideo, isSingleVideo, volume } = storeToRefs(playerStore);
-const { skipToNext, skipToPrevious } = playerStore;
+const { skipToNext, skipToPrevious, queueItem } = playerStore;
 
 const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
@@ -310,6 +310,15 @@ watch(
                                 <UButton icon="i-mdi-view-list" />
                             </UTooltip>
                         </PlayerQueue>
+
+                        <UTooltip
+                            v-if="currentVideo && isSingleVideo"
+                            text="Add to queue"
+                            :disabled="isMobile()"
+                            @click="queueItem(currentVideo)"
+                        >
+                            <UButton icon="i-mdi-plus-circle" />
+                        </UTooltip>
 
                         <template v-if="currentVideo">
                             <PlaylistSelectorModal :video="currentVideo">

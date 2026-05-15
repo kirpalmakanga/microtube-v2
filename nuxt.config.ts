@@ -11,7 +11,10 @@ const {
 export default defineNuxtConfig({
     app: {
         head: {
-            title: 'Microtube'
+            title: 'Microtube',
+            bodyAttrs: {
+                style: 'background-color:oklch(21% 0.034 264.665));height:100dvh'
+            }
         }
     },
     ssr: false,

@@ -1,4 +1,4 @@
-import { getAuthorizationUrl } from '../core/google';
+import { getAuthorizationUrl } from '../services/google';
 import { badRequest } from '../utils/response';
 
 export default defineEventHandler(async (event) => {

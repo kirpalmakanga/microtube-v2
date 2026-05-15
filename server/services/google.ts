@@ -45,7 +45,19 @@ export async function getAuthorizationUrl(origin: string) {
     return url;
 }
 
-export async function getToken({ origin, code }: { origin: string; code: string }) {
+interface GoogleGetTokenReturn {
+    accessToken: string;
+    refreshToken: string;
+    idToken: string;
+}
+
+export async function getToken({
+    origin,
+    code
+}: {
+    origin: string;
+    code: string;
+}): Promise<GoogleGetTokenReturn> {
     const client = getClient({ redirectUri: `${origin}/callback` });
 
     const {
@@ -59,13 +71,18 @@ export async function getToken({ origin, code }: { origin: string; code: string 
     };
 }
 
+interface GoogleRefreshAccessTokenReturn {
+    idToken: string;
+    accessToken: string;
+}
+
 export function refreshAccessToken({
     origin,
     refreshToken
 }: {
     origin: string;
     refreshToken: string;
-}) {
+}): Promise<GoogleRefreshAccessTokenReturn> {
     const client = getClient({
         redirectUri: `${origin}/callback`,
         credentials: {
@@ -81,7 +98,8 @@ export function refreshAccessToken({
                 if (tokens) {
                     const { id_token: idToken, access_token: accessToken } = tokens;
 
-                    resolve({ idToken, accessToken });
+                    if (idToken && accessToken) resolve({ idToken, accessToken });
+                    else reject('Invalid returned credentials');
                 } else reject(new Error("Couldn't retrieve credentials"));
             }
         });

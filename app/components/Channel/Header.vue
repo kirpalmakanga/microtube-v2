@@ -30,9 +30,6 @@ function toggleSubscription() {
 
         <template #content>
             <h1 class="text-lg font-bold leading-none ellipsis">{{ title }}</h1>
-            <p class="text-sm opacity-70 leading-none ellipsis">
-                {{ description }}
-            </p>
 
             <UButton class="self-start justify-self-end" @click="toggleSubscription">
                 {{ subscriptionId ? 'Unsubscribe' : 'Subscribe' }}

@@ -3,7 +3,8 @@
         <USkeleton class="size-14 md:size-28" />
 
         <div class="flex flex-col grow gap-2">
-            <p><USkeleton class="h-5 w-full" /></p>
+            <USkeleton class="h-5 w-full" />
+            <USkeleton class="h-8 w-25.5" />
         </div>
     </div>
 </template>

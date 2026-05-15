@@ -21,12 +21,21 @@ async function handleSignIn() {
         });
     }
 }
+
+definePageMeta({
+    layout: 'empty'
+});
 </script>
 
 <template>
-    <Placeholder icon="i-mdi-lock" text="You must be logged in to access this content.">
+    <div class="flex flex-col grow items-center justify-center">
+        <div class="flex items-center gap-1 mb-4 md:mb-6">
+            <UIcon class="size-14" name="i-mdi-youtube" />
+            <h1 class="text-4xl font-bold leading-none">MicroTube</h1>
+        </div>
+
         <UButton icon="i-mdi-login" :loading="isSigningIn" @click="handleSignIn" type="button">
             Sign in
         </UButton>
-    </Placeholder>
+    </div>
 </template>

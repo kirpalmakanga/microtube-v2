@@ -11,6 +11,6 @@ const { isSignedIn } = storeToRefs(authStore);
             <NuxtPage />
         </div>
 
-        <Player v-if="isSignedIn" />
+        <Player />
     </UMain>
 </template>

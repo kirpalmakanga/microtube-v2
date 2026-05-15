@@ -8,6 +8,8 @@ const props = defineProps<{
     title: string;
     thumbnails: Thumbnails;
     itemCount: number;
+    privacyStatus: string;
+    showPrivacyStatus?: boolean;
     canBeRemoved?: boolean;
 }>();
 
@@ -65,6 +67,10 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
     >
         <template #content>
             <h2 class="font-bold ellipsis">{{ title }}</h2>
+
+            <UBadge v-if="showPrivacyStatus" class="self-start" color="primary">
+                {{ getVisibilityLabel(privacyStatus) }}
+            </UBadge>
         </template>
 
         <template #actions>

@@ -204,3 +204,13 @@ export function isEqual(a: unknown, b: unknown): boolean {
 export function limitNumberWithinRange(value: number, min: number, max: number) {
     return Math.min(Math.max(value, min), max);
 }
+
+const privacyLabels: Record<string, string> = {
+    private: 'Private',
+    public: 'Public',
+    unlisted: 'Unlisted'
+};
+
+export function getVisibilityLabel(privacyStatus: string) {
+    return privacyLabels[privacyStatus];
+}

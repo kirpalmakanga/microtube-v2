@@ -27,6 +27,7 @@ const itemToRemove = ref<Playlist | null>(null);
                 <PlaylistsListItem
                     v-bind="item"
                     :can-be-removed="true"
+                    :show-privacy-status="true"
                     @queue="queuePlaylist(item.id)"
                     @remove="itemToRemove = item"
                 />

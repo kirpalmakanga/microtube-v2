@@ -1,7 +1,6 @@
 import { getAllPlaylistItems, getVideo, getVideosFromIds } from '~/services/youtube';
 
 interface PlayerStoreState {
-    isScreenVisible: boolean;
     volume: number;
     video: Video | null;
     queue: Video[];
@@ -10,7 +9,6 @@ interface PlayerStoreState {
 
 function getInitialState(): PlayerStoreState {
     return {
-        isScreenVisible: false,
         volume: 100,
         video: null,
         queue: [],

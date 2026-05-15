@@ -8,9 +8,10 @@ import {
 } from '@vueuse/core';
 import { type YoutubePlayerOptions } from '~/services/youtube-player';
 
+const route = useRoute();
+
 const playerStore = usePlayerStore();
-const { currentVideo, previousVideo, nextVideo, isSingleVideo, isScreenVisible, volume } =
-    storeToRefs(playerStore);
+const { currentVideo, previousVideo, nextVideo, isSingleVideo, volume } = storeToRefs(playerStore);
 const { skipToNext, skipToPrevious } = playerStore;
 
 const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
@@ -18,6 +19,7 @@ const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 interface PlayerState {
     isPlaying: boolean;
     isMuted: boolean;
+    isScreenVisible: boolean;
     isQueueVisible: boolean;
     isDescriptionVisible: boolean;
     currentTime: number;
@@ -27,6 +29,7 @@ function getInitialPlayerState(): PlayerState {
     return {
         isPlaying: false,
         isMuted: false,
+        isScreenVisible: false,
         isQueueVisible: false,
         isDescriptionVisible: false,
         currentTime: 0
@@ -66,7 +69,7 @@ function toggleMute() {
 }
 
 function toggleScreen() {
-    isScreenVisible.value = !isScreenVisible.value;
+    state.isScreenVisible = !state.isScreenVisible;
 }
 
 function handleSeeking(currentTime: number) {
@@ -159,6 +162,13 @@ useEventListener(document, 'mouseleave', () => {
         stopHideControlsTimer();
     }
 });
+
+watch(
+    () => route.name,
+    () => {
+        if (state.isScreenVisible) state.isScreenVisible = false;
+    }
+);
 </script>
 
 <template>
@@ -175,7 +185,7 @@ useEventListener(document, 'mouseleave', () => {
             :class="{
                 'top-16 bottom-37': !isFullscreen,
                 'top-0 bottom-0': isFullscreen,
-                'translate-y-full': !isScreenVisible && !isFullscreen && !isSingleVideo
+                'translate-y-full': !state.isScreenVisible && !isFullscreen && !isSingleVideo
             }"
             :videoId="currentVideo.id"
             :options="playerOptions"
@@ -203,6 +213,7 @@ useEventListener(document, 'mouseleave', () => {
                             v-if="currentVideo"
                             class="text-sm opacity-70 hover:opacity-60"
                             :to="`/channel/${currentVideo?.channelId}`"
+                            @click="isFullscreen && toggleFullscreen()"
                         >
                             {{ currentVideo?.channelTitle }}
                         </NuxtLink>

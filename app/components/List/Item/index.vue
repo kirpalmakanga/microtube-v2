@@ -30,7 +30,7 @@ defineEmits<{ click: [e: void] }>();
                 {{ index }}
             </div>
 
-            <div class="flex max-lg:items-center grow gap-4 overflow-hidden">
+            <div class="flex max-md:items-center grow gap-4 overflow-hidden">
                 <div class="relative shrink-0">
                     <Img
                         class="bg-gray-800 h-14 md:h-28 aspect-video rounded-md"

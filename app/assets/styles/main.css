@@ -27,6 +27,10 @@
     }
 }
 
+body {
+    @apply overflow-hidden;
+}
+
 button {
     @apply cursor-pointer;
 

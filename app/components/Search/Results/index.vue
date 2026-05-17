@@ -8,8 +8,6 @@ const { data, isPending, isLoading, error, refetch, hasNextPage, loadNextPage } 
     }))
 );
 
-const clearSearchResults = useClearSearchResults();
-
 const items = computed(() => data.value?.pages.flatMap(({ items }) => items));
 
 const { queueItem } = usePlayerStore();
@@ -27,7 +25,7 @@ watch(
 </script>
 
 <template>
-    <SearchResultsLoader v-if="isPending || (error && isLoading)" />
+    <SearchResultsLoader v-if="isPending || (error && isLoading)" class="p4 md:p-6" />
 
     <Error v-else-if="error" @action="refetch()" />
 

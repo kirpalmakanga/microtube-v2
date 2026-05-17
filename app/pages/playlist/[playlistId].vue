@@ -50,7 +50,7 @@ useAppTitle(computed(() => playlist.value?.title));
         />
 
         <PlaylistItemsLoader
-            class="p-6"
+            class="p4 md:p-6"
             v-if="arePlaylistItemsPending || (playlistItemsError && arePlaylistItemsLoading)"
         />
 

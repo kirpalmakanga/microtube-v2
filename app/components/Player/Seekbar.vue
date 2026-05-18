@@ -3,7 +3,7 @@ import { useEventListener } from '@vueuse/core';
 
 const props = defineProps<{ duration: number }>();
 
-const emit = defineEmits<{ update: [position: number]; start: [e: void]; end: [e: void] }>();
+const emit = defineEmits<{ start: [e: void]; end: [e: void] }>();
 
 const container = useTemplateRef('container');
 const marker = useTemplateRef('marker');
@@ -13,11 +13,7 @@ const isSeeking = defineModel<boolean>('isSeeking', { default: false });
 
 const seekingPosition = ref<number>(0);
 
-const progress = computed<number>(() => {
-    if (isSeeking.value) return seekingPosition.value;
-
-    return position.value / props.duration;
-});
+const progress = computed<number>(() => position.value / props.duration);
 
 const handlePosition = computed<number>(() => {
     if (!container.value) return 0;
@@ -31,12 +27,10 @@ const markerPosition = ref<number | null>(null);
 
 const markerMargin = 12;
 
-function emitUpdatedTime() {
-    emit('update', seekingPosition.value * props.duration);
-}
-
 function calculateSeekingPosition(mousePositionX: number, containerWidth: number) {
     seekingPosition.value = mousePositionX / containerWidth;
+
+    if (isSeeking.value) position.value = seekingPosition.value * props.duration;
 }
 
 function calculateMarkerPosition(mousePositionX: number, containerWidth: number) {
@@ -68,24 +62,30 @@ function trackMousePosition({ pageX }: MouseEvent) {
     calculateMarkerPosition(positionX, containerWidth);
 }
 
-function startSeeking(e: Event) {
+function startSeeking(e: MouseEvent) {
     e.preventDefault();
 
     isSeeking.value = true;
+
+    trackMousePosition(e);
+
+    emit('start');
 }
 
 function stopSeeking() {
     if (isSeeking.value) {
-        isSeeking.value = false;
+        emit('end');
 
-        emitUpdatedTime();
+        isSeeking.value = false;
     }
 }
 
 function handleMouseLeave() {
-    seekingPosition.value = 0;
+    if (!isSeeking.value) {
+        markerPosition.value = null;
 
-    if (!isSeeking.value) markerPosition.value = null;
+        seekingPosition.value = 0;
+    }
 }
 
 function getContainerEvents() {

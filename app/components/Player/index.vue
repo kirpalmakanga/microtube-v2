@@ -21,7 +21,6 @@ const { isFullscreen, toggle: toggleFullscreen } = useFullscreen(playerWrapper);
 interface PlayerState {
     isPlaying: boolean;
     isMuted: boolean;
-    isSeeking: boolean;
     isScreenVisible: boolean;
     isQueueVisible: boolean;
     isDescriptionVisible: boolean;
@@ -32,7 +31,6 @@ function getInitialPlayerState(): PlayerState {
     return {
         isPlaying: false,
         isMuted: false,
-        isSeeking: false,
         isScreenVisible: false,
         isQueueVisible: false,
         isDescriptionVisible: false,
@@ -76,10 +74,10 @@ function toggleScreen() {
     state.isScreenVisible = !state.isScreenVisible;
 }
 
-function handleSeeking(currentTime: number) {
-    state.currentTime = currentTime;
+function handleSeeking() {
+    youtubePlayer.value?.seekTo(state.currentTime);
 
-    youtubePlayer.value?.seekTo(currentTime);
+    if (!state.isPlaying) togglePlay();
 }
 
 function handleVideoEnd() {
@@ -123,13 +121,6 @@ watch(
         } else {
             pauseTimewatcher();
         }
-    }
-);
-
-watch(
-    () => state.isSeeking,
-    () => {
-        state.isPlaying = !state.isSeeking;
     }
 );
 
@@ -219,8 +210,8 @@ watch(
                     class="grow opacity-0 group-hover:opacity-100"
                     :duration="currentVideo.duration"
                     v-model:position="state.currentTime"
-                    v-model:is-seeking="state.isSeeking"
-                    @update="handleSeeking"
+                    @start="state.isPlaying && togglePlay()"
+                    @end="handleSeeking()"
                 />
             </div>
 

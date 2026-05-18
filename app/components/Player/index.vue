@@ -14,11 +14,14 @@ const playerStore = usePlayerStore();
 const { currentVideo, previousVideo, nextVideo, isSingleVideo, volume } = storeToRefs(playerStore);
 const { skipToNext, skipToPrevious, queueItem } = playerStore;
 
-const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
+const playerWrapper = useTemplateRef('playerWrapper');
+
+const { isFullscreen, toggle: toggleFullscreen } = useFullscreen(playerWrapper);
 
 interface PlayerState {
     isPlaying: boolean;
     isMuted: boolean;
+    isSeeking: boolean;
     isScreenVisible: boolean;
     isQueueVisible: boolean;
     isDescriptionVisible: boolean;
@@ -29,6 +32,7 @@ function getInitialPlayerState(): PlayerState {
     return {
         isPlaying: false,
         isMuted: false,
+        isSeeking: false,
         isScreenVisible: false,
         isQueueVisible: false,
         isDescriptionVisible: false,
@@ -123,6 +127,13 @@ watch(
 );
 
 watch(
+    () => state.isSeeking,
+    () => {
+        state.isPlaying = !state.isSeeking;
+    }
+);
+
+watch(
     () => currentVideo.value?.id,
     () => {
         Object.assign(state, getInitialPlayerState());
@@ -173,7 +184,7 @@ watch(
 
 <template>
     <div
-        class="flex flex-col justify-end bg-elevated/70 overflow-hidden group"
+        class="flex flex-col justify-end bg-elevated/70 group"
         ref="playerWrapper"
         @mousemove="isFullscreen && startHideControlsTimerThrottled()"
         @mouseleave="isFullscreen && stopHideControlsTimer"
@@ -181,9 +192,9 @@ watch(
         <YoutubePlayer
             v-if="currentVideo"
             ref="youtubePlayer"
-            class="fixed left-0 right-0 z-51 transition-transform after:content-[''] after:absolute after:inset-0"
+            class="fixed left-0 right-0 transition-transform after:content-[''] z-51 after:absolute after:inset-0"
             :class="{
-                'top-16 bottom-37': !isFullscreen,
+                'top-16 bottom-29': !isFullscreen,
                 'top-0 bottom-0': isFullscreen,
                 'translate-y-full': !state.isScreenVisible && !isFullscreen && !isSingleVideo
             }"
@@ -191,52 +202,58 @@ watch(
             :options="playerOptions"
             :volume="volume"
             v-model:playing="state.isPlaying"
-            v-model:current-time="state.currentTime"
             @ready="isStartup = false"
             @ended="handleVideoEnd"
             @click="togglePlay"
         />
 
         <div
-            class="bg-elevated shadow z-52 transition-transform"
+            class="relative bg-elevated shadow transition-transform z-52"
             :class="{
                 'translate-y-full': isFullscreen && !areControlsVisible && !state.isQueueVisible
             }"
         >
-            <div class="ui-container flex flex-col gap-4 px-4 md:px-6 py-4 h-37 overflow-hidden4">
-                <div class="h-10">
-                    <p class="font-bold ellipsis leading-none shrink-0 mb-1">
-                        {{ currentVideo?.title || 'No selected video.' }}
-                    </p>
-                    <p class="ellipsis leading-none shrink-0">
-                        <NuxtLink
-                            v-if="currentVideo"
-                            class="text-sm opacity-70 hover:opacity-60"
-                            :to="`/channel/${currentVideo?.channelId}`"
-                            @click="isFullscreen && toggleFullscreen()"
-                        >
-                            {{ currentVideo?.channelTitle }}
-                        </NuxtLink>
-                    </p>
-                </div>
+            <div class="absolute left-0 right-0 top-0">
+                <PlayerSeekbar
+                    v-if="currentVideo"
+                    class="grow opacity-0 group-hover:opacity-100"
+                    :duration="currentVideo.duration"
+                    v-model:position="state.currentTime"
+                    v-model:is-seeking="state.isSeeking"
+                    @update="handleSeeking"
+                />
+            </div>
 
-                <div class="flex items-center gap-2">
-                    <PlayerSeekbar
-                        class="grow"
-                        :position="state.currentTime"
-                        :duration="currentVideo?.duration || 0"
-                        @update="handleSeeking"
-                    />
+            <div class="ui-container flex flex-col gap-4 px-4 md:px-6 py-4 h-29 overflow-hidden">
+                <div class="flex items-center">
+                    <div class="h-10 grow overflow-hidden">
+                        <p class="font-bold ellipsis leading-none shrink-0 mb-1">
+                            {{ currentVideo?.title || 'No selected video.' }}
+                        </p>
+                        <p class="ellipsis leading-none shrink-0">
+                            <NuxtLink
+                                v-if="currentVideo"
+                                class="text-sm opacity-70 hover:opacity-60"
+                                :to="`/channel/${currentVideo?.channelId}`"
+                                @click="isFullscreen && toggleFullscreen()"
+                            >
+                                {{ currentVideo?.channelTitle }}
+                            </NuxtLink>
+                        </p>
+                    </div>
 
-                    <span v-if="currentVideo" class="class flex gap-1 text-sm leading-none">
-                        <span class="w-14 text-center">
+                    <div
+                        v-if="currentVideo"
+                        class="flex items-center gap-1 text-sm leading-none font-mono"
+                    >
+                        <span class="w-17 text-right">
                             {{ formatTime(state.currentTime) }}
                         </span>
                         <span>/</span>
-                        <span class="w-14 text-center">
+                        <span>
                             {{ formatTime(currentVideo.duration || 0) }}
                         </span>
-                    </span>
+                    </div>
                 </div>
 
                 <div class="flex">
@@ -280,7 +297,7 @@ watch(
 
                         <div
                             v-if="!isMobile()"
-                            class="group flex gap-1 overflow-hidden transition-all w-8 z-1"
+                            class="flex gap-1 overflow-hidden transition-all w-8 z-1"
                             :class="{ 'hover:w-37': !!currentVideo }"
                             @wheel="handleWheelVolume"
                         >

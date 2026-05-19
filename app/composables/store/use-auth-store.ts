@@ -1,4 +1,4 @@
-import { logIn, refreshAccessToken } from '~/services/youtube';
+import { exchangeCodeForTokens, refreshAccessToken } from '~/services/authentication';
 import { captureError } from '~/utils/helpers';
 
 export const getInitialState = (): User => ({
@@ -17,7 +17,7 @@ export const useAuthStore = defineStore(
         const state = reactive<User>(getInitialState());
 
         async function signIn(code: string) {
-            const user = await logIn(code);
+            const user = await exchangeCodeForTokens(code);
 
             Object.assign(state, user);
         }

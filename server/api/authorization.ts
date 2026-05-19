@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     if (origin) {
         const url = await getAuthorizationUrl(origin);
 
-        return { url };
+        return await sendRedirect(event, url);
     }
 
     badRequest('Invalid origin');

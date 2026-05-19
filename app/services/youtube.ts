@@ -12,35 +12,6 @@ export const instance = axios.create({
     baseURL: 'https://content.googleapis.com/youtube/v3'
 });
 
-export async function getAuthorizationUrl(): Promise<string> {
-    const {
-        data: { url }
-    } = await axios.get('/api/authorization');
-
-    return url;
-}
-
-export async function logIn(code: string): Promise<User> {
-    const { data } = await axios.get('/api/token', {
-        params: { code }
-    });
-
-    return data;
-}
-
-interface RefreshAccessTokenReturn {
-    idToken: string;
-    accessToken: string;
-}
-
-export async function refreshAccessToken(refreshToken: string): Promise<RefreshAccessTokenReturn> {
-    const { data } = await axios.get('/api/refresh', {
-        params: { refreshToken }
-    });
-
-    return data;
-}
-
 function removeEmptyParams(params: Record<string, unknown>) {
     for (const p in params) {
         if (!params[p]) {

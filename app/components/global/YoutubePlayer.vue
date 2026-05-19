@@ -15,10 +15,11 @@ const props = defineProps<{
 const emit = defineEmits<{
     ready: [youtubePlayer: YouTubePlayerInstance];
     unstarted: [e: void];
-    buffering: [e: void];
     playing: [e: void];
     paused: [e: void];
     ended: [e: void];
+    'buffering-start': [e: void];
+    'buffering-end': [e: void];
 }>();
 
 const containerId = 'youtube-player';
@@ -50,6 +51,8 @@ function onStateChange({ data }: { [key: string]: any }) {
             isPlaying.value = true;
 
             emit('playing');
+
+            emit('buffering-end');
             break;
 
         case PAUSED:
@@ -59,7 +62,7 @@ function onStateChange({ data }: { [key: string]: any }) {
             break;
 
         case BUFFERING:
-            emit('buffering');
+            emit('buffering-start');
             break;
 
         default:
@@ -145,7 +148,7 @@ export interface YoutubePlayerExposed {
 defineExpose<YoutubePlayerExposed>({
     isPlayerReady,
     getCurrentTime: () => {
-        return youtubePlayer.value?.getCurrentTime();
+        return youtubePlayer.value?.getCurrentTime() || 0;
     },
     seekTo: (time: number) => {
         youtubePlayer.value?.seekTo(time, true);

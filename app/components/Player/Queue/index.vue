@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useSortable, type UseSortableOptions } from '@vueuse/integrations/useSortable';
 const playerStore = usePlayerStore();
-const { queue, selectedItemId } = storeToRefs(playerStore);
+const { queue } = storeToRefs(playerStore);
 const { isSelectedItem, clearQueue, removeQueueItem, setSelectedItem } = playerStore;
 
 const isOpen = defineModel<boolean>('isOpen', { default: false });

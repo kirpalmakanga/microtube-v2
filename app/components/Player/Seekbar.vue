@@ -74,9 +74,9 @@ function startSeeking(e: MouseEvent) {
 
 function stopSeeking() {
     if (isSeeking.value) {
-        emit('end');
-
         isSeeking.value = false;
+
+        emit('end');
     }
 }
 

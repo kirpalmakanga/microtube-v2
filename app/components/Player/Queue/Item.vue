@@ -56,7 +56,7 @@ const menuConfig = {
 <template>
     <UContextMenu :items="menuOptions" :disabled="!menuOptions">
         <div
-            class="bg-elevated/50 hover:bg-elevated/25 transition-colors relative flex grow items-center overflow-hidden pl-10 py-2 pr-2"
+            class="bg-elevated/50 hover:bg-elevated/25 transition-colors relative flex grow items-center overflow-hidden pl-10 py-2 pr-2 cursor-pointer"
             :class="{
                 'bg-zinc-700 hover:bg-zinc-600': isSelected
             }"

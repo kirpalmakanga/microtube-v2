@@ -1,9 +1,9 @@
 import { format } from 'date-fns';
 
 export function captureError(error: unknown) {
-    if (import.meta.env.DEV) {
-        console.error(error);
-    }
+    // if (import.meta.env.DEV) {
+    console.error(error);
+    // }
 }
 
 export const getThumbnails = (thumbnails: Thumbnails, size: string): string => {

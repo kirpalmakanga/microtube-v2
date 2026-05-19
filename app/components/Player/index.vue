@@ -19,6 +19,7 @@ const playerWrapper = useTemplateRef('playerWrapper');
 const { isFullscreen, toggle: toggleFullscreen } = useFullscreen(playerWrapper);
 
 interface PlayerState {
+    isBuffering: boolean;
     isPlaying: boolean;
     isMuted: boolean;
     isScreenVisible: boolean;
@@ -29,6 +30,7 @@ interface PlayerState {
 
 function getInitialPlayerState(): PlayerState {
     return {
+        isBuffering: false,
         isPlaying: false,
         isMuted: false,
         isScreenVisible: false,
@@ -74,10 +76,20 @@ function toggleScreen() {
     state.isScreenVisible = !state.isScreenVisible;
 }
 
-function handleSeeking() {
+let wasPreviouslyPlaying = false;
+
+function handleStartSeeking() {
+    wasPreviouslyPlaying = state.isPlaying;
+
+    if (state.isPlaying) state.isPlaying = false;
+}
+
+function handleEndSeeking() {
     youtubePlayer.value?.seekTo(state.currentTime);
 
-    if (!state.isPlaying) togglePlay();
+    if (wasPreviouslyPlaying) state.isBuffering = true;
+
+    state.isPlaying = wasPreviouslyPlaying;
 }
 
 function handleVideoEnd() {
@@ -114,11 +126,11 @@ const { pause: pauseTimewatcher, resume: resumeTimeWatcher } = useIntervalFn(
 );
 
 watch(
-    () => state.isPlaying,
+    () => [state.isPlaying, state.isBuffering],
     () => {
-        if (state.isPlaying) {
+        if (state.isPlaying && !state.isBuffering) {
             resumeTimeWatcher();
-        } else {
+        } else if (!state.isPlaying || state.isBuffering) {
             pauseTimewatcher();
         }
     }
@@ -193,6 +205,8 @@ watch(
             :options="playerOptions"
             :volume="volume"
             v-model:playing="state.isPlaying"
+            @buffering-start="state.isBuffering = true"
+            @buffering-end="state.isBuffering = false"
             @ready="isStartup = false"
             @ended="handleVideoEnd"
             @click="togglePlay"
@@ -210,8 +224,8 @@ watch(
                     class="grow opacity-0 group-hover:opacity-100"
                     :duration="currentVideo.duration"
                     v-model:position="state.currentTime"
-                    @start="state.isPlaying && togglePlay()"
-                    @end="handleSeeking()"
+                    @start="handleStartSeeking()"
+                    @end="handleEndSeeking()"
                 />
             </div>
 

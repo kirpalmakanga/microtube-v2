@@ -1,3 +1,4 @@
+import type { AvatarProps } from '@nuxt/ui';
 import { getAllPlaylistItems, getVideo, getVideosFromIds } from '~/services/youtube';
 
 interface PlayerStoreState {
@@ -54,31 +55,45 @@ export const usePlayerStore = defineStore(
             return state.queue.find(({ id: queueItemId }) => queueItemId === videoId);
         }
 
-        async function queueItems(items: Video[]) {
+        async function queueItems(items: Video[], notify?: boolean) {
             const newItems = items.filter(({ id }) => !isInQueue(id));
 
             state.queue = [...state.queue, ...newItems];
 
-            toast.add({
-                title: `${newItems.length} new item(s) added to queue.`,
-                color: 'success'
-            });
+            if (notify) {
+                toast.add({
+                    title: `${newItems.length} new item(s) added to queue.`,
+                    color: 'success'
+                });
+            }
 
             await saveQueueToDatabase();
 
             return items;
         }
 
-        function queueItem(data: Video) {
+        async function queueItem(data: Video) {
+            const avatar: AvatarProps = {
+                src: getThumbnails(data.thumbnails, 'default'),
+                class: 'rounded-md aspect-video w-auto'
+            };
+
             if (isInQueue(data.id)) {
                 toast.add({
-                    title: 'Already in queue.'
+                    title: 'Already in queue.',
+                    avatar
                 });
 
                 return;
             }
 
-            return queueItems([data]);
+            await queueItems([data]);
+
+            toast.add({
+                title: `Added to queue.`,
+                color: 'success',
+                avatar
+            });
         }
 
         async function removeQueueItem(targetId: string) {
@@ -107,7 +122,7 @@ export const usePlayerStore = defineStore(
             try {
                 const items = await getVideosFromIds(ids.filter((id) => !isInQueue(id)));
 
-                await queueItems(items);
+                await queueItems(items, true);
             } catch (error) {
                 captureError(error);
 
@@ -146,7 +161,7 @@ export const usePlayerStore = defineStore(
                     });
                 });
 
-                await queueItems(items);
+                await queueItems(items, true);
 
                 if (play && items.length) {
                     const [{ id } = {}] = items;
@@ -185,7 +200,6 @@ export const usePlayerStore = defineStore(
             nextVideo: computed(() => state.queue[selectedItemIndex.value + 1]),
             isSingleVideo: computed(() => !!state.video),
             isInQueue,
-            queueItems,
             queueItem,
             queuePlaylist,
             setSelectedItem,

@@ -221,7 +221,7 @@ watch(
             <div class="absolute left-0 right-0 top-0">
                 <PlayerSeekbar
                     v-if="currentVideo"
-                    class="grow opacity-0 group-hover:opacity-100"
+                    class="grow"
                     :duration="currentVideo.duration"
                     v-model:position="state.currentTime"
                     @start="handleStartSeeking()"

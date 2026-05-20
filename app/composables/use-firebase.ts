@@ -80,4 +80,6 @@ export function useFirebaseData<T>(path: MaybeRef<string>, callback: (data: T | 
         },
         { immediate: true }
     );
+
+    onUnmounted(clean);
 }

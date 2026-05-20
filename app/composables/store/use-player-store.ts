@@ -33,18 +33,14 @@ export const usePlayerStore = defineStore(
             state.queue.findIndex(({ id }) => id === state.selectedItemId)
         );
 
-        const currentUserId = computed(() => (import.meta.env.DEV ? 'dev' : userId.value));
-        const queuePath = computed(() => `users/${currentUserId.value}/queue`);
-        const selectedItemIdPath = computed(() => `users/${currentUserId.value}/selectedItemId`);
-
         function saveQueueToDatabase() {
-            return saveData(queuePath.value, state.queue);
+            return saveData('queue', state.queue);
         }
 
         async function setSelectedItem(videoId: string | null) {
             state.selectedItemId = videoId;
 
-            await saveData(selectedItemIdPath.value, videoId);
+            await saveData('selectedItemId', videoId);
         }
 
         function isSelectedItem(videoId: string | null) {
@@ -177,13 +173,13 @@ export const usePlayerStore = defineStore(
             }
         }
 
-        useFirebaseData<Video[]>(queuePath.value, (queue) => {
+        useFirebaseData<Video[]>('queue', (queue) => {
             if (!isEqual(queue, state.queue)) {
                 state.queue = queue || [];
             }
         });
 
-        useFirebaseData<string | null>(selectedItemIdPath, (selectedId) => {
+        useFirebaseData<string | null>('selectedItemId', (selectedId) => {
             if (!isSelectedItem(selectedId)) {
                 state.selectedItemId = selectedId;
             }

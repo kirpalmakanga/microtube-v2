@@ -33,6 +33,7 @@ declare global {
         privacyStatus: string;
         channelId: string;
         channelTitle: string;
+        isOwned?: boolean;
     }
 
     interface Video {

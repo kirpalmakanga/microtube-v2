@@ -1,5 +1,10 @@
 import axios from 'axios';
-import { parseVideoData, parsePlaylistData, parseChannelData } from './parsers';
+import {
+    parseVideoData,
+    parsePlaylistData,
+    parseChannelData,
+    type YoutubePlaylist
+} from './parsers';
 import { parseVideoId, pick } from '~/utils/helpers';
 
 interface SearchResultItem {
@@ -134,7 +139,10 @@ export async function getPlaylists({
     });
 
     return {
-        items: items.map(parsePlaylistData),
+        items: items.map((item: YoutubePlaylist) => ({
+            ...parsePlaylistData(item),
+            isOwned: !!mine
+        })),
         nextPageToken,
         totalResults
     };

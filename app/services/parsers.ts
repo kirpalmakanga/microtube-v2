@@ -14,7 +14,7 @@ interface YoutubeVideo {
     status: { privacyStatus: string };
 }
 
-interface YoutubePlaylist {
+export interface YoutubePlaylist {
     id: string;
     contentDetails: { itemCount: number };
     snippet: { title: string; thumbnails: Thumbnails; channelId: string; channelTitle: string };

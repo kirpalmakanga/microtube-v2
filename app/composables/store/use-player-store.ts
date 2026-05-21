@@ -20,9 +20,6 @@ function getInitialState(): PlayerStoreState {
 export const usePlayerStore = defineStore(
     'player',
     () => {
-        const authStore = useAuthStore();
-        const { id: userId } = storeToRefs(authStore);
-
         const { saveData } = useFirebase();
 
         const toast = useToast();

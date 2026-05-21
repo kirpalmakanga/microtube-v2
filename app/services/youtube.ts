@@ -46,7 +46,7 @@ const request = async (
 /* Videos */
 export interface SearchVideosReturn {
     items: Video[];
-    nextPageToken: string | null;
+    nextPageToken: string | undefined;
     totalResults: number;
 }
 
@@ -110,7 +110,7 @@ export async function getVideosFromIds(ids: string[]) {
 
 export interface GetPlaylistsReturn {
     items: Playlist[];
-    nextPageToken: string;
+    nextPageToken: string | undefined;
     totalResults: number;
 }
 
@@ -145,27 +145,6 @@ export async function getPlaylists({
         })),
         nextPageToken,
         totalResults
-    };
-}
-
-export async function getAllPlaylists({ mine = false } = {}) {
-    let pageToken = null;
-    let stack = [];
-
-    while (pageToken !== null) {
-        const { items, nextPageToken } = await getPlaylists({
-            pageToken,
-            mine
-        });
-
-        pageToken = nextPageToken || null;
-        stack.push(...items);
-    }
-
-    return {
-        items: stack,
-        nextPageToken: pageToken,
-        totalResults: stack.length
     };
 }
 
@@ -214,7 +193,7 @@ export async function getPlaylist(id: string) {
 
 export interface GetPlaylistItemsReturn {
     items: PlaylistItem[];
-    nextPageToken: string;
+    nextPageToken: string | undefined;
     totalResults: number;
 }
 
@@ -269,28 +248,23 @@ export async function getAllPlaylistItems(
     playlistId: string,
     onUpdate: (items: PlaylistItem[], totalResults: number) => void
 ): Promise<PlaylistItem[]> {
-    async function getItemsRecursively(
-        pageToken: string | null,
-        gatheredItems: PlaylistItem[],
-        onUpdate?: (items: PlaylistItem[], totalItems: number) => void
-    ) {
+    let pageToken: string | null | undefined = null;
+    let stack = [];
+
+    while (typeof pageToken !== 'undefined') {
         const { items, nextPageToken, totalResults } = await getPlaylistItems({
             playlistId,
             pageToken
         });
 
-        gatheredItems.push(...items);
+        onUpdate?.(stack, totalResults);
 
-        onUpdate?.(gatheredItems, totalResults);
+        pageToken = nextPageToken;
 
-        if (nextPageToken) {
-            await getItemsRecursively(nextPageToken, gatheredItems, onUpdate);
-        }
-
-        return gatheredItems;
+        stack.push(...items);
     }
 
-    return await getItemsRecursively(null, [], onUpdate);
+    return stack;
 }
 
 export async function hasPlaylistItem(videoId: string, playlistId: string) {
@@ -421,7 +395,7 @@ export async function getChannel(id: string): Promise<Channel> {
 
 export interface GetChannelVideosReturn {
     items: Video[];
-    nextPageToken: string | null;
+    nextPageToken: string | undefined;
     totalResults: number;
 }
 

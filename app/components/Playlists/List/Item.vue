@@ -10,7 +10,7 @@ const props = defineProps<{
     itemCount: number;
     privacyStatus: string;
     showPrivacyStatus?: boolean;
-    canBeRemoved?: boolean;
+    isOwned?: boolean;
 }>();
 
 const copy = useCopy();
@@ -43,7 +43,7 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
             }
         }
     },
-    ...(props.canBeRemoved
+    ...(props.isOwned
         ? ([
               { type: 'separator' },
               {

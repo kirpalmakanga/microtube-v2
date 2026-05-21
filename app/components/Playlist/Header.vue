@@ -9,7 +9,7 @@ const props = defineProps<{
     privacyStatus: string;
     channelId: string;
     channelTitle: string;
-    canBeRemoved?: boolean;
+    isOwned?: boolean;
 }>();
 
 const emit = defineEmits<{ queue: [e: void]; remove: [e: void] }>();
@@ -44,7 +44,7 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
             }
         }
     },
-    ...(props.canBeRemoved
+    ...(props.isOwned
         ? ([
               { type: 'separator' },
               {

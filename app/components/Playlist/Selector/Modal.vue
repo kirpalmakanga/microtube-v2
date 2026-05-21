@@ -22,7 +22,7 @@ watch(
         v-model:open="isOpen"
         :title="video?.title"
         description="Save to playlist"
-        :ui="{ footer: 'justify-center' }"
+        :ui="{ header: 'pr-16 sm:pr-16', footer: 'justify-center' }"
         @after:leave="$emit('close')"
     >
         <slot />

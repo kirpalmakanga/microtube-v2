@@ -28,7 +28,7 @@ watch(
         <slot />
 
         <template #body>
-            <PlaylistSelector v-if="video" :video-id="video.id" @saved="isOpen = false" />
+            <PlaylistSelector v-if="video" :video="video" @saved="isOpen = false" />
         </template>
 
         <template #footer>

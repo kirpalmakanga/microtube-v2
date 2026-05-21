@@ -285,6 +285,17 @@ export async function getAllPlaylistItems(
     return await getItemsRecursively(null, [], onUpdate);
 }
 
+export async function hasPlaylistItem(videoId: string, playlistId: string) {
+    const { items } = await request('get', 'playlistItems', {
+        part: 'id',
+        playlistId,
+        videoId,
+        maxResults: 1
+    });
+
+    return items.length > 0;
+}
+
 export async function addPlaylistItem(playlistId: string, videoId: string): Promise<string> {
     const { id } = await request(
         'post',

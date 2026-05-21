@@ -3,6 +3,7 @@ import {
     addPlaylistItem,
     getPlaylist,
     getPlaylistItems,
+    hasPlaylistItem,
     removePlaylistItem,
     type GetPlaylistItemsReturn
 } from '~/services/youtube';
@@ -35,16 +36,33 @@ export function useAddPlaylistItem() {
     const queryCache = useQueryCache();
 
     return useMutation({
-        mutation: async ({ videoId, playlist }: { videoId: string; playlist: Playlist }) => {
-            await addPlaylistItem(playlist.id, videoId);
+        mutation: async ({ video, playlist }: { video: Video; playlist: Playlist }) => {
+            const isItemInPlaylist = await hasPlaylistItem(video.id, playlist.id);
 
-            return playlist;
+            if (!isItemInPlaylist) {
+                await addPlaylistItem(playlist.id, video.id);
+            }
+
+            return { video, playlist, isItemInPlaylist };
         },
-        onSuccess: async ({ id, title }) => {
+        onSuccess: async ({ video: { thumbnails }, playlist: { id, title }, isItemInPlaylist }) => {
+            if (isItemInPlaylist) {
+                toast.add({
+                    title: `"Already in playlist "${title}"`,
+                    icon: 'i-mdi-information',
+                    color: 'info'
+                });
+
+                return;
+            }
+
             toast.add({
                 title: `Added to playlist "${title}"`,
-                icon: 'i-mdi-check-circle',
-                color: 'success'
+                color: 'success',
+                avatar: {
+                    src: getThumbnails(thumbnails, 'default'),
+                    class: 'rounded-md aspect-video w-auto'
+                }
             });
 
             await Promise.all([

@@ -53,7 +53,7 @@ async function handleSubmit() {
     const playlist = await createPlaylist(formData);
 
     if (video.value) {
-        addPlaylistItem({ videoId: video.value.id, playlist });
+        addPlaylistItem({ video: video.value, playlist });
 
         video.value = null;
     }

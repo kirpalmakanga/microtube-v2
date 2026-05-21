@@ -14,8 +14,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{ queue: [e: void]; remove: [e: void] }>();
 
-const router = useRouter();
-
 const copy = useCopy();
 
 const menuOptions = computed<ContextMenuItem[]>(() => [

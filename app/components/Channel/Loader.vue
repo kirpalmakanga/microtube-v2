@@ -1,5 +1,5 @@
 <template>
-    <div class="flex bg-elevated/50 p-6 gap-6">
+    <div class="flex bg-elevated/50 p-6 gap-6 xl:rounded-b-lg">
         <USkeleton class="size-14 md:size-28" />
 
         <div class="flex flex-col grow gap-2">

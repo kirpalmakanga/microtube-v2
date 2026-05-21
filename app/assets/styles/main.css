@@ -43,10 +43,10 @@ button {
     @apply w-2;
 }
 ::-webkit-scrollbar-track {
-    @apply bg-stone-100;
+    @apply bg-stone-100 md:my-2 md:rounded-md;
 }
 ::-webkit-scrollbar-thumb {
-    @apply bg-stone-300;
+    @apply bg-stone-300 md:rounded-md;
 }
 
 @media (prefers-color-scheme: dark) {

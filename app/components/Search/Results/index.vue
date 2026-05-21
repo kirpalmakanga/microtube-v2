@@ -25,7 +25,7 @@ watch(
 </script>
 
 <template>
-    <SearchResultsLoader v-if="isPending || (error && isLoading)" class="p4 md:p-6" />
+    <SearchResultsLoader v-if="isPending || (error && isLoading)" class="p-4 md:p-6" />
 
     <Error v-else-if="error" @action="refetch()" />
 

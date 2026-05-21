@@ -12,7 +12,7 @@ const itemToRemove = ref<Playlist | null>(null);
 
 <template>
     <div class="flex flex-col grow">
-        <PlaylistsListLoader v-if="isPending || (error && isLoading)" class="p4 md:p-6" />
+        <PlaylistsListLoader v-if="isPending || (error && isLoading)" class="p-4 md:p-6" />
 
         <Error v-else-if="error" @action="refetch()" />
 

@@ -7,6 +7,6 @@ export function useCopy() {
     return async (text: string, message?: string) => {
         await copy(text);
 
-        toast.add({ title: message || 'Copied to clipboard.' });
+        toast.add({ title: message || 'Copied to clipboard.', icon: 'i-mdi-clipboard-check' });
     };
 }

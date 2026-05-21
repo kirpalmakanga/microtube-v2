@@ -106,12 +106,10 @@ useEventListener(document, 'mouseup', stopSeeking);
 <template>
     <div
         ref="container"
-        class="relative w-full h-1 cursor-pointer"
+        class="relative w-full h-1 cursor-pointer before:absolute before:inset-0 before:top-0 before:left-0 before:right-0 before:h-3 before:-translate-y-full"
         v-on="getContainerEvents()"
         draggable="false"
     >
-        <div class="absolute top-0 left-0 right-0 h-3 -translate-y-full"></div>
-
         <div class="relative w-full h-full overflow-hidden bg-zinc-100 pointer-events-none">
             <span
                 class="absolute inset-0 bg-zinc-400"

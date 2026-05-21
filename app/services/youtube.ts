@@ -264,6 +264,8 @@ export async function getAllPlaylistItems(
         stack.push(...items);
     }
 
+    onUpdate?.(stack, stack.length);
+
     return stack;
 }
 

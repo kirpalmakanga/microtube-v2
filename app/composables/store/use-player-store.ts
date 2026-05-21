@@ -63,7 +63,7 @@ export const usePlayerStore = defineStore(
 
             await saveQueueToDatabase();
 
-            return items;
+            return newItems;
         }
 
         async function queueItem(data: Video) {
@@ -164,7 +164,14 @@ export const usePlayerStore = defineStore(
                     });
                 });
 
-                await queueItems(items, true);
+                const newItems = await queueItems(items);
+
+                toast.update(toastId, {
+                    title: `${newItems.length} new item(s) added to queue.`,
+                    icon: 'i-mdi-playlist-check',
+                    color: 'success',
+                    progress: true
+                });
 
                 if (play && items.length) {
                     const [{ id } = {}] = items;

@@ -16,7 +16,9 @@ async function handleSignIn() {
         isSigningIn.value = false;
 
         toast.add({
-            title: 'Signing in failed, please try again.'
+            title: 'Signing in failed, please try again.',
+            icon: 'i-mdi-close-circle',
+            color: 'error'
         });
     }
 }

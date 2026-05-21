@@ -1,3 +1,4 @@
+import type { AvatarProps } from '@nuxt/ui';
 import {
     addPlaylistItem,
     getPlaylist,
@@ -42,6 +43,7 @@ export function useAddPlaylistItem() {
         onSuccess: async ({ id, title }) => {
             toast.add({
                 title: `Added to playlist "${title}"`,
+                icon: 'i-mdi-check-circle',
                 color: 'success'
             });
 
@@ -63,6 +65,7 @@ export function useAddPlaylistItem() {
 
             toast.add({
                 title: `Error: Failed to add item to playlist "${title}"`,
+                icon: 'i-mdi-close-circle',
                 color: 'error'
             });
         }
@@ -82,6 +85,7 @@ export function useRemovePlaylistItem() {
         onSuccess: async ({ playlist: { id }, video: { title } }) => {
             toast.add({
                 title: `Successfully removed "${title}" from playlist`,
+                icon: 'i-mdi-check-circle',
                 color: 'success'
             });
 
@@ -102,7 +106,8 @@ export function useRemovePlaylistItem() {
             captureError(error);
 
             toast.add({
-                title: `Error: Failed remove "${title}" from playlist`,
+                title: `Error: Failed to remove "${title}" from playlist`,
+                icon: 'i-mdi-close-circle',
                 color: 'error'
             });
         }

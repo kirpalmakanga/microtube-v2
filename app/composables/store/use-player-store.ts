@@ -56,6 +56,7 @@ export const usePlayerStore = defineStore(
             if (notify) {
                 toast.add({
                     title: `${newItems.length} new item(s) added to queue.`,
+                    icon: 'i-mdi-playlist-check',
                     color: 'success'
                 });
             }
@@ -74,7 +75,8 @@ export const usePlayerStore = defineStore(
             if (isInQueue(data.id)) {
                 toast.add({
                     title: 'Already in queue.',
-                    avatar
+                    icon: 'i-mdi-information',
+                    color: 'info'
                 });
 
                 return;
@@ -119,7 +121,11 @@ export const usePlayerStore = defineStore(
             } catch (error) {
                 captureError(error);
 
-                toast.add({ title: 'Error queuing videos.', color: 'error' });
+                toast.add({
+                    title: 'Could not import videos.',
+                    icon: 'i-mdi-close-circle',
+                    color: 'error'
+                });
             }
         }
 
@@ -133,7 +139,11 @@ export const usePlayerStore = defineStore(
             } catch (error) {
                 captureError(error);
 
-                toast.add({ title: 'Error fetching video.', color: 'error' });
+                toast.add({
+                    title: 'Could not fetch video.',
+                    icon: 'i-mdi-close-circle',
+                    color: 'error'
+                });
             }
         }
 
@@ -164,7 +174,11 @@ export const usePlayerStore = defineStore(
             } catch (error) {
                 captureError(error);
 
-                toast.add({ title: 'Error queueing playlist items.', color: 'error' });
+                toast.add({
+                    title: 'Could not queue playlist.',
+                    icon: 'i-mdi-close-circle',
+                    color: 'error'
+                });
             } finally {
                 toast.remove(toastId);
             }

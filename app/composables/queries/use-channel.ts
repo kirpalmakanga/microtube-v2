@@ -49,6 +49,7 @@ export function useSubscribeToChannel() {
 
             toast.add({
                 title: `Error: Failed to subscribe to channel "${title}"`,
+                icon: 'i-mdi-close-circle',
                 color: 'error'
             });
         }
@@ -83,6 +84,7 @@ export function useUnsubscribeFromChannel() {
 
             toast.add({
                 title: `Error: Failed to unsubscribe from channel "${title}"`,
+                icon: 'i-mdi-close-circle',
                 color: 'error'
             });
         }

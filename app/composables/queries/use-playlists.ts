@@ -33,6 +33,7 @@ export function useCreateplaylist() {
         onSuccess: async ({ id, title }) => {
             toast.add({
                 title: `Successfully created playlist "${title}"`,
+                icon: 'i-mdi-check-circle',
                 color: 'success',
                 orientation: 'horizontal',
                 actions: [
@@ -57,7 +58,11 @@ export function useCreateplaylist() {
         onError: (error, { title }) => {
             captureError(error);
 
-            toast.add({ title: `Error: Failed to create playlist "${title}"`, color: 'error' });
+            toast.add({
+                title: `Error: Failed to create playlist "${title}"`,
+                icon: 'i-mdi-close-circle',
+                color: 'error'
+            });
         }
     });
 }
@@ -75,6 +80,7 @@ export function useRemovePlaylist() {
         onSuccess: async ({ title }) => {
             toast.add({
                 title: `Successfully removed playlist "${title}"`,
+                icon: 'i-mdi-check-circle',
                 color: 'success'
             });
 
@@ -86,7 +92,11 @@ export function useRemovePlaylist() {
         onError: (error, { title }) => {
             captureError(error);
 
-            toast.add({ title: `Error: Failed to remove playlist "${title}"`, color: 'error' });
+            toast.add({
+                title: `Error: Failed to remove playlist "${title}"`,
+                icon: 'i-mdi-close-circle',
+                color: 'error'
+            });
         }
     });
 }

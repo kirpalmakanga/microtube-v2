@@ -40,7 +40,11 @@ async function handleSubmit() {
         } catch (error) {
             captureError(error);
 
-            toast.add({ title: 'An error has occured, please retry.', color: 'error' });
+            toast.add({
+                title: 'An error has occured, please retry.',
+                icon: 'i-mdi-close-circle',
+                color: 'error'
+            });
         }
     }
 

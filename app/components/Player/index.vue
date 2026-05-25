@@ -228,21 +228,21 @@ watch(
             </div>
 
             <div class="ui-container flex flex-col gap-4 px-4 md:px-6 py-4 h-29 overflow-hidden">
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 h-10">
                     <Img
                         v-if="currentVideo"
                         class="h-10 aspect-video rounded-md"
                         :src="getThumbnails(currentVideo.thumbnails, 'default')"
                     />
 
-                    <div class="h-10 grow overflow-hidden">
+                    <div class="grow overflow-hidden">
                         <p class="font-bold ellipsis leading-none shrink-0 mb-1">
                             {{ currentVideo?.title || 'No selected video.' }}
                         </p>
-                        <p class="ellipsis leading-none shrink-0">
+                        <p class="ellipsis shrink-0 leading-none">
                             <NuxtLink
                                 v-if="currentVideo"
-                                class="text-sm opacity-70 hover:opacity-60"
+                                class="text-sm opacity-70 hover:opacity-60 leading-none"
                                 :to="`/channel/${currentVideo?.channelId}`"
                                 @click="isFullscreen && toggleFullscreen()"
                             >

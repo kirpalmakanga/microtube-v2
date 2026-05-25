@@ -12,9 +12,11 @@ export default defineNuxtPlugin(() => {
             refreshing = refreshTokens();
         }
 
-        await refreshing;
-
-        refreshing = null;
+        try {
+            await refreshing;
+        } finally {
+            refreshing = null;
+        }
     }
 
     instance.interceptors.request.use((config) => {

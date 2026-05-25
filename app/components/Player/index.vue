@@ -14,9 +14,7 @@ const playerStore = usePlayerStore();
 const { currentVideo, previousVideo, nextVideo, isSingleVideo, volume } = storeToRefs(playerStore);
 const { skipToNext, skipToPrevious, queueItem } = playerStore;
 
-const playerWrapper = useTemplateRef('playerWrapper');
-
-const { isFullscreen, toggle: toggleFullscreen } = useFullscreen(playerWrapper);
+const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
 interface PlayerState {
     isBuffering: boolean;

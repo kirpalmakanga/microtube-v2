@@ -195,7 +195,7 @@ watch(
             ref="youtubePlayer"
             class="fixed left-0 right-0 transition-transform after:content-[''] z-51 after:absolute after:inset-0"
             :class="{
-                'top-16 bottom-29': !isFullscreen,
+                'top-16 bottom-30': !isFullscreen,
                 'top-0 bottom-0': isFullscreen,
                 'translate-y-full': !state.isScreenVisible && !isFullscreen && !isSingleVideo
             }"
@@ -216,16 +216,14 @@ watch(
                 'translate-y-full': isFullscreen && !areControlsVisible && !state.isQueueVisible
             }"
         >
-            <div class="absolute left-0 right-0 top-0">
-                <PlayerSeekbar
-                    v-if="currentVideo"
-                    class="grow"
-                    :duration="currentVideo.duration"
-                    v-model:position="state.currentTime"
-                    @start="handleStartSeeking()"
-                    @end="handleEndSeeking()"
-                />
-            </div>
+            <PlayerSeekbar
+                v-if="currentVideo"
+                class="grow"
+                :duration="currentVideo.duration"
+                v-model:position="state.currentTime"
+                @start="handleStartSeeking()"
+                @end="handleEndSeeking()"
+            />
 
             <div class="ui-container flex flex-col gap-4 px-4 md:px-6 py-4 h-29 overflow-hidden">
                 <div class="flex items-center gap-2 h-10">

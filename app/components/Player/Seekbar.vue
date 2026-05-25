@@ -106,7 +106,7 @@ useEventListener(document, 'mouseup', stopSeeking);
 <template>
     <div
         ref="container"
-        class="relative w-full h-1 cursor-pointer before:absolute before:inset-0 before:top-0 before:left-0 before:right-0 before:h-3 before:-translate-y-full"
+        class="relative w-full h-1 cursor-pointer before:absolute before:inset-0 before:top-0 before:left-0 before:right-0 before:h-3 before:-translate-y-full hover:before:bg-linear-to-t hover:before:from-elevated hover:before:to-transparent"
         v-on="getContainerEvents()"
         draggable="false"
     >

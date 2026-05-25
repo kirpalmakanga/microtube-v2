@@ -16,11 +16,7 @@ const selectedItem = ref<Video | null>(null);
 
 watch(
     () => [props.query, props.forMine],
-    () => {
-        // clearSearchResults();
-
-        refetch();
-    }
+    () => refetch()
 );
 </script>
 

@@ -228,7 +228,13 @@ watch(
             </div>
 
             <div class="ui-container flex flex-col gap-4 px-4 md:px-6 py-4 h-29 overflow-hidden">
-                <div class="flex items-center">
+                <div class="flex items-center gap-2">
+                    <Img
+                        v-if="currentVideo"
+                        class="h-10 aspect-video rounded-md"
+                        :src="getThumbnails(currentVideo.thumbnails, 'default')"
+                    />
+
                     <div class="h-10 grow overflow-hidden">
                         <p class="font-bold ellipsis leading-none shrink-0 mb-1">
                             {{ currentVideo?.title || 'No selected video.' }}

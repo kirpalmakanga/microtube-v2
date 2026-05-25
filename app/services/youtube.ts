@@ -408,7 +408,11 @@ export async function getChannelVideos({
     channelId: string;
     pageToken: string | null;
 }): Promise<GetChannelVideosReturn> {
-    const { items, nextPageToken, pageInfo } = await request('get', 'search', {
+    const {
+        items,
+        nextPageToken,
+        pageInfo: { totalResults }
+    } = await request('get', 'search', {
         part: 'snippet',
         type: 'video',
         order: 'date',
@@ -417,14 +421,18 @@ export async function getChannelVideos({
         maxResults: ITEMS_PER_REQUEST
     });
 
-    const videoIds = items.map(({ id: { videoId } }: SearchResultItem) => videoId);
+    let videos = [];
 
-    const videos = await getVideosFromIds(videoIds);
+    if (items.length) {
+        const videoIds = items.map(({ id: { videoId } }: SearchResultItem) => videoId);
+
+        videos = await getVideosFromIds(videoIds);
+    }
 
     return {
         items: videos,
         nextPageToken,
-        totalResults: pageInfo.totalResults
+        totalResults
     };
 }
 

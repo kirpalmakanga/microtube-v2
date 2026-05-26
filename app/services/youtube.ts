@@ -1,10 +1,5 @@
 import axios from 'axios';
-import {
-    parseVideoData,
-    parsePlaylistData,
-    parseChannelData,
-    type YoutubePlaylist
-} from './parsers';
+import { parseVideoData, parsePlaylistData, parseChannelData } from './parsers';
 import { parseVideoId, pick } from '~/utils/helpers';
 
 interface SearchResultItem {
@@ -305,7 +300,7 @@ export async function removePlaylistItem(playlistItemId: string) {
     });
 }
 /* Subscriptions */
-async function getChannelsFromIds(ids: string[]) {
+async function getChannelsFromIds(ids: string[]): Promise<Channel[]> {
     const { items } = await request('get', 'channels', {
         part: 'snippet',
         id: ids.join(','),
@@ -317,7 +312,19 @@ async function getChannelsFromIds(ids: string[]) {
     return channels;
 }
 
-export async function getSubscriptions({ pageToken = '', mine = false }) {
+export interface GetSubscriptionsReturn {
+    items: Subscription[];
+    nextPageToken: string | undefined;
+    totalResults: number;
+}
+
+export async function getSubscriptions({
+    pageToken,
+    mine
+}: {
+    pageToken: string | null;
+    mine?: boolean;
+}): Promise<GetSubscriptionsReturn> {
     const {
         items: subscriptions,
         nextPageToken,
@@ -335,11 +342,7 @@ export async function getSubscriptions({ pageToken = '', mine = false }) {
             snippet: {
                 resourceId: { channelId }
             }
-        }: {
-            snippet: {
-                resourceId: { channelId: string };
-            };
-        }) => channelId
+        }: YoutubeSubscription) => channelId
     );
 
     const channels = await getChannelsFromIds(channelIds);
@@ -351,26 +354,15 @@ export async function getSubscriptions({ pageToken = '', mine = false }) {
                     snippet: {
                         resourceId: { channelId }
                     }
-                }: {
-                    snippet: {
-                        resourceId: { channelId: string };
-                    };
-                }) => channelId === data.id
+                }: YoutubeSubscription) => channelId === data.id
             );
 
             return {
                 ...data,
-                ...(matchingSubscription.id
-                    ? {
-                          subscriptionId: matchingSubscription.id,
-                          ...pick(
-                              matchingSubscription.contentDetails,
-                              'totalItemCount',
-                              'newItemCount'
-                          )
-                      }
-                    : {}),
-                isUnsubscribed: false
+                ...(matchingSubscription && {
+                    subscriptionId: matchingSubscription.id,
+                    totalItemCount: matchingSubscription.contentDetails.totalItemCount
+                })
             };
         }),
         nextPageToken,

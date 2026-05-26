@@ -60,6 +60,10 @@ declare global {
         thumbnails: Thumbnails;
         subscriptionId?: string;
     }
+
+    interface Subscription extends Channel {
+        totalItemCount?: number;
+    }
 }
 
 export {};

@@ -55,8 +55,16 @@ const menuOptions = computed<DropdownMenuItem[]>(() => [
         </template>
 
         <template v-if="isSignedIn" #right>
-            <NuxtLink v-if="$route.name !== 'search'" class="flex items-center gap-1" to="/search">
+            <NuxtLink v-if="$route.name !== 'search'" class="flex items-center" to="/search">
                 <UIcon class="size-6" name="i-mdi-search" />
+            </NuxtLink>
+
+            <NuxtLink
+                v-if="$route.name !== 'subscriptions'"
+                class="flex items-center"
+                to="/subscriptions"
+            >
+                <UIcon class="size-6" name="i-mdi-youtube-subscription" />
             </NuxtLink>
 
             <UDropdownMenu :content="menuConfig" :items="menuOptions">

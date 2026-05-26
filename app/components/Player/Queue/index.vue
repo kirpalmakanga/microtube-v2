@@ -41,34 +41,35 @@ defineShortcuts({
         <slot />
 
         <template #body>
-            <ul ref="list" class="w-full" :options="sortableOptions">
-                <li
-                    class="relative flex bg-elevated/50 group"
-                    v-for="(item, index) of queue"
-                    :key="item.id"
+            <SortableVirtualizedList
+                v-model="queue"
+                item-class="relative flex bg-elevated/50 group"
+                empty-message="No videos in the queue"
+                :item-height="88"
+                v-slot="{ item, index }"
+            >
+                <PlayerQueueItem
+                    v-bind="item"
+                    class="pl-10"
+                    :is-playing="false"
+                    :is-selected="isSelectedItem(item.id)"
+                    @select="!isSelectedItem(item.id) && setSelectedItem(item.id)"
+                    @save="itemToSave = item"
+                    @remove="removeQueueItem(item.id)"
+                />
+
+                <div
+                    class="absolute left-0 top-0 bottom-0 flex shrink-0 items-center justify-center w-10 text-sm group-hover:invisible"
                 >
-                    <PlayerQueueItem
-                        v-bind="item"
-                        :is-playing="false"
-                        :is-selected="isSelectedItem(item.id)"
-                        @select="!isSelectedItem(item.id) && setSelectedItem(item.id)"
-                        @save="itemToSave = item"
-                        @remove="removeQueueItem(item.id)"
-                    />
+                    {{ index + 1 }}
+                </div>
 
-                    <div
-                        class="absolute left-0 top-0 bottom-0 flex shrink-0 items-center justify-center w-10 text-sm group-hover:invisible"
-                    >
-                        {{ index + 1 }}
-                    </div>
-
-                    <div
-                        class="handle absolute left-0 top-0 bottom-0 flex shrink-0 items-center justify-center w-10 invisible group-hover:visible cursor-grab"
-                    >
-                        <UIcon class="size-6" name="i-mdi-drag" />
-                    </div>
-                </li>
-            </ul>
+                <div
+                    class="handle absolute left-0 top-0 bottom-0 flex shrink-0 items-center justify-center w-10 invisible group-hover:visible cursor-grab"
+                >
+                    <UIcon class="size-6" name="i-mdi-drag" />
+                </div>
+            </SortableVirtualizedList>
         </template>
 
         <template #footer>

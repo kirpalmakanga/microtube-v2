@@ -20,20 +20,23 @@ const items = computed(() => model.value.map((item, index) => ({ data: item, ind
 const itemToReplace = ref<HTMLElement | null>(null);
 
 const sortableOptions: UseSortableOptions = {
-    //@ts-ignore
     handle: '.handle',
     animation: 150,
     ghostClass: 'invisible',
     watchElement: true,
     onMove: ({ related }) => {
-        itemToReplace.value = related;
+        if (related) {
+            itemToReplace.value = related;
+        }
     },
-    onEnd: ({ item }) => {
+    onEnd: (event) => {
+        const { item } = event;
+
         if (item && itemToReplace.value) {
             const oldIndex = Number(item.dataset.index);
             const newIndex = Number(itemToReplace.value.dataset.index);
 
-            moveArrayElement(model, oldIndex, newIndex);
+            moveArrayElement(model, oldIndex, newIndex, event);
 
             itemToReplace.value = null;
         }

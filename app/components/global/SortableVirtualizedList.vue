@@ -17,32 +17,26 @@ const model = defineModel<T[]>({ default: [] });
 
 const items = computed(() => model.value.map((item, index) => ({ data: item, index })));
 
+const itemToReplace = ref<HTMLElement | null>(null);
+
 const sortableOptions: UseSortableOptions = {
     //@ts-ignore
     handle: '.handle',
     animation: 150,
     ghostClass: 'invisible',
     watchElement: true,
-    onUpdate: ({ item }) => {
-        if (!item) return;
+    onMove: ({ related }) => {
+        itemToReplace.value = related;
+    },
+    onEnd: ({ item }) => {
+        if (item && itemToReplace.value) {
+            const oldIndex = Number(item.dataset.index);
+            const newIndex = Number(itemToReplace.value.dataset.index);
 
-        // TODO: replace item that has been moved
+            moveArrayElement(model, oldIndex, newIndex);
 
-        const oldIndex = Number(item.dataset.index);
-        const previousIndex = Number((item.previousElementSibling as HTMLElement)?.dataset.index);
-        const nextIndex = Number((item.nextElementSibling as HTMLElement)?.dataset.index);
-
-        let newIndex: number = oldIndex;
-
-        console.log(JSON.stringify({ oldIndex, previousIndex, nextIndex }, null, 2));
-
-        if (!isNaN(previousIndex)) {
-            newIndex = previousIndex + 1;
-        } else if (!isNaN(nextIndex)) {
-            newIndex = nextIndex;
+            itemToReplace.value = null;
         }
-
-        moveArrayElement(model, oldIndex, newIndex);
     }
 };
 

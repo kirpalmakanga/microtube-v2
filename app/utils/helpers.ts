@@ -117,24 +117,6 @@ export const chunk = (array: any[] = [], size: number) => {
     return chunks;
 };
 
-export function pick<T extends object, K extends keyof T>(base: T, ...keys: K[]): Pick<T, K> {
-    if (!keys.length) return base;
-
-    const entries = keys.map((key) => [key, base[key]]);
-
-    return Object.fromEntries(entries);
-}
-
-export function omit<T extends object, K extends keyof T>(base: T, ...keys: K[]): Omit<T, K> {
-    if (!keys.length) return base;
-
-    const result = { ...base };
-
-    for (const key of keys) delete result[key];
-
-    return result;
-}
-
 export const wrapURLs = (text: string) => {
     // oxlint-disable-next-line no-useless-escape
     const urlPattern = /\b(?:https?|ftp):\/\/[a-z0-9-+&@#\/%?=~_|!:,.;]*[a-z0-9-+&@#\/%=~_|]/gim;

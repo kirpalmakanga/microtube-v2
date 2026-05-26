@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { parseVideoData, parsePlaylistData, parseChannelData } from './parsers';
-import { parseVideoId, pick } from '~/utils/helpers';
+import { parseVideoId } from '~/utils/helpers';
 
 interface SearchResultItem {
     id: { videoId: string };

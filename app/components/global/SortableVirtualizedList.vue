@@ -17,7 +17,17 @@ const model = defineModel<T[]>({ default: [] });
 
 const items = computed(() => model.value.map((item, index) => ({ data: item, index })));
 
-const itemToReplace = ref<HTMLElement | null>(null);
+let itemToReplace: HTMLElement | null = null;
+
+function getItemIndex(element: HTMLElement) {
+    const index = Number(element.dataset.index);
+
+    if (isNaN(index)) {
+        throw new Error('Element does not have a valid data-index attribute:');
+    }
+
+    return index;
+}
 
 const sortableOptions: UseSortableOptions = {
     handle: '.handle',
@@ -26,19 +36,19 @@ const sortableOptions: UseSortableOptions = {
     watchElement: true,
     onMove: ({ related }) => {
         if (related) {
-            itemToReplace.value = related;
+            itemToReplace = related;
         }
     },
     onEnd: (event) => {
         const { item } = event;
 
-        if (item && itemToReplace.value) {
-            const oldIndex = Number(item.dataset.index);
-            const newIndex = Number(itemToReplace.value.dataset.index);
+        if (item && itemToReplace) {
+            const oldIndex = getItemIndex(item);
+            const newIndex = getItemIndex(itemToReplace);
 
             moveArrayElement(model, oldIndex, newIndex, event);
 
-            itemToReplace.value = null;
+            itemToReplace = null;
         }
     }
 };

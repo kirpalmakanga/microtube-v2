@@ -72,7 +72,7 @@ defineShortcuts({
                 </div>
             </SortableVirtualizedList>
 
-            <Placeholder v-else icon="i-mdi-format-list-bulleted" text="The queue is empty" />
+            <Placeholder v-else icon="i-mdi-format-list-bulleted" text="The queue is empty." />
         </template>
 
         <template #footer>

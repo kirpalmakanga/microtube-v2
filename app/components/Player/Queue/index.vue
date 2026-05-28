@@ -46,7 +46,6 @@ defineShortcuts({
                 v-if="queue.length"
                 v-model="queue"
                 item-class="relative flex bg-elevated/50 group"
-                empty-message="No videos in the queue"
                 :options="listOptions"
                 v-slot="{ item, index }"
             >
@@ -73,7 +72,7 @@ defineShortcuts({
                 </div>
             </SortableVirtualizedList>
 
-            <Placeholder v-else icon="i-mdi-format-list-bulleted" text="No videos in the queue" />
+            <Placeholder v-else icon="i-mdi-format-list-bulleted" text="The queue is empty" />
         </template>
 
         <template #footer>

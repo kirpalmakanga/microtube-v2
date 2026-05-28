@@ -50,7 +50,11 @@ function getItemHeight(item: HTMLElement) {
     return itemHeight;
 }
 
-const sortableOptions: UseSortableOptions = {
+function getItemKey(item: T) {
+    return props.itemKey && item !== null && typeof item === 'object' ? item[props.itemKey] : item;
+}
+
+useSortable(listContainer, model, {
     onUpdate: (event) => {
         const { item } = event;
 
@@ -66,13 +70,7 @@ const sortableOptions: UseSortableOptions = {
         moveArrayElement(model, oldIndex, newIndex, event);
     },
     ...props.options.sortable
-};
-
-function getItemKey(item: T) {
-    return props.itemKey && item !== null && typeof item === 'object' ? item[props.itemKey] : item;
-}
-
-useSortable(listContainer, model, sortableOptions);
+});
 
 const { list, containerProps, wrapperProps } = useVirtualList(items, props.options.virtualize);
 </script>

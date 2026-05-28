@@ -16,7 +16,10 @@ const props = defineProps<{
     itemKey?: keyof T;
     options: {
         sortable?: Pick<UseSortableOptions, 'handle' | 'animation' | 'ghostClass' | 'watchElement'>;
-        virtualize: UseVerticalVirtualListOptions;
+        virtualize: {
+            itemHeight: number;
+            overscan?: number;
+        };
     };
 }>();
 
@@ -42,14 +45,6 @@ function getViewportY(element: HTMLElement) {
     return top;
 }
 
-function getItemHeight(item: HTMLElement) {
-    const { itemHeight } = props.options.virtualize;
-
-    if (typeof itemHeight === 'function') return itemHeight(getItemIndex(item));
-
-    return itemHeight;
-}
-
 function getItemKey(item: T) {
     return props.itemKey && item !== null && typeof item === 'object' ? item[props.itemKey] : item;
 }
@@ -65,7 +60,7 @@ useSortable(listContainer, model, {
 
         const oldIndex = getItemIndex(item);
 
-        const newIndex = (itemY - containerY) / getItemHeight(item);
+        const newIndex = (itemY - containerY) / props.options.virtualize.itemHeight;
 
         moveArrayElement(model, oldIndex, newIndex, event);
     },

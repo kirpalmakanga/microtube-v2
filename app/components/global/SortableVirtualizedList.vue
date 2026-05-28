@@ -8,19 +8,16 @@ import {
 
 export interface SortableVirtualizedListOptions {
     sortable: Pick<UseSortableOptions, 'handle' | 'animation' | 'ghostClass' | 'watchElement'>;
-    virtualize: UseVerticalVirtualListOptions;
+    virtualize: {
+        itemHeight: number;
+        overscan?: number;
+    };
 }
 
 const props = defineProps<{
     itemClass: string;
     itemKey?: keyof T;
-    options: {
-        sortable?: Pick<UseSortableOptions, 'handle' | 'animation' | 'ghostClass' | 'watchElement'>;
-        virtualize: {
-            itemHeight: number;
-            overscan?: number;
-        };
-    };
+    options: SortableVirtualizedListOptions;
 }>();
 
 const model = defineModel<T[]>({ default: [] });

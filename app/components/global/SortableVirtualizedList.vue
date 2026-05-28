@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T extends unknown">
-import { useVirtualList, type UseVerticalVirtualListOptions } from '@vueuse/core';
+import { useVirtualList } from '@vueuse/core';
 import {
     useSortable,
     moveArrayElement,

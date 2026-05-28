@@ -17,6 +17,7 @@ const model = defineModel<T[]>({ default: [] });
 
 const items = computed(() => model.value.map((item, index) => ({ data: item, index })));
 
+let previousItemToReplace: HTMLElement | null = null;
 let itemToReplace: HTMLElement | null = null;
 
 function getItemIndex(element: HTMLElement) {
@@ -35,8 +36,12 @@ const sortableOptions: UseSortableOptions = {
     ghostClass: 'invisible',
     watchElement: true,
     onMove: ({ related }) => {
-        if (related) {
+        if (related !== itemToReplace) {
+            previousItemToReplace = itemToReplace;
+
             itemToReplace = related;
+        } else {
+            itemToReplace = previousItemToReplace;
         }
     },
     onEnd: (event) => {
@@ -47,9 +52,10 @@ const sortableOptions: UseSortableOptions = {
             const newIndex = getItemIndex(itemToReplace);
 
             moveArrayElement(model, oldIndex, newIndex, event);
-
-            itemToReplace = null;
         }
+
+        itemToReplace = null;
+        previousItemToReplace = null;
     }
 };
 

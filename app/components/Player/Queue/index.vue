@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useSortable, type UseSortableOptions } from '@vueuse/integrations/useSortable';
+import type { SortableVirtualizedListOptions } from '~/components/global/SortableVirtualizedList.vue';
 const playerStore = usePlayerStore();
 const { queue } = storeToRefs(playerStore);
 const { isSelectedItem, clearQueue, removeQueueItem, setSelectedItem } = playerStore;
@@ -9,17 +9,18 @@ const itemToSave = ref<Video | null>(null);
 const isImportFormOpen = ref<boolean>(false);
 const isClearingPromptOpen = ref<boolean>(false);
 
-const sortableOptions: UseSortableOptions = {
-    //@ts-ignore
-    handle: '.handle',
-    animation: 150,
-    ghostClass: 'invisible',
-    watchElement: true
+const listOptions: SortableVirtualizedListOptions = {
+    sortable: {
+        handle: '.handle',
+        animation: 150,
+        ghostClass: 'invisible',
+        watchElement: true
+    },
+    virtualize: {
+        itemHeight: 88,
+        overscan: 10
+    }
 };
-
-const list = useTemplateRef('list');
-
-useSortable(list, queue, sortableOptions);
 
 defineShortcuts({
     q: () => (isOpen.value = !isOpen.value)
@@ -42,10 +43,11 @@ defineShortcuts({
 
         <template #body>
             <SortableVirtualizedList
+                v-if="queue.length"
                 v-model="queue"
                 item-class="relative flex bg-elevated/50 group"
                 empty-message="No videos in the queue"
-                :item-height="88"
+                :options="listOptions"
                 v-slot="{ item, index }"
             >
                 <PlayerQueueItem
@@ -70,6 +72,8 @@ defineShortcuts({
                     <UIcon class="size-6" name="i-mdi-drag" />
                 </div>
             </SortableVirtualizedList>
+
+            <Placeholder v-else icon="i-mdi-format-list-bulleted" text="No videos in the queue" />
         </template>
 
         <template #footer>

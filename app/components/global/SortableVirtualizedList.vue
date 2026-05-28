@@ -1,24 +1,30 @@
 <script setup lang="ts" generic="T extends unknown">
-import { useVirtualList } from '@vueuse/core';
+import { useVirtualList, type UseVerticalVirtualListOptions } from '@vueuse/core';
 import {
     useSortable,
     moveArrayElement,
     type UseSortableOptions
 } from '@vueuse/integrations/useSortable';
 
+export interface SortableVirtualizedListOptions {
+    sortable: Pick<UseSortableOptions, 'handle' | 'animation' | 'ghostClass' | 'watchElement'>;
+    virtualize: UseVerticalVirtualListOptions;
+}
+
 const props = defineProps<{
     itemClass: string;
-    itemHeight: number;
     itemKey?: keyof T;
-    emptyMessage?: string;
+    options: {
+        sortable?: Pick<UseSortableOptions, 'handle' | 'animation' | 'ghostClass' | 'watchElement'>;
+        virtualize: UseVerticalVirtualListOptions;
+    };
 }>();
 
 const model = defineModel<T[]>({ default: [] });
 
 const items = computed(() => model.value.map((item, index) => ({ data: item, index })));
 
-let previousTargetIndex: number | null = null;
-let targetIndex: number | null = null;
+const listContainer = useTemplateRef('listContainer');
 
 function getItemIndex(element: HTMLElement) {
     const index = Number(element.dataset.index);
@@ -30,50 +36,49 @@ function getItemIndex(element: HTMLElement) {
     return index;
 }
 
+function getViewportY(element: HTMLElement) {
+    const { top } = element.getBoundingClientRect();
+
+    return top;
+}
+
+function getItemHeight(item: HTMLElement) {
+    const { itemHeight } = props.options.virtualize;
+
+    if (typeof itemHeight === 'function') return itemHeight(getItemIndex(item));
+
+    return itemHeight;
+}
+
 const sortableOptions: UseSortableOptions = {
-    handle: '.handle',
-    animation: 150,
-    ghostClass: 'invisible',
-    watchElement: true,
-    onMove: ({ related, willInsertAfter }) => {
-        const relatedIndex = getItemIndex(related);
-
-        if (relatedIndex !== targetIndex) {
-            previousTargetIndex = targetIndex;
-
-            targetIndex = relatedIndex;
-        } else {
-            targetIndex = previousTargetIndex;
-        }
-    },
-    onEnd: (event) => {
+    onUpdate: (event) => {
         const { item } = event;
 
-        if (item && targetIndex !== null) {
-            const oldIndex = getItemIndex(item);
+        if (!item || !listContainer.value) return;
 
-            moveArrayElement(model, oldIndex, targetIndex, event);
-        }
+        const containerY = getViewportY(listContainer.value);
+        const itemY = getViewportY(item);
 
-        targetIndex = null;
-        previousTargetIndex = null;
-    }
+        const oldIndex = getItemIndex(item);
+
+        const newIndex = (itemY - containerY) / getItemHeight(item);
+
+        moveArrayElement(model, oldIndex, newIndex, event);
+    },
+    ...props.options.sortable
 };
 
 function getItemKey(item: T) {
     return props.itemKey && item !== null && typeof item === 'object' ? item[props.itemKey] : item;
 }
 
-useSortable(useTemplateRef('listContainer'), model, sortableOptions);
+useSortable(listContainer, model, sortableOptions);
 
-const { list, containerProps, wrapperProps } = useVirtualList(items, {
-    itemHeight: props.itemHeight,
-    overscan: 10
-});
+const { list, containerProps, wrapperProps } = useVirtualList(items, props.options.virtualize);
 </script>
 
 <template>
-    <div v-if="items.length" v-bind="containerProps">
+    <div v-bind="containerProps">
         <ul ref="listContainer" class="w-full" v-bind="wrapperProps">
             <li
                 v-for="{ data: { data, index } } of list"
@@ -85,6 +90,4 @@ const { list, containerProps, wrapperProps } = useVirtualList(items, {
             </li>
         </ul>
     </div>
-
-    <Placeholder v-else-if="emptyMessage" icon="i-mdi-format-list-bulleted" :text="emptyMessage" />
 </template>

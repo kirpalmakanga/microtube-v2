@@ -60,15 +60,11 @@ defineShortcuts({
                 />
 
                 <div
-                    class="absolute left-0 top-0 bottom-0 flex shrink-0 items-center justify-center w-10 text-sm group-hover:invisible"
+                    class="handle absolute left-0 top-0 bottom-0 flex shrink-0 items-center justify-center w-10 cursor-grab"
                 >
-                    {{ index + 1 }}
-                </div>
+                    <span class="text-sm group-hover:hidden">{{ index + 1 }}</span>
 
-                <div
-                    class="handle absolute left-0 top-0 bottom-0 flex shrink-0 items-center justify-center w-10 invisible group-hover:visible cursor-grab"
-                >
-                    <UIcon class="size-6" name="i-mdi-drag" />
+                    <UIcon class="size-6 hidden group-hover:block" name="i-mdi-drag" />
                 </div>
             </SortableVirtualizedList>
 

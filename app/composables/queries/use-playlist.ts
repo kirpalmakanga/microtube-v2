@@ -107,9 +107,20 @@ export function useRemovePlaylistItem() {
             });
 
             await Promise.all([
-                queryCache.invalidateQueries({
-                    key: ['playlistItems', id]
-                }),
+                queryCache.invalidateQueries(
+                    {
+                        key: ['playlistItems', id],
+                        exact: true
+                    },
+                    'all'
+                ),
+                queryCache.invalidateQueries(
+                    {
+                        key: ['playlist', id],
+                        exact: true
+                    },
+                    'all'
+                ),
                 queryCache.invalidateQueries(
                     {
                         key: ['playlists', 'mine'],

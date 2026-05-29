@@ -1,12 +1,5 @@
 <script setup lang="ts">
-import {
-    useEventListener,
-    useFullscreen,
-    useIntervalFn,
-    useThrottleFn,
-    useTimeout
-} from '@vueuse/core';
-import { type YoutubePlayerOptions } from '~/services/youtube-player';
+import { useEventListener, useFullscreen, useThrottleFn, useTimeout } from '@vueuse/core';
 
 const route = useRoute();
 
@@ -17,57 +10,36 @@ const { skipToNext, skipToPrevious, queueItem } = playerStore;
 const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
 interface PlayerState {
-    isBuffering: boolean;
-    isPlaying: boolean;
-    isMuted: boolean;
     isScreenVisible: boolean;
     isQueueVisible: boolean;
     isDescriptionVisible: boolean;
-    currentTime: number;
 }
 
 function getInitialPlayerState(): PlayerState {
     return {
-        isBuffering: false,
-        isPlaying: false,
-        isMuted: false,
         isScreenVisible: false,
         isQueueVisible: false,
-        isDescriptionVisible: false,
-        currentTime: 0
+        isDescriptionVisible: false
     };
 }
 
+const { currentTime, isPlaying, isReady, isMuted, play, pause, toggleMute, seek } = useAudioStream(
+    computed(() => currentVideo.value?.id || null),
+    {
+        volume: computed(() => volume.value / 100),
+        onEnded: () => {
+            if (!isSingleVideo.value && nextVideo.value) {
+                skipToNext();
+            }
+        }
+    }
+);
+
 const state = reactive<PlayerState>(getInitialPlayerState());
 
-const youtubePlayer = useTemplateRef('youtubePlayer');
-
-const isStartup = ref<boolean>(true);
-
-const volumeBeforeMuting = ref<number>(100);
-
-const playerOptions = computed<YoutubePlayerOptions>(() => ({
-    playerVars: {
-        enablejsapi: 1,
-        autoplay: isStartup.value ? 0 : 1,
-        controls: 0
-    }
-}));
-
 function togglePlay() {
-    state.isPlaying = !state.isPlaying;
-}
-
-function toggleMute() {
-    state.isMuted = !state.isMuted;
-
-    if (state.isMuted) {
-        volumeBeforeMuting.value = volume.value;
-
-        volume.value = 0;
-    } else {
-        volume.value = volumeBeforeMuting.value;
-    }
+    if (isPlaying) pause();
+    else play();
 }
 
 function toggleScreen() {
@@ -77,23 +49,13 @@ function toggleScreen() {
 let wasPreviouslyPlaying = false;
 
 function handleStartSeeking() {
-    wasPreviouslyPlaying = state.isPlaying;
+    wasPreviouslyPlaying = isPlaying.value;
 
-    if (state.isPlaying) state.isPlaying = false;
+    if (isPlaying.value) pause();
 }
 
 function handleEndSeeking() {
-    youtubePlayer.value?.seekTo(state.currentTime);
-
-    if (wasPreviouslyPlaying) state.isBuffering = true;
-
-    state.isPlaying = wasPreviouslyPlaying;
-}
-
-function handleVideoEnd() {
-    if (!isSingleVideo.value && nextVideo.value) {
-        skipToNext();
-    }
+    if (wasPreviouslyPlaying) play();
 }
 
 function handleWheelVolume({ deltaY }: WheelEvent) {
@@ -101,7 +63,7 @@ function handleWheelVolume({ deltaY }: WheelEvent) {
 }
 
 function getVolumeIcon() {
-    if (state.isMuted) return 'i-mdi-volume-off';
+    if (isMuted.value) return 'i-mdi-volume-off';
 
     if (volume.value <= 25) return 'i-mdi-volume-low';
 
@@ -109,30 +71,6 @@ function getVolumeIcon() {
 
     return 'i-mdi-volume';
 }
-
-function fetchCurrentTime() {
-    state.currentTime = youtubePlayer.value?.getCurrentTime() || 0;
-}
-
-const { pause: pauseTimewatcher, resume: resumeTimeWatcher } = useIntervalFn(
-    fetchCurrentTime,
-    100,
-    {
-        immediate: false,
-        immediateCallback: true
-    }
-);
-
-watch(
-    () => [state.isPlaying, state.isBuffering],
-    () => {
-        if (state.isPlaying && !state.isBuffering) {
-            resumeTimeWatcher();
-        } else if (!state.isPlaying || state.isBuffering) {
-            pauseTimewatcher();
-        }
-    }
-);
 
 watch(
     () => currentVideo.value?.id,
@@ -190,26 +128,6 @@ watch(
         @mousemove="isFullscreen && startHideControlsTimerThrottled()"
         @mouseleave="isFullscreen && stopHideControlsTimer"
     >
-        <YoutubePlayer
-            v-if="currentVideo"
-            ref="youtubePlayer"
-            class="fixed left-0 right-0 transition-transform after:content-[''] z-51 after:absolute after:inset-0"
-            :class="{
-                'top-16 bottom-30': !isFullscreen,
-                'top-0 bottom-0': isFullscreen,
-                'translate-y-full': !state.isScreenVisible && !isFullscreen && !isSingleVideo
-            }"
-            :videoId="currentVideo.id"
-            :options="playerOptions"
-            :volume="volume"
-            v-model:playing="state.isPlaying"
-            @buffering-start="state.isBuffering = true"
-            @buffering-end="state.isBuffering = false"
-            @ready="isStartup = false"
-            @ended="handleVideoEnd"
-            @click="togglePlay"
-        />
-
         <div
             class="relative bg-elevated shadow transition-transform z-52"
             :class="{
@@ -220,7 +138,7 @@ watch(
                 v-if="currentVideo"
                 class="grow"
                 :duration="currentVideo.duration"
-                v-model:position="state.currentTime"
+                @update:position="(time) => seek(time)"
                 @start="handleStartSeeking()"
                 @end="handleEndSeeking()"
             />
@@ -254,7 +172,7 @@ watch(
                         class="flex items-center gap-1 text-sm leading-none font-mono"
                     >
                         <span class="w-17 text-right">
-                            {{ formatTime(state.currentTime) }}
+                            {{ formatTime(currentTime) }}
                         </span>
                         <span>/</span>
                         <span>
@@ -266,12 +184,12 @@ watch(
                 <div class="flex">
                     <div class="flex items-center gap-2">
                         <UTooltip
-                            :text="state.isPlaying ? 'Pause' : 'Play'"
+                            :text="isPlaying ? 'Pause' : 'Play'"
                             :kbds="['shift', 'k']"
                             :disabled="isMobile()"
                         >
                             <UButton
-                                :icon="state.isPlaying ? 'i-mdi-pause' : 'i-mdi-play'"
+                                :icon="isPlaying ? 'i-mdi-pause' : 'i-mdi-play'"
                                 :disabled="!currentVideo"
                                 @click="togglePlay"
                             />

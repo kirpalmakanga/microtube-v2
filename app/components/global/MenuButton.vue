@@ -10,7 +10,7 @@ const menuConfig = {
 </script>
 
 <template>
-    <UDropdownMenu v-if="menuOptions" :items="menuOptions" :content="menuConfig">
+    <UDropdownMenu :items="menuOptions" :content="menuConfig">
         <UButton
             class="ml-4"
             color="neutral"

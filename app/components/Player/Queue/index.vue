@@ -45,6 +45,7 @@ defineShortcuts({
             <SortableVirtualizedList
                 v-if="queue.length"
                 v-model="queue"
+                class="grow"
                 item-class="relative flex bg-elevated/50 group"
                 :options="listOptions"
                 v-slot="{ item, index }"

@@ -69,7 +69,7 @@ const { list, containerProps, wrapperProps } = useVirtualList(items, props.optio
 
 <template>
     <div v-bind="containerProps">
-        <ul ref="listContainer" class="w-full" v-bind="wrapperProps">
+        <ul ref="listContainer" v-bind="wrapperProps">
             <li
                 v-for="{ data: { data, index } } of list"
                 :key="getItemKey(data)"

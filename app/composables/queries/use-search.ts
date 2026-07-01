@@ -15,13 +15,3 @@ export function useSearch(searchParams: MaybeRef<{ query: string; forMine: numbe
         }
     });
 }
-
-export function useClearSearchResults() {
-    const queryCache = useQueryCache();
-
-    return () => {
-        const entry = queryCache.get(['search']);
-
-        if (entry) queryCache.remove(entry);
-    };
-}

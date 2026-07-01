@@ -11,8 +11,6 @@ const forMine = useRouteQuery('forMine', '0', { transform: Number });
             <SearchForm />
         </div>
 
-        <template v-if="query">
-            <SearchResults :query="query" :forMine="forMine" />
-        </template>
+        <SearchResults v-if="query" :query="query" :forMine="forMine" />
     </div>
 </template>

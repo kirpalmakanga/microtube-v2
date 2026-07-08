@@ -30,24 +30,38 @@ export function useCreateplaylist() {
         mutation: (playlistFormData: { title: string; privacyStatus: string }) => {
             return createPlaylist(playlistFormData);
         },
-        onSuccess: ({ id, title }: Playlist) => {
+        onSuccess: async ({ id, title }) => {
             toast.add({
-                title: `Playlist "${title}" created`,
+                title: `Successfully created playlist "${title}"`,
+                icon: 'i-mdi-check-circle',
+                color: 'success',
                 orientation: 'horizontal',
                 actions: [
                     {
                         label: 'See list',
+                        color: 'neutral',
                         async onClick() {
                             await router.push(`/playlist/${id}`);
                         }
                     }
                 ]
             });
+
+            await queryCache.invalidateQueries(
+                {
+                    key: ['playlists', 'mine'],
+                    exact: true
+                },
+                'all'
+            );
         },
-        onSettled: async () => {
-            await queryCache.invalidateQueries({
-                key: ['playlists', 'mine'],
-                exact: true
+        onError: (error, { title }) => {
+            captureError(error);
+
+            toast.add({
+                title: `Error: Failed to create playlist "${title}"`,
+                icon: 'i-mdi-close-circle',
+                color: 'error'
             });
         }
     });
@@ -63,16 +77,25 @@ export function useRemovePlaylist() {
 
             return playlist;
         },
-        onSuccess: ({ title }) => {
+        onSuccess: async ({ title }) => {
             toast.add({
-                title: `Playlist "${title}" removed`,
-                orientation: 'horizontal'
+                title: `Successfully removed playlist "${title}"`,
+                icon: 'i-mdi-check-circle',
+                color: 'success'
             });
-        },
-        onSettled: async () => {
+
             await queryCache.invalidateQueries({
                 key: ['playlists', 'mine'],
                 exact: true
+            });
+        },
+        onError: (error, { title }) => {
+            captureError(error);
+
+            toast.add({
+                title: `Error: Failed to remove playlist "${title}"`,
+                icon: 'i-mdi-close-circle',
+                color: 'error'
             });
         }
     });

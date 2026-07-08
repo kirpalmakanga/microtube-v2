@@ -33,6 +33,7 @@ declare global {
         privacyStatus: string;
         channelId: string;
         channelTitle: string;
+        isOwned?: boolean;
     }
 
     interface Video {
@@ -55,7 +56,13 @@ declare global {
     interface Channel {
         id: string;
         title: string;
+        description: string;
         thumbnails: Thumbnails;
+        subscriptionId?: string;
+    }
+
+    interface Subscription extends Channel {
+        totalItemCount?: number;
     }
 }
 

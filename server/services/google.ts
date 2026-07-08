@@ -1,4 +1,6 @@
-import { google } from 'googleapis';
+import { AuthPlus, oauth2 } from 'googleapis/build/src/apis/oauth2/index.js';
+
+const { OAuth2 } = new AuthPlus();
 
 const { CLIENT_ID, CLIENT_SECRET } = process.env;
 
@@ -6,18 +8,24 @@ function getClient({
     redirectUri,
     credentials
 }: {
-    redirectUri: string;
-    credentials?: { refresh_token: string };
+    redirectUri?: string;
+    credentials?: { access_token: string } | { refresh_token: string };
 }) {
-    const oauth2 = new google.auth.OAuth2({
-        clientId: CLIENT_ID,
-        clientSecret: CLIENT_SECRET,
-        redirectUri
-    });
+    let options;
 
-    if (credentials) oauth2.setCredentials(credentials);
+    if (redirectUri) {
+        options = {
+            clientId: CLIENT_ID,
+            clientSecret: CLIENT_SECRET,
+            redirectUri
+        };
+    }
 
-    return oauth2;
+    const client = new OAuth2(options);
+
+    if (credentials) client.setCredentials(credentials);
+
+    return client;
 }
 
 export async function getAuthorizationUrl(origin: string) {
@@ -37,7 +45,19 @@ export async function getAuthorizationUrl(origin: string) {
     return url;
 }
 
-export async function getToken({ origin, code }: { origin: string; code: string }) {
+interface GoogleGetTokenReturn {
+    accessToken: string;
+    refreshToken: string;
+    idToken: string;
+}
+
+export async function getToken({
+    origin,
+    code
+}: {
+    origin: string;
+    code: string;
+}): Promise<GoogleGetTokenReturn> {
     const client = getClient({ redirectUri: `${origin}/callback` });
 
     const {
@@ -51,13 +71,18 @@ export async function getToken({ origin, code }: { origin: string; code: string 
     };
 }
 
+interface GoogleRefreshAccessTokenReturn {
+    idToken: string;
+    accessToken: string;
+}
+
 export function refreshAccessToken({
     origin,
     refreshToken
 }: {
     origin: string;
     refreshToken: string;
-}) {
+}): Promise<GoogleRefreshAccessTokenReturn> {
     const client = getClient({
         redirectUri: `${origin}/callback`,
         credentials: {
@@ -73,7 +98,8 @@ export function refreshAccessToken({
                 if (tokens) {
                     const { id_token: idToken, access_token: accessToken } = tokens;
 
-                    resolve({ idToken, accessToken });
+                    if (idToken && accessToken) resolve({ idToken, accessToken });
+                    else reject('Invalid returned credentials');
                 } else reject(new Error("Couldn't retrieve credentials"));
             }
         });
@@ -81,12 +107,10 @@ export function refreshAccessToken({
 }
 
 export async function getProfile(accessToken: string) {
-    const oauth2 = new google.auth.OAuth2();
+    const client = getClient({ credentials: { access_token: accessToken } });
 
-    oauth2.setCredentials({ access_token: accessToken });
-
-    const auth = google.oauth2({
-        auth: oauth2,
+    const auth = oauth2({
+        auth: client,
         version: 'v2'
     });
 

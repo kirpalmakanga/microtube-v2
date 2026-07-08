@@ -5,7 +5,7 @@ const content = computed(() => (props.text ? wrapURLs(props.text) : ''));
 </script>
 
 <template>
-    <USlideover :title="title" inset>
+    <USlideover :title="title" :ui="{ header: 'pr-16 sm:pr-16' }" inset>
         <slot />
 
         <template #body>

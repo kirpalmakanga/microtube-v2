@@ -1,10 +1,51 @@
 <script setup lang="ts">
+import type { DropdownMenuItem } from '@nuxt/ui';
+
+const router = useRouter();
+const colorMode = useColorMode();
+
 const authStore = useAuthStore();
-const { picture } = storeToRefs(authStore);
+const { isSignedIn, picture } = storeToRefs(authStore);
+const { signOut } = authStore;
+
+const isDark = computed({
+    get() {
+        return colorMode.value === 'dark';
+    },
+    set(_isDark) {
+        colorMode.preference = _isDark ? 'dark' : 'light';
+    }
+});
+
+const menuConfig = {
+    align: 'end',
+    side: 'bottom'
+} as const;
+
+const menuOptions = computed<DropdownMenuItem[]>(() => [
+    {
+        label: `Theme: ${isDark.value ? 'Dark' : 'Light'}`,
+        icon: isDark.value ? 'i-mdi-moon-waning-crescent' : 'i-mdi-white-balance-sunny',
+        onSelect: () => {
+            isDark.value = !isDark.value;
+        }
+    },
+    { type: 'separator' },
+    {
+        label: 'Sign out',
+        icon: 'i-mdi-sign-out',
+        color: 'error',
+        onSelect: async () => {
+            await signOut();
+
+            await router.push('/login');
+        }
+    }
+]);
 </script>
 
 <template>
-    <UHeader :toggle="false">
+    <UHeader class="bg-default" :ui="{ container: 'lg:px-6' }" :toggle="false">
         <template #left>
             <NuxtLink class="flex items-center gap-1" to="/">
                 <UIcon class="size-8" name="i-mdi-youtube" />
@@ -13,12 +54,22 @@ const { picture } = storeToRefs(authStore);
             </NuxtLink>
         </template>
 
-        <template #right>
-            <SearchForm />
+        <template v-if="isSignedIn" #right>
+            <NuxtLink v-if="$route.name !== 'search'" class="flex items-center" to="/search">
+                <UIcon class="size-6" name="i-mdi-search" />
+            </NuxtLink>
 
-            <UColorModeButton />
+            <NuxtLink
+                v-if="$route.name !== 'subscriptions'"
+                class="flex items-center"
+                to="/subscriptions"
+            >
+                <UIcon class="size-6" name="i-mdi-youtube-subscription" />
+            </NuxtLink>
 
-            <UButton color="neutral" variant="ghost"><UAvatar :src="picture" /></UButton>
+            <UDropdownMenu :content="menuConfig" :items="menuOptions">
+                <button><UAvatar :src="picture" /></button>
+            </UDropdownMenu>
         </template>
     </UHeader>
 </template>

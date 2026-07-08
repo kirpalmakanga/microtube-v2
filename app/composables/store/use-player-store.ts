@@ -1,130 +1,132 @@
-import { getPlaylistItems, getVideo, getVideosFromIds } from '~/services/youtube';
+import type { AvatarProps } from '@nuxt/ui';
+import { getAllPlaylistItems, getVideo, getVideosFromIds } from '~/services/youtube';
 
-interface PlayerState {
-    isScreenVisible: boolean;
+interface PlayerStoreState {
     volume: number;
-    currentTime: number;
-    queue: Video[];
-    newItemCount: number;
-    selectedItemId: string | null;
     video: Video | null;
+    queue: Video[];
+    selectedItemId: string | null;
 }
 
-function getInitialState(): PlayerState {
+function getInitialState(): PlayerStoreState {
     return {
-        isScreenVisible: false,
         volume: 100,
-        newItemCount: 0,
-        currentTime: 0,
+        video: null,
         queue: [],
-        selectedItemId: null,
-        video: null
+        selectedItemId: null
     };
 }
 
 export const usePlayerStore = defineStore(
     'player',
     () => {
-        const authStore = useAuthStore();
-        const { id: userId } = storeToRefs(authStore);
-
-        const { saveData, subscribeToData } = useFirebase();
+        const { saveData } = useFirebase();
 
         const toast = useToast();
 
-        const state = reactive<PlayerState>(getInitialState());
+        const state = reactive<PlayerStoreState>(getInitialState());
 
         const selectedItemIndex = computed(() =>
             state.queue.findIndex(({ id }) => id === state.selectedItemId)
         );
 
-        const currentUserId = computed(() => (import.meta.env.DEV ? 'dev' : userId.value));
-        const queuePath = computed(() => `users/${currentUserId.value}/queue`);
-        const selectedItemIdPath = computed(() => `users/${currentUserId.value}/selectedItemId`);
-
-        function subscribeToQueue() {
-            subscribeToData(queuePath.value, (queue = []) => {
-                const { queue: currentQueue } = state;
-
-                if (!isEqual(queue, currentQueue)) {
-                    state.queue = queue;
-                }
-            });
+        function saveQueueToDatabase() {
+            return saveData('queue', state.queue);
         }
 
-        function subscribeToCurrentQueueId() {
-            subscribeToData(selectedItemIdPath.value, (videoId = '') => {
-                if (videoId !== state.selectedItemId) {
-                    state.selectedItemId = videoId;
-                }
-            });
+        async function setSelectedItem(videoId: string | null) {
+            state.selectedItemId = videoId;
+
+            await saveData('selectedItemId', videoId);
         }
 
-        async function setQueue(queue: Video[]) {
-            state.queue = queue;
-
-            await saveData(queuePath.value, queue);
+        function isSelectedItem(videoId: string | null) {
+            return videoId === state.selectedItemId;
         }
 
         function isInQueue(videoId: string) {
             return state.queue.find(({ id: queueItemId }) => queueItemId === videoId);
         }
 
-        async function queueItems(newItems: Video[]) {
-            const items = newItems.filter(({ id }) => !isInQueue(id));
+        async function queueItems(items: Video[], notify?: boolean) {
+            const newItems = items.filter(({ id }) => !isInQueue(id));
 
-            const { queue: currentQueue, newItemCount } = state;
+            state.queue = [...state.queue, ...newItems];
 
-            const queue = [...currentQueue, ...items];
+            if (notify) {
+                toast.add({
+                    title: `${newItems.length} new item(s) added to queue.`,
+                    icon: 'i-mdi-playlist-check',
+                    color: 'success'
+                });
+            }
 
-            Object.assign(state, {
-                queue,
-                newItemCount: newItemCount + items.length
+            await saveQueueToDatabase();
+
+            return newItems;
+        }
+
+        async function queueItem(data: Video) {
+            const avatar: AvatarProps = {
+                src: getThumbnails(data.thumbnails, 'default'),
+                class: 'rounded-md aspect-video w-auto'
+            };
+
+            if (isInQueue(data.id)) {
+                toast.add({
+                    title: 'Already in queue.',
+                    icon: 'i-mdi-information',
+                    color: 'info'
+                });
+
+                return;
+            }
+
+            await queueItems([data]);
+
+            toast.add({
+                title: `Added to queue.`,
+                color: 'success',
+                avatar
             });
-
-            await saveData(queuePath.value, queue);
-
-            return items;
         }
 
-        function queueItem(data: Video) {
-            return queueItems([data]);
+        async function removeQueueItem(targetId: string) {
+            state.queue = state.queue.filter(({ id }) => id !== targetId);
+
+            await saveQueueToDatabase();
+
+            if (targetId === state.selectedItemId) {
+                await setSelectedItem(null);
+            }
         }
 
-        async function setSelectedItem(videoId: string) {
-            state.selectedItemId = videoId;
+        async function clearQueue() {
+            state.queue = state.queue.filter(({ id }) => id === state.selectedItemId);
 
-            await saveData(selectedItemIdPath.value, videoId);
+            await saveQueueToDatabase();
+        }
+
+        async function moveInQueue(direction: -1 | 1) {
+            const { [selectedItemIndex.value + direction]: selectedItem } = state.queue;
+
+            if (selectedItem) await setSelectedItem(selectedItem.id);
         }
 
         async function importVideos(ids: string[]) {
             try {
                 const items = await getVideosFromIds(ids.filter((id) => !isInQueue(id)));
 
-                await queueItems(items);
+                await queueItems(items, true);
             } catch (error) {
                 captureError(error);
 
-                toast.add({ title: 'Error queuing videos.', color: 'error' });
+                toast.add({
+                    title: 'Could not import videos.',
+                    icon: 'i-mdi-close-circle',
+                    color: 'error'
+                });
             }
-        }
-
-        async function removeQueueItem(targetId: string) {
-            await setQueue(state.queue.filter(({ id }) => id !== targetId));
-
-            if (targetId === state.selectedItemId) {
-                await saveData(selectedItemIdPath.value, null);
-
-                state.selectedItemId = null;
-            }
-        }
-
-        function resetNewItemCount() {
-            state.newItemCount = 0;
-        }
-
-        function clearQueue() {
-            state.queue = state.queue.filter(({ id }) => id === state.selectedItemId);
         }
 
         function clearVideo() {
@@ -133,50 +135,73 @@ export const usePlayerStore = defineStore(
 
         async function fetchVideo(videoId: string) {
             try {
-                clearVideo();
-
                 state.video = await getVideo(videoId);
             } catch (error) {
                 captureError(error);
 
-                toast.add({ title: 'Error fetching video.', color: 'error' });
+                toast.add({
+                    title: 'Could not fetch video.',
+                    icon: 'i-mdi-close-circle',
+                    color: 'error'
+                });
             }
         }
 
         async function queuePlaylist(playlistId: string, play?: boolean) {
-            async function getItems(pageToken: string | null) {
-                const { items, nextPageToken } = await getPlaylistItems({
-                    playlistId,
-                    pageToken
+            const toastId = `fetch-playlist-${playlistId}`;
+
+            try {
+                toast.add({
+                    id: toastId,
+                    title: 'Fetching playlist items...',
+                    icon: 'svg-spinners-90-ring-with-bg',
+                    progress: false
+                });
+
+                const items = await getAllPlaylistItems(playlistId, (items, totalItems) => {
+                    toast.update(toastId, {
+                        title: `Fetched ${items.length}/${totalItems} playlist items...`
+                    });
                 });
 
                 const newItems = await queueItems(items);
 
-                if (play && !pageToken && newItems.length) {
-                    const [{ id } = {}] = newItems;
+                toast.update(toastId, {
+                    title: `${newItems.length} new item(s) added to queue.`,
+                    icon: 'i-mdi-playlist-check',
+                    color: 'success',
+                    progress: true
+                });
+
+                if (play && items.length) {
+                    const [{ id } = {}] = items;
 
                     if (id) await setSelectedItem(id);
                 }
-
-                if (nextPageToken) {
-                    await getItems(nextPageToken);
-                }
-            }
-
-            try {
-                await getItems(null);
             } catch (error) {
                 captureError(error);
 
-                toast.add({ title: 'Error queueing playlist items.', color: 'error' });
+                toast.add({
+                    title: 'Could not queue playlist.',
+                    icon: 'i-mdi-close-circle',
+                    color: 'error'
+                });
+            } finally {
+                toast.remove(toastId);
             }
         }
 
-        async function moveInQueue(direction: -1 | 1) {
-            const { [selectedItemIndex.value + direction]: selectedItem } = state.queue;
+        useFirebaseData<Video[]>('queue', (queue) => {
+            if (!isEqual(queue, state.queue)) {
+                state.queue = queue || [];
+            }
+        });
 
-            if (selectedItem) await setSelectedItem(selectedItem.id);
-        }
+        useFirebaseData<string | null>('selectedItemId', (selectedId) => {
+            if (!isSelectedItem(selectedId)) {
+                state.selectedItemId = selectedId;
+            }
+        });
 
         return {
             ...toRefs(state),
@@ -187,25 +212,25 @@ export const usePlayerStore = defineStore(
             }),
             previousVideo: computed(() => state.queue[selectedItemIndex.value - 1]),
             nextVideo: computed(() => state.queue[selectedItemIndex.value + 1]),
-            subscribeToQueue,
-            subscribeToCurrentQueueId,
-            setQueue,
-            queueItems,
+            isSingleVideo: computed(() => !!state.video),
+            isInQueue,
             queueItem,
             queuePlaylist,
             setSelectedItem,
+            isSelectedItem,
             importVideos,
             removeQueueItem,
             clearQueue,
-            resetNewItemCount,
             clearVideo,
             fetchVideo,
-            moveInQueue
+            skipToPrevious: () => moveInQueue(-1),
+            skipToNext: () => moveInQueue(1)
         };
     },
     {
         persist: {
-            storage: piniaPluginPersistedstate.localStorage()
+            storage: piniaPluginPersistedstate.localStorage(),
+            pick: ['volume', 'queue', 'selectedItemId']
         }
     }
 );

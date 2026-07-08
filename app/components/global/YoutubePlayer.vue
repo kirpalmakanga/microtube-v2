@@ -6,30 +6,85 @@ import {
     type YoutubePlayerOptions
 } from '~/services/youtube-player';
 
-interface NewOptions {
-    videoId: string;
-    startSeconds?: number;
-    endSeconds?: number;
-}
-
 const props = defineProps<{
     videoId: string;
     options?: YoutubePlayerOptions;
+    volume?: number;
 }>();
 
 const emit = defineEmits<{
     ready: [youtubePlayer: YouTubePlayerInstance];
     unstarted: [e: void];
-    buffering: [e: void];
     playing: [e: void];
     paused: [e: void];
     ended: [e: void];
+    'buffering-start': [e: void];
+    'buffering-end': [e: void];
 }>();
 
 const containerId = 'youtube-player';
 const youtubePlayer = ref<YouTubePlayerInstance | null>(null);
+const isPlayerReady = ref<boolean>(false);
 const isPlaying = defineModel<boolean>('playing', { default: false });
+
 let isStartup: boolean = true;
+
+const { ENDED, PLAYING, PAUSED, BUFFERING, UNSTARTED } = PLAYBACK_STATES;
+
+function onStateChange({ data }: { [key: string]: any }) {
+    switch (data) {
+        case UNSTARTED:
+            if (!isStartup) {
+                youtubePlayer.value?.playVideo();
+            } else {
+                isStartup = false;
+            }
+
+            emit('unstarted');
+            break;
+
+        case ENDED:
+            emit('ended');
+            break;
+
+        case PLAYING:
+            isPlaying.value = true;
+
+            emit('playing');
+
+            emit('buffering-end');
+            break;
+
+        case PAUSED:
+            isPlaying.value = false;
+
+            emit('paused');
+            break;
+
+        case BUFFERING:
+            emit('buffering-start');
+            break;
+
+        default:
+            return;
+    }
+}
+
+function onReady() {
+    if (youtubePlayer.value) {
+        emit('ready', youtubePlayer.value);
+
+        isPlayerReady.value = true;
+
+        setPlayerVolume();
+    }
+}
+
+function setPlayerVolume() {
+    if (typeof props.volume !== 'undefined' && youtubePlayer.value) {
+        youtubePlayer.value.setVolume(props.volume);
+    }
+}
 
 async function createPlayer() {
     if (youtubePlayer.value) {
@@ -38,51 +93,14 @@ async function createPlayer() {
         return;
     }
 
-    const { ENDED, PLAYING, PAUSED, BUFFERING, UNSTARTED } = PLAYBACK_STATES;
-
     try {
         youtubePlayer.value = await createYoutubePlayer(containerId, {
             ...props.options,
             videoId: props.videoId,
             events: {
-                onReady: () => youtubePlayer.value && emit('ready', youtubePlayer.value),
-                onError: captureError,
-                onStateChange({ data }: { [key: string]: any }) {
-                    switch (data) {
-                        case UNSTARTED:
-                            if (!isStartup) {
-                                youtubePlayer.value?.playVideo();
-                            } else {
-                                isStartup = false;
-                            }
-
-                            emit('unstarted');
-                            break;
-
-                        case ENDED:
-                            emit('ended');
-                            break;
-
-                        case PLAYING:
-                            isPlaying.value = true;
-
-                            emit('playing');
-                            break;
-
-                        case PAUSED:
-                            isPlaying.value = false;
-
-                            emit('paused');
-                            break;
-
-                        case BUFFERING:
-                            emit('buffering');
-                            break;
-
-                        default:
-                            return;
-                    }
-                }
+                onReady,
+                onStateChange,
+                onError: captureError
             }
         });
     } catch (error: unknown) {
@@ -94,64 +112,64 @@ function destroyPlayer() {
     youtubePlayer.value?.destroy();
 }
 
-async function resetPlayer() {
-    destroyPlayer();
-
-    createPlayer();
-}
-
 async function updateVideo() {
     if (!youtubePlayer.value) return;
 
-    const { videoId, options } = props;
+    const { videoId } = props;
 
-    if (!videoId) {
-        youtubePlayer.value.stopVideo();
+    if (videoId) {
+        youtubePlayer.value.loadVideoById({ videoId });
 
         return;
     }
 
-    const newOpts: NewOptions = { videoId };
-    let autoplay = false;
-
-    if (options && 'playerVars' in options) {
-        const { playerVars = {} } = options;
-
-        autoplay = playerVars.autoplay === 1;
-
-        if ('start' in playerVars) {
-            newOpts.startSeconds = playerVars.start;
-        }
-        if ('end' in playerVars) {
-            newOpts.endSeconds = playerVars.end;
-        }
-    }
-
-    if (autoplay) {
-        youtubePlayer.value.loadVideoById(newOpts);
-    } else {
-        youtubePlayer.value.cueVideoById(newOpts);
-    }
+    youtubePlayer.value.stopVideo();
 }
-
-watch(() => props.options, resetPlayer, { deep: true });
-
-watch(() => props.videoId, updateVideo);
 
 watch(isPlaying, () => {
     if (isPlaying.value) youtubePlayer.value?.playVideo();
     else youtubePlayer.value?.pauseVideo();
 });
 
+watch(() => props.videoId, updateVideo);
+
+watch(() => props.volume, setPlayerVolume);
+
 onMounted(createPlayer);
 
 onBeforeUnmount(destroyPlayer);
 
-defineExpose(youtubePlayer);
+export interface YoutubePlayerExposed {
+    isPlayerReady: Ref<boolean>;
+    getCurrentTime: () => number | undefined;
+    seekTo: (time: number) => void;
+}
+
+defineExpose<YoutubePlayerExposed>({
+    isPlayerReady,
+    getCurrentTime: () => {
+        return youtubePlayer.value?.getCurrentTime() || 0;
+    },
+    seekTo: (time: number) => {
+        youtubePlayer.value?.seekTo(time, true);
+    }
+});
 </script>
 
 <template>
-    <div>
-        <div :id="containerId" class="h-full w-full"></div>
+    <div class="bg-black">
+        <div class="h-full w-full">
+            <div :id="containerId" class="h-full w-full"></div>
+        </div>
+
+        <Transition name="fade">
+            <div
+                v-if="!isPlayerReady"
+                class="bg-inherit absolute inset-0 flex flex-col items-center justify-center gap-2"
+            >
+                <UIcon class="size-12" name="i-svg-spinners-90-ring-with-bg" />
+                <p>Initializing player</p>
+            </div>
+        </Transition>
     </div>
 </template>

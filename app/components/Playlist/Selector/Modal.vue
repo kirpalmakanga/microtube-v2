@@ -7,6 +7,7 @@ const isFormOpen = ref<boolean>(false);
 
 function handleOpenForm() {
     isOpen.value = false;
+
     isFormOpen.value = true;
 }
 
@@ -21,13 +22,13 @@ watch(
         v-model:open="isOpen"
         :title="video?.title"
         description="Save to playlist"
-        :ui="{ footer: 'justify-center' }"
+        :ui="{ header: 'pr-16 sm:pr-16', footer: 'justify-center' }"
         @after:leave="$emit('close')"
     >
         <slot />
 
         <template #body>
-            <PlaylistSelector v-if="video" :video-id="video.id" @saved="isOpen = false" />
+            <PlaylistSelector v-if="video" :video="video" @saved="isOpen = false" />
         </template>
 
         <template #footer>
@@ -37,5 +38,5 @@ watch(
         </template>
     </UModal>
 
-    <PlaylistSelectorForm v-model:is-open="isFormOpen" />
+    <PlaylistSelectorForm :video="video" v-model:is-open="isFormOpen" @saved="isOpen = false" />
 </template>

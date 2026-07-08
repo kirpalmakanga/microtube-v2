@@ -12,18 +12,22 @@ const itemToRemove = ref<Playlist | null>(null);
 
 <template>
     <div class="flex flex-col grow">
-        <PlaylistsListLoader v-if="isPending || (error && isLoading)" />
+        <PlaylistsListLoader v-if="isPending || (error && isLoading)" class="p-4 md:p-6" />
 
         <Error v-else-if="error" @action="refetch()" />
 
         <List
             v-else-if="items"
             :items="items"
-            @reached-bottom="hasNextPage && !isLoading && loadNextPage()"
+            :is-loading="isLoading"
+            empty-message="You haven't created playlists yet."
+            @load-more="hasNextPage && !isLoading && loadNextPage()"
         >
             <template #item="{ item }">
                 <PlaylistsListItem
                     v-bind="item"
+                    :can-be-removed="true"
+                    :show-privacy-status="true"
                     @queue="queuePlaylist(item.id)"
                     @remove="itemToRemove = item"
                 />

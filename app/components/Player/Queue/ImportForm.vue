@@ -40,7 +40,11 @@ async function handleSubmit() {
         } catch (error) {
             captureError(error);
 
-            toast.add({ title: 'An error has occured, please retry.', color: 'error' });
+            toast.add({
+                title: 'An error has occured, please retry.',
+                icon: 'i-mdi-close-circle',
+                color: 'error'
+            });
         }
     }
 
@@ -70,7 +74,7 @@ async function handleSubmit() {
             <UAlert
                 class="mt-6"
                 color="info"
-                title="Paste IDs links to youtube videos or their, one link per line."
+                title="Paste video IDs or links, one item per line."
             />
         </template>
 

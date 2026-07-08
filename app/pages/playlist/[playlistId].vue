@@ -4,12 +4,14 @@ const {
 } = useRoute();
 
 const {
-    data: playlistData,
+    data: playlist,
     isPending: isPlaylistPending,
     isLoading: isPlaylistLoading,
     error: playlistError,
     refetch: refetchPlaylist
 } = usePlaylist(playlistId as string);
+
+const { mutate: removePlaylist } = useRemovePlaylist();
 
 const {
     data: playlistItems,
@@ -21,16 +23,17 @@ const {
     loadNextPage
 } = usePlaylistItems(playlistId as string);
 
-const items = computed(() => playlistItems.value?.pages.flatMap(({ items }) => items));
-
-const { queueItem } = usePlayerStore();
-
 const { mutate: removePlaylistItem } = useRemovePlaylistItem();
 
-const itemToBeSaved = ref<PlaylistItem | null>(null);
-const itemToBeRemoved = ref<PlaylistItem | null>(null);
+const items = computed(() => playlistItems.value?.pages.flatMap(({ items }) => items));
 
-useAppTitle(computed(() => playlistData.value?.title || ''));
+const { queueItem, queuePlaylist } = usePlayerStore();
+
+const isPlaylistRemovalPromptOpen = ref<boolean>(false);
+const itemToSave = ref<PlaylistItem | null>(null);
+const itemToRemove = ref<PlaylistItem | null>(null);
+
+useAppTitle(computed(() => playlist.value?.title));
 </script>
 
 <template>
@@ -39,10 +42,15 @@ useAppTitle(computed(() => playlistData.value?.title || ''));
 
         <Error v-else-if="playlistError" @action="refetchPlaylist()" />
 
-        <PlaylistHeader v-else-if="playlistData" v-bind="playlistData" />
+        <PlaylistHeader
+            v-else-if="playlist"
+            v-bind="playlist"
+            @queue="queuePlaylist(playlist.id)"
+            @remove="isPlaylistRemovalPromptOpen = true"
+        />
 
         <PlaylistItemsLoader
-            class="p-6"
+            class="p-4 md:p-6"
             v-if="arePlaylistItemsPending || (playlistItemsError && arePlaylistItemsLoading)"
         />
 
@@ -51,6 +59,8 @@ useAppTitle(computed(() => playlistData.value?.title || ''));
         <List
             v-else-if="items"
             :items="items"
+            :is-loading="arePlaylistItemsLoading"
+            empty-message="No videos in this playlist yet"
             @load-more="hasNextPage && !arePlaylistItemsLoading && loadNextPage()"
         >
             <template #item="{ item, index }">
@@ -58,8 +68,8 @@ useAppTitle(computed(() => playlistData.value?.title || ''));
                     :index="index + 1"
                     v-bind="item"
                     @queue="queueItem(item)"
-                    @save="itemToBeSaved = item"
-                    @remove="itemToBeRemoved = item"
+                    @save="itemToSave = item"
+                    @remove="itemToRemove = item"
                 />
             </template>
 
@@ -69,17 +79,23 @@ useAppTitle(computed(() => playlistData.value?.title || ''));
         </List>
     </div>
 
-    <PlaylistSelectorModal
-        :is-open="!!itemToBeSaved"
-        :video="itemToBeSaved"
-        @close="itemToBeSaved = null"
-    />
+    <PlaylistSelectorModal :is-open="!!itemToSave" :video="itemToSave" @close="itemToSave = null" />
 
-    <Prompt
-        :is-open="!!itemToBeRemoved"
-        :title="`Remove playlist item &quot;${itemToBeRemoved?.title}&quot; ?`"
-        confirm-text="Remove"
-        @confirm="itemToBeRemoved && removePlaylistItem(itemToBeRemoved)"
-        @close="itemToBeRemoved = null"
-    />
+    <template v-if="playlist">
+        <Prompt
+            :is-open="isPlaylistRemovalPromptOpen"
+            :title="`Remove playlist &quot;${playlist.title}&quot; ?`"
+            confirm-text="Remove"
+            @confirm="removePlaylist(playlist)"
+            @close="isPlaylistRemovalPromptOpen = false"
+        />
+
+        <Prompt
+            :is-open="!!itemToRemove"
+            :title="`Remove playlist item &quot;${itemToRemove?.title}&quot; ?`"
+            confirm-text="Remove"
+            @confirm="itemToRemove && removePlaylistItem({ playlist, video: itemToRemove })"
+            @close="itemToRemove = null"
+        />
+    </template>
 </template>

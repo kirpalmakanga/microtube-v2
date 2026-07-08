@@ -21,8 +21,48 @@
     .ellipsis {
         @apply whitespace-nowrap text-ellipsis overflow-hidden;
     }
+
+    .ui-container {
+        @apply w-full max-w-(--ui-container) mx-auto;
+    }
+}
+
+body {
+    @apply overflow-hidden;
 }
 
 button {
     @apply cursor-pointer;
+
+    &:disabled {
+        @apply cursor-not-allowed opacity-50;
+    }
+}
+
+::-webkit-scrollbar {
+    @apply w-2;
+}
+::-webkit-scrollbar-track {
+    @apply bg-stone-100 md:my-2 md:rounded-md;
+}
+::-webkit-scrollbar-thumb {
+    @apply bg-stone-300 md:rounded-md;
+}
+
+@media (prefers-color-scheme: dark) {
+    ::-webkit-scrollbar-track {
+        @apply bg-neutral-700;
+    }
+    ::-webkit-scrollbar-thumb {
+        @apply bg-neutral-500;
+    }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.15s;
+}
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
 }

@@ -1,4 +1,4 @@
-import { getProfile, getToken } from '../core/google';
+import { getProfile, getToken } from '../services/google';
 import { badRequest } from '../utils/response';
 
 export default defineEventHandler<{ query: { code: string } }>(async (event) => {

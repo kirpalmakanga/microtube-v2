@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = defineProps<{ videoId: string }>();
+const props = defineProps<{ video: Video }>();
 
 const emit = defineEmits<{ saved: [e: void] }>();
 
@@ -10,7 +10,7 @@ const playlists = computed(() => data.value?.pages.flatMap(({ items }) => items)
 const { mutate: addPlaylistItem } = useAddPlaylistItem();
 
 function handleSelectPlaylist(playlist: Playlist) {
-    addPlaylistItem({ videoId: props.videoId, playlist });
+    addPlaylistItem({ video: props.video, playlist });
 
     emit('saved');
 }

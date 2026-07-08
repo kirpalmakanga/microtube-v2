@@ -30,7 +30,7 @@ watch(
     <div class="grow relative overflow-hidden">
         <div
             ref="innerContainer"
-            class="absolute top-0 left-0 right-0 bottom-0 overflow-auto"
+            class="absolute top-0 left-0 right-0 bottom-0 overflow-y-auto scroll-smooth"
             :class="scrollableClass"
         >
             <slot />

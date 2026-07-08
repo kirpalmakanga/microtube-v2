@@ -1,4 +1,4 @@
-import { refreshAccessToken } from '../core/google';
+import { refreshAccessToken } from '../services/google';
 import { badRequest } from '../utils/response';
 
 export default defineEventHandler<{ query: { refreshToken: string } }>(async (event) => {

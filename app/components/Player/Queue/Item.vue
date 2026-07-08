@@ -56,7 +56,7 @@ const menuConfig = {
 <template>
     <UContextMenu :items="menuOptions" :disabled="!menuOptions">
         <div
-            class="bg-elevated/50 hover:bg-elevated/25 transition-colors relative flex grow items-center overflow-hidden pl-10 py-2 pr-2"
+            class="bg-elevated/50 hover:bg-elevated/25 transition-colors relative flex grow items-center overflow-hidden p-2 cursor-pointer"
             :class="{
                 'bg-zinc-700 hover:bg-zinc-600': isSelected
             }"
@@ -74,16 +74,16 @@ const menuConfig = {
                     />
 
                     <span
-                        class="absolute bottom-2 right-2 bg-gray-800/70 font-semibold font-montserrat text-xs rounded px-2 py-1"
+                        class="absolute bottom-2 right-2 bg-gray-800/70 font-semibold text-xs rounded px-2 py-1"
                     >
                         {{ formatTime(duration) }}
                     </span>
                 </div>
 
                 <div class="flex flex-col grow gap-1 overflow-hidden">
-                    <h2 class="font-bold font-montserrat ellipsis">{{ title }}</h2>
+                    <h2 class="font-bold ellipsis">{{ title }}</h2>
 
-                    <h3 class="text-sm opacity-70 hover:opacity-60 font-montserrat ellipsis">
+                    <h3 class="text-sm opacity-70 hover:opacity-60 ellipsis">
                         <NuxtLink :to="`/channel/${channelId}`" @click.stop>
                             {{ channelTitle }}
                         </NuxtLink>

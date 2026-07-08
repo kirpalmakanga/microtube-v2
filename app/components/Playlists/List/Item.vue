@@ -8,16 +8,25 @@ const props = defineProps<{
     title: string;
     thumbnails: Thumbnails;
     itemCount: number;
+    privacyStatus: string;
+    showPrivacyStatus?: boolean;
+    isOwned?: boolean;
 }>();
 
 const copy = useCopy();
 
 const menuOptions = computed<ContextMenuItem[]>(() => [
-    {
-        label: 'Add to queue',
-        icon: 'i-mdi-plus-circle',
-        onSelect: () => props.itemCount && emit('queue')
-    },
+    ...(props.itemCount
+        ? [
+              {
+                  label: 'Add to queue',
+                  icon: 'i-mdi-plus-circle',
+                  onSelect: () => {
+                      if (props.itemCount) emit('queue');
+                  }
+              }
+          ]
+        : []),
     {
         label: 'Share',
         icon: 'i-mdi-share',
@@ -34,13 +43,17 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
             }
         }
     },
-    { type: 'separator' },
-    {
-        label: 'Delete',
-        icon: 'i-mdi-delete-forever',
-        color: 'error',
-        onSelect: () => emit('remove')
-    }
+    ...(props.isOwned
+        ? ([
+              { type: 'separator' },
+              {
+                  label: 'Delete',
+                  icon: 'i-mdi-delete-forever',
+                  color: 'error',
+                  onSelect: () => emit('remove')
+              }
+          ] as ContextMenuItem[])
+        : [])
 ]);
 </script>
 
@@ -53,7 +66,15 @@ const menuOptions = computed<ContextMenuItem[]>(() => [
         @click="$router.push(`/playlist/${id}`)"
     >
         <template #content>
-            <h2 class="font-bold text-light-50 font-montserrat ellipsis">{{ title }}</h2>
+            <h2 class="font-bold ellipsis">{{ title }}</h2>
+
+            <UBadge v-if="showPrivacyStatus" class="self-start" color="primary">
+                {{ getVisibilityLabel(privacyStatus) }}
+            </UBadge>
+        </template>
+
+        <template #actions>
+            <MenuButton :menu-options="menuOptions" />
         </template>
     </ListItem>
 </template>

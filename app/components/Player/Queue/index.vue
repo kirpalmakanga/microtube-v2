@@ -1,71 +1,79 @@
 <script setup lang="ts">
-import { UseSortable } from '@vueuse/integrations/useSortable/component';
+import type { SortableVirtualizedListOptions } from '~/components/global/SortableVirtualizedList.vue';
 const playerStore = usePlayerStore();
-const { queue, selectedItemId } = storeToRefs(playerStore);
-const { clearQueue, removeQueueItem, setSelectedItem } = playerStore;
-const list = shallowRef(queue);
+const { queue } = storeToRefs(playerStore);
+const { isSelectedItem, clearQueue, removeQueueItem, setSelectedItem } = playerStore;
 
+const isOpen = defineModel<boolean>('isOpen', { default: false });
 const itemToSave = ref<Video | null>(null);
 const isImportFormOpen = ref<boolean>(false);
 const isClearingPromptOpen = ref<boolean>(false);
 
-function isSelected(videoId: string) {
-    return videoId === selectedItemId.value;
-}
+const listOptions: SortableVirtualizedListOptions = {
+    sortable: {
+        handle: '.handle',
+        animation: 150,
+        ghostClass: 'invisible',
+        watchElement: true
+    },
+    virtualize: {
+        itemHeight: 88,
+        overscan: 10
+    }
+};
+
+defineShortcuts({
+    q: () => (isOpen.value = !isOpen.value)
+});
 </script>
 
 <template>
     <USlideover
+        v-model:open="isOpen"
         title="Queue"
         :description="`${queue.length} video${queue.length !== 1 ? 's' : ''}`"
-        :ui="{ content: 'max-w-2/5', body: 'flex p-0 sm:p-0', footer: 'justify-end' }"
+        :ui="{
+            content: 'max-w-full md:max-w-2/3 lg:max-w-1/2 xl:max-w-2/5',
+            body: 'flex p-0 sm:p-0 scroll-smooth',
+            footer: 'justify-end'
+        }"
         inset
     >
         <slot />
 
         <template #body>
-            <UseSortable
-                class="w-full"
-                v-model="list"
-                as="ul"
-                :options="{
-                    //@ts-ignore
-                    handle: '.handle',
-                    animation: 150,
-                    ghostClass: 'invisible'
-                }"
+            <SortableVirtualizedList
+                v-if="queue.length"
+                v-model="queue"
+                class="grow"
+                item-class="relative flex bg-elevated/50 group"
+                :options="listOptions"
+                v-slot="{ item, index }"
             >
-                <li
-                    class="relative flex bg-elevated/50 group"
-                    v-for="(item, index) of list"
-                    :key="item.id"
+                <PlayerQueueItem
+                    v-bind="item"
+                    class="pl-10"
+                    :is-playing="false"
+                    :is-selected="isSelectedItem(item.id)"
+                    @select="!isSelectedItem(item.id) && setSelectedItem(item.id)"
+                    @save="itemToSave = item"
+                    @remove="removeQueueItem(item.id)"
+                />
+
+                <div
+                    class="handle absolute left-0 top-0 bottom-0 flex shrink-0 items-center justify-center w-10 cursor-grab"
                 >
-                    <PlayerQueueItem
-                        v-bind="item"
-                        :is-playing="false"
-                        :is-selected="isSelected(item.id)"
-                        @select="!isSelected(item.id) && setSelectedItem(item.id)"
-                        @save="itemToSave = item"
-                        @remove="removeQueueItem(item.id)"
-                    />
+                    <span class="text-sm group-hover:hidden">{{ index + 1 }}</span>
 
-                    <div
-                        class="absolute left-0 top-0 bottom-0 flex shrink-0 items-center justify-center w-10 text-sm group-hover:invisible"
-                    >
-                        {{ index + 1 }}
-                    </div>
+                    <UIcon class="size-6 hidden group-hover:block" name="i-mdi-drag" />
+                </div>
+            </SortableVirtualizedList>
 
-                    <div
-                        class="handle absolute left-0 top-0 bottom-0 flex shrink-0 items-center justify-center w-10 invisible group-hover:visible cursor-grab"
-                    >
-                        <UIcon class="size-6" name="i-mdi-drag" />
-                    </div>
-                </li>
-            </UseSortable>
+            <Placeholder v-else icon="i-mdi-format-list-bulleted" text="The queue is empty." />
         </template>
 
         <template #footer>
-            <UButton icon="i-mdi-plus-box" @click="isImportFormOpen = true" />
+            <UButton icon="i-mdi-plus-box-multiple" @click="isImportFormOpen = true" />
             <UButton icon="i-mdi-notification-clear-all" @click="isClearingPromptOpen = true" />
         </template>
     </USlideover>

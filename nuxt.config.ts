@@ -11,7 +11,10 @@ const {
 export default defineNuxtConfig({
     app: {
         head: {
-            title: 'Microtube'
+            title: 'Microtube',
+            bodyAttrs: {
+                style: 'background-color:oklch(21% 0.034 264.665);height:100dvh;'
+            }
         }
     },
     ssr: false,
@@ -29,6 +32,17 @@ export default defineNuxtConfig({
     vite: {
         server: {
             allowedHosts: true
+        },
+        optimizeDeps: {
+            include: [
+                'axios',
+                'firebase/app',
+                'firebase/auth',
+                'firebase/database',
+                'date-fns',
+                '@vueuse/core',
+                '@vueuse/integrations/useSortable/component'
+            ]
         }
     },
     runtimeConfig: {

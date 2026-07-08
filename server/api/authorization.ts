@@ -1,4 +1,4 @@
-import { getAuthorizationUrl } from '../core/google';
+import { getAuthorizationUrl } from '../services/google';
 import { badRequest } from '../utils/response';
 
 export default defineEventHandler(async (event) => {
@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     if (origin) {
         const url = await getAuthorizationUrl(origin);
 
-        return { url };
+        return await sendRedirect(event, url);
     }
 
     badRequest('Invalid origin');

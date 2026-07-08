@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import type { FormError, FormSubmitEvent, SelectMenuItem } from '@nuxt/ui';
+import type { FormError, SelectMenuItem } from '@nuxt/ui';
+
+const emit = defineEmits<{ saved: [e: void] }>();
+const props = defineProps<{ video: Video | null }>();
+
+const video = ref<Video | null>(props.video);
 
 interface PlaylisFormData {
     title: string;
@@ -13,7 +18,8 @@ function getInitialState(): PlaylisFormData {
     };
 }
 
-const { mutate: createPlaylist } = useCreateplaylist();
+const { mutateAsync: createPlaylist } = useCreateplaylist();
+const { mutate: addPlaylistItem } = useAddPlaylistItem();
 
 const formData = reactive<PlaylisFormData>(getInitialState());
 
@@ -39,15 +45,36 @@ function reset() {
     Object.assign(formData, getInitialState());
 }
 
-function handleSubmit() {
-    createPlaylist(formData);
-
+async function handleSubmit() {
     close();
+
+    emit('saved');
+
+    const playlist = await createPlaylist(formData);
+
+    if (video.value) {
+        addPlaylistItem({ video: video.value, playlist });
+
+        video.value = null;
+    }
 }
+
+watch(
+    () => props.video,
+    () => {
+        if (props.video) video.value = props.video;
+    },
+    { immediate: true }
+);
 </script>
 
 <template>
-    <UModal v-model:open="isOpen" title="New Playlist" @after:leave="reset">
+    <UModal
+        v-model:open="isOpen"
+        title="New Playlist"
+        @after:leave="reset"
+        :ui="{ footer: 'justify-end' }"
+    >
         <slot />
 
         <template #body>

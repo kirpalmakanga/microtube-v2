@@ -1,38 +1,25 @@
-import { getAuthorizationUrl, refreshAccessToken } from '~/services/youtube';
+import { exchangeCodeForTokens, refreshAccessToken } from '~/services/authentication';
 import { captureError } from '~/utils/helpers';
 
-interface AuthState {
-    id: string;
-    name: string;
-    picture: string;
-    accessToken: string;
-    refreshToken: string;
-    idToken: string;
-    isSignedIn: boolean;
-}
-
-export const getInitialState = (): AuthState => ({
+export const getInitialState = (): User => ({
     id: '',
     name: '',
     picture: '',
     accessToken: '',
     refreshToken: '',
-    idToken: '',
-    isSignedIn: false
+    idToken: ''
 });
 
 export const useAuthStore = defineStore(
     'auth',
     () => {
-        const { signIntoDatabase, signOutOfDatabase } = useFirebase();
-        const state = reactive<AuthState>(getInitialState());
+        const { isSignedIntoDatabase, signIntoDatabase, signOutOfDatabase } = useFirebase();
+        const state = reactive<User>(getInitialState());
 
-        async function signIn() {
-            window.location.href = await getAuthorizationUrl();
-        }
+        async function signIn(code: string) {
+            const user = await exchangeCodeForTokens(code);
 
-        function setUser(data: User) {
-            Object.assign(state, data, { isSignedIn: true });
+            Object.assign(state, user);
         }
 
         async function signOut() {
@@ -53,24 +40,25 @@ export const useAuthStore = defineStore(
 
         watch(
             () => state.accessToken,
-            async (accessToken) => {
-                if (accessToken) {
+            async () => {
+                if (state.accessToken) {
                     try {
-                        await signIntoDatabase(state.idToken, accessToken);
+                        await signIntoDatabase(state.idToken, state.accessToken);
                     } catch (error) {
                         captureError(error);
 
                         await refreshTokens();
                     }
-                } else {
+                } else if (isSignedIntoDatabase.value) {
                     await signOutOfDatabase();
                 }
-            }
+            },
+            { immediate: true }
         );
 
         return {
             ...toRefs(state),
-            setUser,
+            isSignedIn: computed(() => !!state.accessToken),
             signIn,
             signOut,
             refreshTokens

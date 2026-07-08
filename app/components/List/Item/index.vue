@@ -12,11 +12,6 @@ const props = defineProps<{
     menuOptions?: ContextMenuItem[];
 }>();
 
-const menuConfig = {
-    align: 'end',
-    side: 'bottom'
-} as const;
-
 defineEmits<{ click: [e: void] }>();
 </script>
 
@@ -35,10 +30,10 @@ defineEmits<{ click: [e: void] }>();
                 {{ index }}
             </div>
 
-            <div class="flex grow gap-4 overflow-hidden">
+            <div class="flex max-md:items-center grow gap-4 overflow-hidden">
                 <div class="relative shrink-0">
                     <Img
-                        class="bg-gray-800 h-28 aspect-video rounded-md"
+                        class="bg-gray-800 h-14 md:h-28 aspect-video rounded-md"
                         :src="
                             getThumbnails(thumbnails, 'medium') ||
                             getThumbnails(thumbnails, 'default')
@@ -48,7 +43,7 @@ defineEmits<{ click: [e: void] }>();
 
                     <span
                         v-if="badge"
-                        class="absolute bottom-2 right-2 bg-gray-800/70 font-semibold font-montserrat text-xs rounded px-2 py-1"
+                        class="absolute bottom-2 right-2 bg-gray-800/70 font-semibold text-xs rounded px-2 py-1"
                     >
                         {{ badge }}
                     </span>
@@ -59,16 +54,9 @@ defineEmits<{ click: [e: void] }>();
                 </div>
             </div>
 
-            <UDropdownMenu v-if="menuOptions" :items="menuOptions" :content="menuConfig">
-                <UButton
-                    class="ml-4"
-                    color="neutral"
-                    variant="ghost"
-                    icon="i-mdi-dots-vertical"
-                    size="lg"
-                    @click.stop
-                />
-            </UDropdownMenu>
+            <div v-if="$slots.actions" class="flex gap-2">
+                <slot name="actions" />
+            </div>
         </UCard>
     </UContextMenu>
 </template>

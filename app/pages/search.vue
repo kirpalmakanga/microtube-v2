@@ -1,60 +1,16 @@
 <script setup lang="ts">
-const route = useRoute();
+import { useRouteQuery } from '@vueuse/router';
 
-const search = computed(() => {
-    const forMine = parseInt(route.query.forMine as string);
-
-    return {
-        query: route.query.query as string,
-        forMine: isNaN(forMine) ? 0 : forMine
-    };
-});
-
-const { data, isPending, isLoading, error, refetch, hasNextPage, loadNextPage } = useSearch(search);
-
-const items = computed(() => data.value?.pages.flatMap(({ items }) => items));
-
-const { queueItem } = usePlayerStore();
-
-const selectedItem = ref<Video | null>(null);
-
-watch(search, () => refetch());
+const query = useRouteQuery('query', '');
+const forMine = useRouteQuery('forMine', '0', { transform: Number });
 </script>
 
 <template>
     <div class="flex flex-col grow">
-        <SearchResultsLoader v-if="isPending || (error && isLoading)" />
+        <div class="p-4 md:p-6 bg-slate-600/80">
+            <SearchForm />
+        </div>
 
-        <Error v-else-if="error" @action="refetch()" />
-
-        <Placeholder
-            v-else-if="items && !items.length"
-            icon="i-mdi-format-list-bulleted"
-            :text="`Search for &quot;${search.query}&quot; gave no results.`"
-        />
-
-        <List
-            v-else-if="items"
-            :items="items"
-            @load-more="hasNextPage && !isLoading && loadNextPage()"
-        >
-            <template #item="{ item }">
-                <SearchResultsItem
-                    v-bind="item"
-                    @queue="queueItem(item)"
-                    @save="selectedItem = item"
-                />
-            </template>
-
-            <template v-if="isLoading" #loader>
-                <SearchResultsLoader />
-            </template>
-        </List>
+        <SearchResults v-if="query" :query="query" :forMine="forMine" />
     </div>
-
-    <PlaylistSelectorModal
-        :is-open="!!selectedItem"
-        :video="selectedItem"
-        @close="selectedItem = null"
-    />
 </template>

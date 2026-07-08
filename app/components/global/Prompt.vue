@@ -35,7 +35,12 @@ watch(
 </script>
 
 <template>
-    <UModal :title="title" v-model:open="isOpen" @after:leave="$emit('close')">
+    <UModal
+        :title="title"
+        v-model:open="isOpen"
+        :ui="{ header: 'pr-16 sm:pr-16' }"
+        @after:leave="$emit('close')"
+    >
         <slot />
 
         <template #footer>

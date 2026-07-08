@@ -5,6 +5,20 @@ export default defineNuxtPlugin(() => {
     const { refreshTokens, signOut } = authStore;
     const { accessToken } = storeToRefs(authStore);
 
+    let refreshing: Promise<void> | null = null;
+
+    async function refresh() {
+        if (!refreshing) {
+            refreshing = refreshTokens();
+        }
+
+        try {
+            await refreshing;
+        } finally {
+            refreshing = null;
+        }
+    }
+
     instance.interceptors.request.use((config) => {
         if (accessToken.value) {
             config.headers.Authorization = `Bearer ${accessToken.value}`;
@@ -21,23 +35,23 @@ export default defineNuxtPlugin(() => {
                 config
             } = error;
 
-            if (status === 401 && !config._retry) {
-                config._retry = true;
-
-                try {
-                    await refreshTokens();
-
-                    return instance(config);
-                } catch (refreshError) {
-                    await signOut();
-
-                    await navigateTo('/login');
-
-                    return Promise.reject(refreshError);
-                }
+            if (status !== 401 || config._hasBeenRetried) {
+                return Promise.reject(error);
             }
 
-            return Promise.reject(error);
+            config._hasBeenRetried = true;
+
+            try {
+                await refresh();
+
+                return instance(config);
+            } catch (refreshError) {
+                await signOut();
+
+                await navigateTo('/login');
+
+                return Promise.reject(refreshError);
+            }
         }
     );
 });

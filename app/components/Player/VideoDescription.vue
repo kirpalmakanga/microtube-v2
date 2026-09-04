@@ -9,7 +9,6 @@ const content = computed(() => (props.text ? wrapURLs(props.text) : ''));
         <slot />
 
         <template #body>
-            <a href="">hey</a>
             <div
                 class="whitespace-pre-wrap break-all [&_a]:text-primary"
                 v-if="content"

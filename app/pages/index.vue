@@ -17,7 +17,7 @@ const itemToRemove = ref<Playlist | null>(null);
         <Error v-else-if="error" @action="refetch()" />
 
         <List
-            v-else-if="items"
+            v-else-if="items?.length"
             :items="items"
             :is-loading="isLoading"
             empty-message="You haven't created playlists yet."

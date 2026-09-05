@@ -22,15 +22,25 @@ function handleSelectPlaylist(playlist: Playlist) {
 
         <Error v-else-if="error" @action="refetch()" />
 
-        <ScrollContainer class="grow" @reached-bottom="hasNextPage && loadNextPage()">
+        <ScrollContainer
+            v-else-if="playlists?.length"
+            class="grow"
+            @reached-bottom="hasNextPage && !isLoading && loadNextPage()"
+        >
             <ul class="flex flex-col gap-2">
                 <li v-for="playlist of playlists" :key="playlist.id">
                     <PlaylistSelectorItem
-                        v-bind="playlist"
+                        :playlist="playlist"
                         @click="handleSelectPlaylist(playlist)"
                     />
                 </li>
             </ul>
         </ScrollContainer>
+
+        <Placeholder
+            v-else
+            icon="i-mdi-format-list-bulleted"
+            text="You haven't created playlists yet."
+        />
     </div>
 </template>

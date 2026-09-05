@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps<{ title: string; thumbnails: Thumbnails; itemCount: number }>();
+defineProps<{ playlist: Playlist }>();
 </script>
 
 <template>
@@ -8,13 +8,15 @@ defineProps<{ title: string; thumbnails: Thumbnails; itemCount: number }>();
     >
         <Img
             class="bg-gray-800 aspect-video h-10 rounded-md"
-            :src="getThumbnails(thumbnails, 'default')"
+            :src="getThumbnails(playlist.thumbnails, 'default')"
         />
 
         <span class="text-sm font-bold truncate grow ellipsis">
-            {{ title }}
+            {{ playlist.title }}
         </span>
 
-        <span class="text-xs opacity-50">{{ itemCount }} item{{ itemCount !== 1 ? 's' : '' }}</span>
+        <span class="text-xs opacity-50">
+            {{ playlist.itemCount }} item{{ playlist.itemCount !== 1 ? 's' : '' }}
+        </span>
     </button>
 </template>

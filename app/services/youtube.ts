@@ -12,16 +12,6 @@ export const instance = axios.create({
     baseURL: 'https://content.googleapis.com/youtube/v3'
 });
 
-function removeEmptyParams(params: Record<string, unknown>) {
-    for (const p in params) {
-        if (!params[p]) {
-            // FIXME: prevent false positives like 0
-            delete params[p];
-        }
-    }
-    return params;
-}
-
 const request = async (
     method: string,
     path: string,
@@ -32,7 +22,7 @@ const request = async (
         method,
         url: `/${path}`,
         data,
-        params: params ? removeEmptyParams(params) : undefined
+        params
     });
 
     return result;
@@ -62,9 +52,9 @@ export async function searchVideos({
         part: 'id, snippet',
         type: 'video',
         q: query,
-        forMine: !!forMine,
         pageToken,
-        maxResults: ITEMS_PER_REQUEST
+        maxResults: ITEMS_PER_REQUEST,
+        ...(forMine ? { forMine: true } : {})
     });
 
     let items = [];

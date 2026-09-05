@@ -308,7 +308,7 @@ watch(
                             :class="{ 'hover:w-37': !!currentVideo }"
                             @wheel="handleWheelVolume"
                         >
-                            <UTooltip text="Mute" :kbds="['m']">
+                            <UTooltip :text="state.isMuted ? 'Unmute' : 'Mute'" :kbds="['m']">
                                 <UButton
                                     :icon="getVolumeIcon()"
                                     :disabled="!currentVideo"

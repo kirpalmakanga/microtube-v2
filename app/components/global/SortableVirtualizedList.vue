@@ -20,7 +20,7 @@ const props = defineProps<{
     options: SortableVirtualizedListOptions;
 }>();
 
-const model = defineModel<T[]>({ default: [] });
+const model = defineModel<T[]>({ default: () => [] });
 
 const items = computed(() => model.value.map((item, index) => ({ data: item, index })));
 
@@ -46,20 +46,26 @@ function getItemKey(item: T) {
     return props.itemKey && item !== null && typeof item === 'object' ? item[props.itemKey] : item;
 }
 
+function calculateNewIndex(item: HTMLElement) {
+    if (!listContainer.value) return;
+
+    const itemY = getViewportY(item);
+    const containerY = getViewportY(listContainer.value);
+
+    return (itemY - containerY) / props.options.virtualize.itemHeight;
+}
+
 useSortable(listContainer, model, {
     onUpdate: (event) => {
         const { item } = event;
 
-        if (!item || !listContainer.value) return;
+        const newIndex = calculateNewIndex(item);
 
-        const containerY = getViewportY(listContainer.value);
-        const itemY = getViewportY(item);
+        if (typeof newIndex !== 'undefined') {
+            const oldIndex = getItemIndex(item);
 
-        const oldIndex = getItemIndex(item);
-
-        const newIndex = (itemY - containerY) / props.options.virtualize.itemHeight;
-
-        moveArrayElement(model, oldIndex, newIndex, event);
+            moveArrayElement(model, oldIndex, newIndex, event);
+        }
     },
     ...props.options.sortable
 });

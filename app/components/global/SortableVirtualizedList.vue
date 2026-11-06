@@ -47,7 +47,7 @@ function getItemKey(item: T) {
 }
 
 function calculateNewIndex(item: HTMLElement) {
-    if (!listContainer.value) return;
+    if (!listContainer.value) throw new Error('List container does not exist');
 
     const itemY = getViewportY(item);
     const containerY = getViewportY(listContainer.value);
@@ -61,11 +61,9 @@ useSortable(listContainer, model, {
 
         const newIndex = calculateNewIndex(item);
 
-        if (typeof newIndex !== 'undefined') {
-            const oldIndex = getItemIndex(item);
+        const oldIndex = getItemIndex(item);
 
-            moveArrayElement(model, oldIndex, newIndex, event);
-        }
+        moveArrayElement(model, oldIndex, newIndex, event);
     },
     ...props.options.sortable
 });
